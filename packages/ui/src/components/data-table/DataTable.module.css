@@ -566,3 +566,72 @@
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
+
+/* ===== Virtual Scroll ===== */
+.virtualScrollContainer {
+  overflow-y: auto;
+  position: relative;
+}
+
+.virtualScrollSpacer {
+  position: relative;
+  width: 100%;
+}
+
+.virtualScrollContent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+/* ===== Frozen Columns ===== */
+.tableScrollable {
+  overflow-x: auto;
+}
+
+.frozenCell {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: inherit;
+}
+
+.frozenCell::after {
+  content: '';
+  position: absolute;
+  right: -4px;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  box-shadow: inset 4px 0 4px -4px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.scrolled .frozenCell::after {
+  opacity: 1;
+}
+
+.frozenCellHeader {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  background: inherit;
+}
+
+.frozenCellHeader::after {
+  content: '';
+  position: absolute;
+  right: -4px;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  box-shadow: inset 4px 0 4px -4px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.scrolled .frozenCellHeader::after {
+  opacity: 1;
+}

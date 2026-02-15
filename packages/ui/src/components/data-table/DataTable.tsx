@@ -17,6 +17,7 @@ import {
   type Density,
   type DataTableContextValue,
 } from './DataTableContext';
+import { useVirtualScroll } from './useVirtualScroll';
 import styles from './DataTable.module.css';
 
 /* ================================================================
@@ -35,7 +36,7 @@ interface ColumnProps {
 }
 
 function Column(_props: ColumnProps): ReactElement | null {
-  return null; // introspected, never rendered
+  return null;
 }
 Column.displayName = 'DataTable.Column';
 
@@ -68,29 +69,13 @@ interface SearchProps {
 
 function Search({ placeholder = 'Search...' }: SearchProps) {
   const { searchQuery, setSearchQuery } = useDataTable();
-
   return (
     <div className={styles.search}>
-      <svg
-        className={styles.searchIcon}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
+      <svg className={styles.searchIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <circle cx="11" cy="11" r="8" />
         <line x1="21" y1="21" x2="16.65" y2="16.65" />
       </svg>
-      <input
-        type="text"
-        className={styles.searchInput}
-        placeholder={placeholder}
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
+      <input type="text" className={styles.searchInput} placeholder={placeholder} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
     </div>
   );
 }
@@ -99,10 +84,7 @@ Search.displayName = 'DataTable.Search';
 /* ================================================================
  *  FilterGroup
  * ================================================================ */
-interface FilterGroupProps {
-  children: ReactNode;
-}
-
+interface FilterGroupProps { children: ReactNode; }
 function FilterGroup({ children }: FilterGroupProps) {
   return <div className={styles.filterGroup}>{children}</div>;
 }
@@ -121,27 +103,11 @@ interface FilterProps {
 function Filter({ label, options, value = '', onChange }: FilterProps) {
   return (
     <div className={styles.filter}>
-      <select
-        className={styles.filterSelect}
-        value={value}
-        onChange={(e) => onChange?.(e.target.value)}
-        aria-label={label}
-      >
+      <select className={styles.filterSelect} value={value} onChange={(e) => onChange?.(e.target.value)} aria-label={label}>
         <option value="">{label}</option>
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
-          </option>
-        ))}
+        {options.map((opt) => (<option key={opt.value} value={opt.value}>{opt.label}</option>))}
       </select>
-      <svg
-        className={styles.filterChevron}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        aria-hidden="true"
-      >
+      <svg className={styles.filterChevron} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
         <polyline points="6 9 12 15 18 9" />
       </svg>
     </div>
@@ -170,11 +136,7 @@ function ColumnToggle() {
 
   return (
     <div className={styles.columnToggle} ref={ref}>
-      <button
-        className={styles.columnToggleBtn}
-        onClick={() => setOpen((p) => !p)}
-        aria-label="Toggle columns"
-      >
+      <button className={styles.columnToggleBtn} onClick={() => setOpen((p) => !p)} aria-label="Toggle columns">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
           <rect x="3" y="3" width="7" height="7" />
           <rect x="14" y="3" width="7" height="7" />
@@ -186,11 +148,7 @@ function ColumnToggle() {
         <div className={styles.columnToggleDropdown}>
           {columns.map((col) => (
             <label key={col.id} className={styles.columnToggleItem}>
-              <input
-                type="checkbox"
-                checked={visibleColumns.has(col.id)}
-                onChange={() => toggleColumnVisibility(col.id)}
-              />
+              <input type="checkbox" checked={visibleColumns.has(col.id)} onChange={() => toggleColumnVisibility(col.id)} />
               {col.header}
             </label>
           ))}
@@ -206,40 +164,20 @@ ColumnToggle.displayName = 'DataTable.ColumnToggle';
  * ================================================================ */
 function DensityToggle() {
   const { density, setDensity } = useDataTable();
-
   const densities: { value: Density; label: string; lines: number }[] = [
     { value: 'compact', label: 'Compact', lines: 4 },
     { value: 'comfortable', label: 'Comfortable', lines: 3 },
     { value: 'spacious', label: 'Spacious', lines: 2 },
   ];
-
   return (
     <div className={styles.densityToggle} role="group" aria-label="Table density">
       {densities.map((d) => {
-        const btnClasses = [
-          styles.densityBtn,
-          density === d.value ? styles.densityBtnActive : '',
-        ].filter(Boolean).join(' ');
-
+        const btnClasses = [styles.densityBtn, density === d.value ? styles.densityBtnActive : ''].filter(Boolean).join(' ');
         return (
-          <button
-            key={d.value}
-            className={btnClasses}
-            onClick={() => setDensity(d.value)}
-            aria-pressed={density === d.value}
-            title={d.label}
-          >
+          <button key={d.value} className={btnClasses} onClick={() => setDensity(d.value)} aria-pressed={density === d.value} title={d.label}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               {Array.from({ length: d.lines }).map((_, i) => (
-                <rect
-                  key={i}
-                  x="1"
-                  y={1 + i * (12 / d.lines)}
-                  width="12"
-                  height={Math.max(1, 10 / d.lines - 1)}
-                  rx="0.5"
-                  fill="currentColor"
-                />
+                <rect key={i} x="1" y={1 + i * (12 / d.lines)} width="12" height={Math.max(1, 10 / d.lines - 1)} rx="0.5" fill="currentColor" />
               ))}
             </svg>
           </button>
@@ -253,24 +191,16 @@ DensityToggle.displayName = 'DataTable.DensityToggle';
 /* ================================================================
  *  BulkActions
  * ================================================================ */
-interface BulkActionsProps {
-  children: ReactNode;
-}
+interface BulkActionsProps { children: ReactNode; }
 
 function BulkActions({ children }: BulkActionsProps) {
   const { selectedIds, clearSelection } = useDataTable();
-
   if (selectedIds.size === 0) return null;
-
   return (
     <div className={styles.bulkActions}>
-      <span className={styles.bulkActionsCount}>
-        {selectedIds.size} selected
-      </span>
+      <span className={styles.bulkActionsCount}>{selectedIds.size} selected</span>
       <div className={styles.bulkActionsBtns}>{children}</div>
-      <button className={styles.bulkClearBtn} onClick={clearSelection}>
-        Clear selection
-      </button>
+      <button className={styles.bulkClearBtn} onClick={clearSelection}>Clear selection</button>
     </div>
   );
 }
@@ -285,20 +215,8 @@ interface PaginationProps {
   showTotal?: boolean;
 }
 
-function Pagination({
-  pageSize: _externalPageSize,
-  pageSizes = [10, 25, 50, 100],
-  showTotal = false,
-}: PaginationProps) {
-  const {
-    sortedData,
-    currentPage,
-    pageSize,
-    totalPages,
-    setCurrentPage,
-    setPageSize,
-  } = useDataTable();
-
+function Pagination({ pageSize: _externalPageSize, pageSizes = [10, 25, 50, 100], showTotal = false }: PaginationProps) {
+  const { sortedData, currentPage, pageSize, totalPages, setCurrentPage, setPageSize } = useDataTable();
   const totalItems = sortedData.length;
   const startItem = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1;
   const endItem = Math.min(currentPage * pageSize, totalItems);
@@ -323,67 +241,25 @@ function Pagination({
   return (
     <div className={styles.pagination}>
       <div className={styles.paginationInfo}>
-        {showTotal && (
-          <span className={styles.paginationTotal}>
-            Showing {startItem}-{endItem} of {totalItems}
-          </span>
-        )}
+        {showTotal && <span className={styles.paginationTotal}>Showing {startItem}-{endItem} of {totalItems}</span>}
         <span>Rows per page:</span>
-        <select
-          className={styles.pageSizeSelect}
-          value={pageSize}
-          onChange={(e) => {
-            setPageSize(Number(e.target.value));
-            setCurrentPage(1);
-          }}
-        >
-          {pageSizes.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
+        <select className={styles.pageSizeSelect} value={pageSize} onChange={(e) => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}>
+          {pageSizes.map((s) => (<option key={s} value={s}>{s}</option>))}
         </select>
       </div>
       <div className={styles.paginationNav}>
-        <button
-          className={styles.pageBtn}
-          disabled={currentPage === 1}
-          onClick={() => setCurrentPage(currentPage - 1)}
-          aria-label="Previous page"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
+        <button className={styles.pageBtn} disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)} aria-label="Previous page">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><polyline points="15 18 9 12 15 6" /></svg>
         </button>
         {pageNumbers.map((p, i) =>
           p === 'ellipsis' ? (
-            <span key={`ellipsis-${i}`} style={{ padding: '0 4px' }}>
-              ...
-            </span>
+            <span key={`ellipsis-${i}`} style={{ padding: '0 4px' }}>...</span>
           ) : (
-            <button
-              key={p}
-              className={[
-                styles.pageBtn,
-                p === currentPage ? styles.pageBtnActive : '',
-              ]
-                .filter(Boolean)
-                .join(' ')}
-              onClick={() => setCurrentPage(p)}
-            >
-              {p}
-            </button>
+            <button key={p} className={[styles.pageBtn, p === currentPage ? styles.pageBtnActive : ''].filter(Boolean).join(' ')} onClick={() => setCurrentPage(p)}>{p}</button>
           )
         )}
-        <button
-          className={styles.pageBtn}
-          disabled={currentPage === totalPages || totalPages === 0}
-          onClick={() => setCurrentPage(currentPage + 1)}
-          aria-label="Next page"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-            <polyline points="9 18 15 12 9 6" />
-          </svg>
+        <button className={styles.pageBtn} disabled={currentPage === totalPages || totalPages === 0} onClick={() => setCurrentPage(currentPage + 1)} aria-label="Next page">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><polyline points="9 18 15 12 9 6" /></svg>
         </button>
       </div>
     </div>
@@ -394,43 +270,27 @@ Pagination.displayName = 'DataTable.Pagination';
 /* ================================================================
  *  RowActions
  * ================================================================ */
-interface RowActionsProps {
-  children: ReactNode;
-}
+interface RowActionsProps { children: ReactNode; }
 
 function RowActions({ children }: RowActionsProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     if (!open) return;
     const handleClickOutside = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [open]);
-
   return (
     <div className={styles.rowActions} ref={ref}>
-      <button
-        className={styles.rowActionsBtn}
-        onClick={() => setOpen((p) => !p)}
-        aria-label="Row actions"
-      >
+      <button className={styles.rowActionsBtn} onClick={() => setOpen((p) => !p)} aria-label="Row actions">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <circle cx="12" cy="5" r="2" />
-          <circle cx="12" cy="12" r="2" />
-          <circle cx="12" cy="19" r="2" />
+          <circle cx="12" cy="5" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="12" cy="19" r="2" />
         </svg>
       </button>
-      {open && (
-        <div className={styles.rowActionsMenu} role="menu">
-          {children}
-        </div>
-      )}
+      {open && <div className={styles.rowActionsMenu} role="menu">{children}</div>}
     </div>
   );
 }
@@ -441,31 +301,12 @@ RowActions.displayName = 'DataTable.RowActions';
  * ================================================================ */
 function SortIcon({ direction }: { direction: 'asc' | 'desc' | null }) {
   if (direction === 'asc') {
-    return (
-      <span className={`${styles.sortIndicator} ${styles.sortActive}`}>
-        <svg className={styles.sortArrow} viewBox="0 0 10 10" fill="currentColor" aria-hidden="true">
-          <polygon points="5,2 9,8 1,8" />
-        </svg>
-      </span>
-    );
+    return (<span className={`${styles.sortIndicator} ${styles.sortActive}`}><svg className={styles.sortArrow} viewBox="0 0 10 10" fill="currentColor" aria-hidden="true"><polygon points="5,2 9,8 1,8" /></svg></span>);
   }
   if (direction === 'desc') {
-    return (
-      <span className={`${styles.sortIndicator} ${styles.sortActive}`}>
-        <svg className={styles.sortArrow} viewBox="0 0 10 10" fill="currentColor" aria-hidden="true">
-          <polygon points="5,8 9,2 1,2" />
-        </svg>
-      </span>
-    );
+    return (<span className={`${styles.sortIndicator} ${styles.sortActive}`}><svg className={styles.sortArrow} viewBox="0 0 10 10" fill="currentColor" aria-hidden="true"><polygon points="5,8 9,2 1,2" /></svg></span>);
   }
-  return (
-    <span className={styles.sortIndicator}>
-      <svg className={styles.sortArrow} viewBox="0 0 10 10" fill="currentColor" aria-hidden="true">
-        <polygon points="5,1 8,5 2,5" />
-        <polygon points="5,9 8,5 2,5" />
-      </svg>
-    </span>
-  );
+  return (<span className={styles.sortIndicator}><svg className={styles.sortArrow} viewBox="0 0 10 10" fill="currentColor" aria-hidden="true"><polygon points="5,1 8,5 2,5" /><polygon points="5,9 8,5 2,5" /></svg></span>);
 }
 
 /* ================================================================
@@ -473,14 +314,11 @@ function SortIcon({ direction }: { direction: 'asc' | 'desc' | null }) {
  * ================================================================ */
 function LoadingSkeleton({ columns, density }: { columns: ColumnDef[]; density: Density }) {
   const rowHeight = density === 'compact' ? 36 : density === 'comfortable' ? 44 : 52;
-
   return (
     <div className={styles.loadingContainer} aria-label="Loading table data" role="status">
       {Array.from({ length: 5 }).map((_, rowIdx) => (
         <div key={rowIdx} className={styles.skeletonRow} style={{ height: rowHeight }}>
-          {columns.map((col) => (
-            <div key={col.id} className={styles.skeletonCell} />
-          ))}
+          {columns.map((col) => (<div key={col.id} className={styles.skeletonCell} />))}
         </div>
       ))}
     </div>
@@ -488,37 +326,23 @@ function LoadingSkeleton({ columns, density }: { columns: ColumnDef[]; density: 
 }
 
 /* ================================================================
- *  Helper: extract ColumnDefs from children
+ *  Helpers
  * ================================================================ */
 function extractColumns(children: ReactNode): ColumnDef[] {
   const cols: ColumnDef[] = [];
   Children.forEach(children, (child) => {
     if (isValidElement(child) && (child.type as any)?.displayName === 'DataTable.Column') {
       const p = child.props as ColumnProps;
-      cols.push({
-        id: p.id,
-        header: p.header,
-        accessor: p.accessor,
-        width: p.width,
-        frozen: p.frozen,
-        sortable: p.sortable,
-        filterable: p.filterable,
-        render: p.render,
-      });
+      cols.push({ id: p.id, header: p.header, accessor: p.accessor, width: p.width, frozen: p.frozen, sortable: p.sortable, filterable: p.filterable, render: p.render });
     }
   });
   return cols;
 }
 
-/* ================================================================
- *  Helper: extract non-Column children by displayName
- * ================================================================ */
 function extractChild(children: ReactNode, displayName: string): ReactElement | null {
   let found: ReactElement | null = null;
   Children.forEach(children, (child) => {
-    if (isValidElement(child) && (child.type as any)?.displayName === displayName) {
-      found = child;
-    }
+    if (isValidElement(child) && (child.type as any)?.displayName === displayName) found = child;
   });
   return found;
 }
@@ -526,11 +350,17 @@ function extractChild(children: ReactNode, displayName: string): ReactElement | 
 function extractAllChildren(children: ReactNode, displayName: string): ReactElement[] {
   const result: ReactElement[] = [];
   Children.forEach(children, (child) => {
-    if (isValidElement(child) && (child.type as any)?.displayName === displayName) {
-      result.push(child);
-    }
+    if (isValidElement(child) && (child.type as any)?.displayName === displayName) result.push(child);
   });
   return result;
+}
+
+function getDensityRowHeight(density: Density): number {
+  switch (density) {
+    case 'compact': return 36;
+    case 'comfortable': return 44;
+    case 'spacious': return 52;
+  }
 }
 
 /* ================================================================
@@ -543,6 +373,10 @@ export interface DataTableProps {
   stickyHeader?: boolean;
   selectable?: false | 'single' | 'multi';
   loading?: boolean;
+  virtualScroll?: {
+    containerHeight: number;
+    overscan?: number;
+  };
   children: ReactNode;
 }
 
@@ -553,55 +387,43 @@ function DataTableRoot({
   stickyHeader = false,
   selectable = false,
   loading = false,
+  virtualScroll,
   children,
 }: DataTableProps) {
-  /* ------- Column introspection ------- */
   const columns = useMemo(() => extractColumns(children), [children]);
 
-  /* ------- State ------- */
   const [sortState, setSortState] = useState<SortState | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
   const [density, setDensity] = useState<Density>(initialDensity);
   const [searchQuery, setSearchQuery] = useState('');
-  const [visibleColumns, setVisibleColumns] = useState<Set<string>>(
-    () => new Set(columns.map((c) => c.id))
-  );
+  const [visibleColumns, setVisibleColumns] = useState<Set<string>>(() => new Set(columns.map((c) => c.id)));
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  /* Keep visibleColumns in sync if columns change */
+  const [isScrolledHorizontally, setIsScrolledHorizontally] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     setVisibleColumns((prev) => {
       const next = new Set(prev);
       for (const col of columns) {
-        if (!next.has(col.id) && prev.size === 0) {
-          next.add(col.id);
-        }
+        if (!next.has(col.id) && prev.size === 0) next.add(col.id);
       }
-      // Add newly-appeared columns
       for (const col of columns) {
-        if (![...prev].some((id) => columns.find((c) => c.id === id))) {
-          next.add(col.id);
-        }
+        if (![...prev].some((id) => columns.find((c) => c.id === id))) next.add(col.id);
       }
       return next;
     });
   }, [columns]);
 
-  /* ------- Detect pagination child to know default pageSize ------- */
   const paginationChild = extractChild(children, 'DataTable.Pagination');
   const hasPagination = paginationChild !== null;
-  const paginationPageSize = paginationChild
-    ? (paginationChild.props as PaginationProps).pageSize
-    : undefined;
+  const paginationPageSize = paginationChild ? (paginationChild.props as PaginationProps).pageSize : undefined;
 
   useEffect(() => {
-    if (paginationPageSize !== undefined) {
-      setPageSize(paginationPageSize);
-    }
+    if (paginationPageSize !== undefined) setPageSize(paginationPageSize);
   }, [paginationPageSize]);
 
-  /* ------- Derived data ------- */
   const filteredData = useMemo(() => {
     if (!searchQuery.trim()) return data;
     const q = searchQuery.toLowerCase();
@@ -621,14 +443,11 @@ function DataTableRoot({
     const accessor = col.accessor;
     const dir = sortState.direction === 'asc' ? 1 : -1;
     return [...filteredData].sort((a, b) => {
-      const aVal = a[accessor];
-      const bVal = b[accessor];
+      const aVal = a[accessor]; const bVal = b[accessor];
       if (aVal == null && bVal == null) return 0;
       if (aVal == null) return 1;
       if (bVal == null) return -1;
-      if (typeof aVal === 'number' && typeof bVal === 'number') {
-        return (aVal - bVal) * dir;
-      }
+      if (typeof aVal === 'number' && typeof bVal === 'number') return (aVal - bVal) * dir;
       return String(aVal).localeCompare(String(bVal)) * dir;
     });
   }, [filteredData, sortState, columns]);
@@ -641,248 +460,207 @@ function DataTableRoot({
     return sortedData.slice(start, start + pageSize);
   }, [sortedData, currentPage, pageSize, hasPagination]);
 
-  /* Reset page when filter/search changes */
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchQuery, data]);
+  useEffect(() => { setCurrentPage(1); }, [searchQuery, data]);
 
-  /* ------- Actions ------- */
-  const sort = useCallback(
-    (columnId: string) => {
-      setSortState((prev) => {
-        if (prev?.columnId === columnId) {
-          return prev.direction === 'asc'
-            ? { columnId, direction: 'desc' }
-            : null;
-        }
-        return { columnId, direction: 'asc' };
-      });
-    },
-    []
-  );
+  const itemHeight = getDensityRowHeight(density);
+  const isVirtualized = virtualScroll != null;
+  const virtualState = useVirtualScroll({
+    totalItems: paginatedData.length,
+    itemHeight,
+    containerHeight: virtualScroll?.containerHeight ?? 0,
+    overscan: virtualScroll?.overscan ?? 5,
+  });
 
-  const toggleSelection = useCallback(
-    (id: string) => {
-      setSelectedIds((prev) => {
-        const next = new Set(prev);
-        if (selectable === 'single') {
-          if (next.has(id)) {
-            next.delete(id);
-          } else {
-            next.clear();
-            next.add(id);
-          }
-        } else {
-          if (next.has(id)) {
-            next.delete(id);
-          } else {
-            next.add(id);
-          }
-        }
-        return next;
-      });
-    },
-    [selectable]
-  );
+  const displayRows = useMemo(() => {
+    if (!isVirtualized) return paginatedData;
+    return paginatedData.slice(virtualState.startIndex, virtualState.endIndex + 1);
+  }, [isVirtualized, paginatedData, virtualState.startIndex, virtualState.endIndex]);
+
+  const hasFrozenColumns = columns.some((c) => c.frozen);
+
+  const handleHorizontalScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+    setIsScrolledHorizontally((e.target as HTMLDivElement).scrollLeft > 0);
+  }, []);
+
+  const sort = useCallback((columnId: string) => {
+    setSortState((prev) => {
+      if (prev?.columnId === columnId) return prev.direction === 'asc' ? { columnId, direction: 'desc' } : null;
+      return { columnId, direction: 'asc' };
+    });
+  }, []);
+
+  const toggleSelection = useCallback((id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (selectable === 'single') { if (next.has(id)) next.delete(id); else { next.clear(); next.add(id); } }
+      else { if (next.has(id)) next.delete(id); else next.add(id); }
+      return next;
+    });
+  }, [selectable]);
 
   const toggleSelectAll = useCallback(() => {
     setSelectedIds((prev) => {
       const allIds = paginatedData.map((row) => String(row[keyField]));
       const allSelected = allIds.length > 0 && allIds.every((id) => prev.has(id));
-      if (allSelected) {
-        return new Set<string>();
-      }
+      if (allSelected) return new Set<string>();
       return new Set(allIds);
     });
   }, [paginatedData, keyField]);
 
-  const clearSelection = useCallback(() => {
-    setSelectedIds(new Set());
-  }, []);
+  const clearSelection = useCallback(() => { setSelectedIds(new Set()); }, []);
 
   const toggleColumnVisibility = useCallback((columnId: string) => {
     setVisibleColumns((prev) => {
       const next = new Set(prev);
-      if (next.has(columnId)) {
-        // Don't allow hiding all columns
-        if (next.size > 1) next.delete(columnId);
-      } else {
-        next.add(columnId);
-      }
+      if (next.has(columnId)) { if (next.size > 1) next.delete(columnId); }
+      else next.add(columnId);
       return next;
     });
   }, []);
 
-  /* ------- Context ------- */
-  const ctxValue: DataTableContextValue = useMemo(
-    () => ({
-      data,
-      columns,
-      sortState,
-      selectedIds,
-      density,
-      loading,
-      keyField,
-      searchQuery,
-      visibleColumns,
-      filteredData,
-      sortedData,
-      paginatedData,
-      currentPage,
-      pageSize,
-      totalPages,
-      selectable,
-      sort,
-      toggleSelection,
-      toggleSelectAll,
-      clearSelection,
-      setDensity,
-      setSearchQuery,
-      toggleColumnVisibility,
-      setCurrentPage,
-      setPageSize,
-    }),
-    [
-      data, columns, sortState, selectedIds, density, loading, keyField,
-      searchQuery, visibleColumns, filteredData, sortedData, paginatedData,
-      currentPage, pageSize, totalPages, selectable,
-      sort, toggleSelection, toggleSelectAll, clearSelection,
-      setDensity, setSearchQuery, toggleColumnVisibility,
-      setCurrentPage, setPageSize,
-    ]
-  );
+  const ctxValue: DataTableContextValue = useMemo(() => ({
+    data, columns, sortState, selectedIds, density, loading, keyField, searchQuery,
+    visibleColumns, filteredData, sortedData, paginatedData, currentPage, pageSize,
+    totalPages, selectable, sort, toggleSelection, toggleSelectAll, clearSelection,
+    setDensity, setSearchQuery, toggleColumnVisibility, setCurrentPage, setPageSize,
+  }), [
+    data, columns, sortState, selectedIds, density, loading, keyField,
+    searchQuery, visibleColumns, filteredData, sortedData, paginatedData,
+    currentPage, pageSize, totalPages, selectable,
+    sort, toggleSelection, toggleSelectAll, clearSelection,
+    setDensity, setSearchQuery, toggleColumnVisibility, setCurrentPage, setPageSize,
+  ]);
 
-  /* ------- Extract special children ------- */
   const toolbarChild = extractChild(children, 'DataTable.Toolbar');
   const bulkActionsChild = extractChild(children, 'DataTable.BulkActions');
-
-  /* ------- Visible columns ------- */
   const displayColumns = columns.filter((c) => visibleColumns.has(c.id));
-
-  /* ------- Select-all state ------- */
   const allPageIds = paginatedData.map((row) => String(row[keyField]));
   const allSelected = allPageIds.length > 0 && allPageIds.every((id) => selectedIds.has(id));
   const someSelected = allPageIds.some((id) => selectedIds.has(id)) && !allSelected;
 
-  /* ------- Root classes ------- */
-  const rootClasses = [
-    styles.root,
-    styles[density],
-    stickyHeader ? styles.stickyHeader : '',
-  ].filter(Boolean).join(' ');
+  const rootClasses = [styles.root, styles[density], stickyHeader ? styles.stickyHeader : ''].filter(Boolean).join(' ');
+
+  const getCellClass = (col: ColumnDef, isHeader: boolean): string => {
+    const base = isHeader ? styles.th : styles.td;
+    if (!col.frozen) return base;
+    return `${base} ${isHeader ? styles.frozenCellHeader : styles.frozenCell}`;
+  };
+
+  const renderHeaderRow = () => (
+    <tr>
+      {selectable && (
+        <th className={`${styles.th} ${styles.checkboxCell}`}>
+          {selectable === 'multi' && (
+            <input type="checkbox" className={styles.checkbox} checked={allSelected}
+              ref={(el) => { if (el) el.indeterminate = someSelected; }}
+              onChange={toggleSelectAll} aria-label="Select all rows" />
+          )}
+        </th>
+      )}
+      {displayColumns.map((col) => {
+        const isSorted = sortState?.columnId === col.id;
+        const dir = isSorted ? sortState!.direction : null;
+        const thClasses = [getCellClass(col, true), col.sortable ? styles.thSortable : ''].filter(Boolean).join(' ');
+        return (
+          <th key={col.id} className={thClasses} style={col.width ? { width: col.width } : undefined}
+            onClick={col.sortable ? () => sort(col.id) : undefined}
+            aria-sort={isSorted ? (dir === 'asc' ? 'ascending' : 'descending') : undefined}>
+            <span className={styles.thContent}>{col.header}{col.sortable && <SortIcon direction={dir} />}</span>
+          </th>
+        );
+      })}
+    </tr>
+  );
+
+  const renderDataRow = (row: any) => {
+    const rowId = String(row[keyField]);
+    const isSelected = selectedIds.has(rowId);
+    const trClasses = [styles.tr, isSelected ? styles.trSelected : ''].filter(Boolean).join(' ');
+    return (
+      <tr key={rowId} className={trClasses} style={isVirtualized ? { height: itemHeight } : undefined}>
+        {selectable && (
+          <td className={`${styles.td} ${styles.checkboxCell}`}>
+            <input type="checkbox" className={styles.checkbox} checked={isSelected}
+              onChange={() => toggleSelection(rowId)} aria-label={`Select row ${rowId}`} />
+          </td>
+        )}
+        {displayColumns.map((col) => {
+          const value = col.accessor ? row[col.accessor] : undefined;
+          return <td key={col.id} className={getCellClass(col, false)}>{col.render ? col.render(value, row) : value}</td>;
+        })}
+      </tr>
+    );
+  };
+
+  const renderEmptyRow = () => (
+    <tr>
+      <td colSpan={displayColumns.length + (selectable ? 1 : 0)} className={styles.emptyState}>
+        <span className={styles.emptyStateText}>No data available</span>
+      </td>
+    </tr>
+  );
+
+  const renderTableBody = () => {
+    if (displayRows.length === 0) return renderEmptyRow();
+    if (isVirtualized) {
+      const colCount = displayColumns.length + (selectable ? 1 : 0);
+      const bottomHeight = virtualState.totalHeight - virtualState.offsetY - displayRows.length * itemHeight;
+      return (
+        <>
+          {virtualState.offsetY > 0 && (
+            <tr aria-hidden="true"><td colSpan={colCount} style={{ height: virtualState.offsetY, padding: 0, border: 'none' }} /></tr>
+          )}
+          {displayRows.map(renderDataRow)}
+          {bottomHeight > 0 && (
+            <tr aria-hidden="true"><td colSpan={colCount} style={{ height: bottomHeight, padding: 0, border: 'none' }} /></tr>
+          )}
+        </>
+      );
+    }
+    return paginatedData.map(renderDataRow);
+  };
+
+  const renderTable = () => {
+    const tableWrapperClasses = [
+      hasFrozenColumns ? styles.tableScrollable : '',
+      isScrolledHorizontally ? styles.scrolled : '',
+    ].filter(Boolean).join(' ') || undefined;
+
+    const tableContent = (
+      <table className={styles.table} role="table">
+        <thead className={styles.thead}>{renderHeaderRow()}</thead>
+        <tbody className={styles.tbody}>{renderTableBody()}</tbody>
+      </table>
+    );
+
+    if (hasFrozenColumns) {
+      return (
+        <div className={tableWrapperClasses} ref={scrollContainerRef} onScroll={handleHorizontalScroll}>
+          {tableContent}
+        </div>
+      );
+    }
+    return tableContent;
+  };
 
   return (
     <DataTableCtx.Provider value={ctxValue}>
       <div className={rootClasses}>
-        {/* Toolbar */}
         {toolbarChild}
-
-        {/* Bulk actions */}
         {bulkActionsChild}
-
-        {/* Loading */}
         {loading ? (
           <LoadingSkeleton columns={displayColumns} density={density} />
+        ) : isVirtualized ? (
+          <div
+            className={styles.virtualScrollContainer}
+            style={{ height: virtualScroll!.containerHeight }}
+            onScroll={(e) => virtualState.onScroll((e.target as HTMLDivElement).scrollTop)}
+          >
+            {renderTable()}
+          </div>
         ) : (
-          <table className={styles.table} role="table">
-            <thead className={styles.thead}>
-              <tr>
-                {selectable && (
-                  <th className={`${styles.th} ${styles.checkboxCell}`}>
-                    {selectable === 'multi' && (
-                      <input
-                        type="checkbox"
-                        className={styles.checkbox}
-                        checked={allSelected}
-                        ref={(el) => {
-                          if (el) el.indeterminate = someSelected;
-                        }}
-                        onChange={toggleSelectAll}
-                        aria-label="Select all rows"
-                      />
-                    )}
-                  </th>
-                )}
-                {displayColumns.map((col) => {
-                  const isSorted = sortState?.columnId === col.id;
-                  const dir = isSorted ? sortState!.direction : null;
-                  const thClasses = [
-                    styles.th,
-                    col.sortable ? styles.thSortable : '',
-                  ].filter(Boolean).join(' ');
-
-                  return (
-                    <th
-                      key={col.id}
-                      className={thClasses}
-                      style={col.width ? { width: col.width } : undefined}
-                      onClick={col.sortable ? () => sort(col.id) : undefined}
-                      aria-sort={
-                        isSorted
-                          ? dir === 'asc'
-                            ? 'ascending'
-                            : 'descending'
-                          : undefined
-                      }
-                    >
-                      <span className={styles.thContent}>
-                        {col.header}
-                        {col.sortable && <SortIcon direction={dir} />}
-                      </span>
-                    </th>
-                  );
-                })}
-              </tr>
-            </thead>
-            <tbody className={styles.tbody}>
-              {paginatedData.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={displayColumns.length + (selectable ? 1 : 0)}
-                    className={styles.emptyState}
-                  >
-                    <span className={styles.emptyStateText}>No data available</span>
-                  </td>
-                </tr>
-              ) : (
-                paginatedData.map((row) => {
-                  const rowId = String(row[keyField]);
-                  const isSelected = selectedIds.has(rowId);
-                  const trClasses = [
-                    styles.tr,
-                    isSelected ? styles.trSelected : '',
-                  ].filter(Boolean).join(' ');
-
-                  return (
-                    <tr key={rowId} className={trClasses}>
-                      {selectable && (
-                        <td className={`${styles.td} ${styles.checkboxCell}`}>
-                          <input
-                            type="checkbox"
-                            className={styles.checkbox}
-                            checked={isSelected}
-                            onChange={() => toggleSelection(rowId)}
-                            aria-label={`Select row ${rowId}`}
-                          />
-                        </td>
-                      )}
-                      {displayColumns.map((col) => {
-                        const value = col.accessor ? row[col.accessor] : undefined;
-                        return (
-                          <td key={col.id} className={styles.td}>
-                            {col.render ? col.render(value, row) : value}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
+          renderTable()
         )}
-
-        {/* Pagination */}
         {paginationChild}
       </div>
     </DataTableCtx.Provider>
@@ -893,15 +671,6 @@ function DataTableRoot({
  *  Assemble compound component
  * ================================================================ */
 export const DataTable = Object.assign(DataTableRoot, {
-  Column,
-  Toolbar,
-  Search,
-  FilterGroup,
-  Filter,
-  Spacer,
-  ColumnToggle,
-  DensityToggle,
-  BulkActions,
-  Pagination,
-  RowActions,
+  Column, Toolbar, Search, FilterGroup, Filter, Spacer,
+  ColumnToggle, DensityToggle, BulkActions, Pagination, RowActions,
 });
