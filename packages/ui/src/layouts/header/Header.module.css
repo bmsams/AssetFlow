@@ -1,0 +1,149 @@
+.header {
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-3, 0.75rem) var(--spacing-4, 1rem);
+  background-color: var(--surface-card, #ffffff);
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header, 800);
+}
+
+/* Breadcrumbs */
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1, 0.25rem);
+  margin-bottom: var(--spacing-1, 0.25rem);
+}
+
+.breadcrumbList {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  gap: var(--spacing-1, 0.25rem);
+}
+
+.breadcrumbItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1, 0.25rem);
+}
+
+.breadcrumbLink {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-muted, #9ca3af);
+  text-decoration: none;
+  transition: color 150ms;
+}
+
+.breadcrumbLink:hover {
+  color: var(--color-accent-500, #0EA5E9);
+}
+
+.breadcrumbSeparator {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-muted, #9ca3af);
+}
+
+.breadcrumbCurrent {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-secondary, #4b5563);
+  font-weight: var(--font-weight-medium, 500);
+}
+
+/* Main row */
+.mainRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-4, 1rem);
+}
+
+.titleArea {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-size: var(--font-size-xl, 1.25rem);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-text-primary, #111827);
+  line-height: 1.25;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-secondary, #4b5563);
+  margin-top: 2px;
+}
+
+/* Actions area */
+.actionsArea {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2, 0.5rem);
+  flex-shrink: 0;
+}
+
+/* Notification bell */
+.notificationButton {
+  position: relative;
+  background: none;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--radius-md, 0.375rem);
+  padding: 6px;
+  cursor: pointer;
+  color: var(--color-text-secondary, #4b5563);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 150ms;
+}
+
+.notificationButton:hover {
+  background-color: var(--color-gray-100, #f3f4f6);
+  color: var(--color-text-primary, #111827);
+}
+
+.notificationBadge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  font-size: 10px;
+  font-weight: var(--font-weight-bold, 700);
+  background-color: var(--color-error-500, #ef4444);
+  color: white;
+  border-radius: var(--radius-full, 9999px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* User avatar */
+.userAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full, 9999px);
+  background-color: var(--color-enterprise-navy-900, #1B2A4A);
+  color: white;
+  font-weight: var(--font-weight-semibold, 600);
+  font-size: var(--font-size-xs, 0.75rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 150ms;
+}
+
+.userAvatar:hover {
+  border-color: var(--color-accent-500, #0EA5E9);
+}
