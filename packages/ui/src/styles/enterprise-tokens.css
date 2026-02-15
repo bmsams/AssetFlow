@@ -1,1 +1,124 @@
-/* Base design tokens - populated in Task 1 */
+/* ==========================================================================
+   Enterprise Design Tokens - @ams/ui
+   Color palette, surfaces, shadows, sidebar, semantic tokens, dark theme
+   ========================================================================== */
+
+:root {
+  /* ---- Enterprise Primary - Deep Navy ---- */
+  --color-enterprise-navy-50: #f0f4f8;
+  --color-enterprise-navy-100: #d9e2ec;
+  --color-enterprise-navy-200: #bcccdc;
+  --color-enterprise-navy-300: #9fb3c8;
+  --color-enterprise-navy-400: #829ab1;
+  --color-enterprise-navy-500: #627d98;
+  --color-enterprise-navy-600: #486581;
+  --color-enterprise-navy-700: #334e68;
+  --color-enterprise-navy-800: #243b53;
+  --color-enterprise-navy-900: #1B2A4A;
+
+  /* ---- Enterprise Accent - Electric Cyan ---- */
+  --color-accent-50: #e0f7fa;
+  --color-accent-100: #b2ebf2;
+  --color-accent-200: #80deea;
+  --color-accent-300: #4dd0e1;
+  --color-accent-400: #26c6da;
+  --color-accent-500: #0EA5E9;
+  --color-accent-600: #0891b2;
+  --color-accent-700: #0e7490;
+  --color-accent-800: #155e75;
+  --color-accent-900: #164e63;
+
+  /* ---- Gray Scale ---- */
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+
+  /* ---- Success ---- */
+  --color-success-50: #f0fdf4;
+  --color-success-100: #dcfce7;
+  --color-success-500: #22c55e;
+  --color-success-600: #16a34a;
+  --color-success-700: #15803d;
+
+  /* ---- Warning ---- */
+  --color-warning-50: #fffbeb;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
+
+  /* ---- Error ---- */
+  --color-error-50: #fef2f2;
+  --color-error-500: #ef4444;
+  --color-error-600: #dc2626;
+  --color-error-700: #b91c1c;
+
+  /* ---- Info ---- */
+  --color-info-50: #eff6ff;
+  --color-info-500: #3b82f6;
+  --color-info-600: #2563eb;
+
+  /* ---- Sidebar - Dark Slate ---- */
+  --sidebar-bg: #0F172A;
+  --sidebar-bg-hover: #1E293B;
+  --sidebar-bg-active: rgba(14, 165, 233, 0.08);
+  --sidebar-text: #94A3B8;
+  --sidebar-text-active: #F8FAFC;
+  --sidebar-text-muted: #64748B;
+  --sidebar-border: #1E293B;
+  --sidebar-accent: var(--color-accent-500);
+  --sidebar-width: 260px;
+  --sidebar-width-collapsed: 56px;
+
+  /* ---- Enterprise Surfaces ---- */
+  --surface-page: #FAFBFC;
+  --surface-card: #FFFFFF;
+  --surface-card-hover: #F8FAFC;
+  --surface-elevated: #FFFFFF;
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-card-hover: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-dropdown: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+  --shadow-modal: 0 20px 25px rgba(0, 0, 0, 0.15), 0 8px 10px rgba(0, 0, 0, 0.1);
+
+  /* ---- Semantic Colors ---- */
+  --color-text-primary: var(--color-gray-900);
+  --color-text-secondary: var(--color-gray-600);
+  --color-text-muted: var(--color-gray-400);
+  --color-border: var(--color-gray-200);
+  --color-border-hover: var(--color-gray-300);
+  --color-border-focus: var(--color-accent-500);
+
+  /* ---- Active Indicator ---- */
+  --active-border-width: 3px;
+
+  /* ---- Density ---- */
+  --density-compact-row: 36px;
+  --density-comfortable-row: 44px;
+  --density-spacious-row: 52px;
+}
+
+/* ==========================================================================
+   Dark Theme Overrides
+   ========================================================================== */
+
+[data-theme='dark'] {
+  --surface-page: #0B0F19;
+  --surface-card: #151B2B;
+  --surface-card-hover: #1C2333;
+  --surface-elevated: #1E2536;
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-card-hover: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --sidebar-bg: #060A13;
+  --sidebar-bg-hover: #0F172A;
+  --color-text-primary: #F8FAFC;
+  --color-text-secondary: #94A3B8;
+  --color-text-muted: #64748B;
+  --color-border: #1E293B;
+  --color-border-hover: #334155;
+}
