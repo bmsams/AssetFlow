@@ -1,0 +1,93 @@
+.container {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.left {
+  overflow: auto;
+  flex-shrink: 0;
+}
+
+.right {
+  flex: 1;
+  overflow: auto;
+  min-width: 0;
+  transition: width 200ms ease, flex 200ms ease, opacity 200ms ease;
+}
+
+.right.collapsed {
+  width: 0 !important;
+  flex: 0 0 0;
+  overflow: hidden;
+  opacity: 0;
+  padding: 0;
+}
+
+.handle {
+  width: 4px;
+  flex-shrink: 0;
+  cursor: col-resize;
+  background-color: transparent;
+  position: relative;
+  z-index: 1;
+  transition: background-color 150ms ease;
+}
+
+.handle::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background-color: var(--color-border, #e5e7eb);
+  transform: translateX(-50%);
+}
+
+.handle:hover,
+.handle.dragging {
+  background-color: var(--color-accent-500, #0EA5E9);
+}
+
+.handle:hover::after,
+.handle.dragging::after {
+  background-color: var(--color-accent-500, #0EA5E9);
+  width: 2px;
+}
+
+.collapseButton {
+  position: absolute;
+  top: 50%;
+  right: -12px;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full, 9999px);
+  border: 1px solid var(--color-border, #e5e7eb);
+  background-color: var(--surface-card, #ffffff);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted, #9ca3af);
+  z-index: 2;
+  transition: all 150ms ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.collapseButton:hover {
+  color: var(--color-text-primary, #111827);
+  border-color: var(--color-border-hover, #d1d5db);
+}
+
+.collapseButton:focus-visible {
+  outline: 2px solid var(--color-border-focus, #0EA5E9);
+  outline-offset: 1px;
+}
+
+.noSelect {
+  user-select: none;
+}
