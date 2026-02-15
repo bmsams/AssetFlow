@@ -7,3 +7,7 @@ export { Card, type CardProps, type CardVariant, type CardPadding } from './card
 export { Tabs } from './tabs/Tabs';
 export { SplitPanel, type SplitPanelProps } from './split-panel/SplitPanel';
 export { DataTable } from './data-table';
+
+export { Form } from './form';
+export { useFormContext } from './form';
+export type { FormProps, FormSectionProps, FormFieldProps, FormInputProps, FormSelectProps, FormComboboxProps, FormDynamicFieldsProps, FormActionsProps, FormSubmitProps, FormContextValue } from './form';
