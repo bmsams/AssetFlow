@@ -1,0 +1,62 @@
+.mono {
+  font-family: var(--font-family-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+  color: var(--color-text-primary);
+}
+
+.sm { font-size: var(--font-size-xs); }
+.md { font-size: var(--font-size-sm); }
+.lg { font-size: var(--font-size-base); }
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+.wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1);
+}
+
+.copyButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 2px;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  transition: all var(--transition-fast);
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.copyButton:hover {
+  color: var(--color-accent-500);
+  background-color: var(--color-gray-100);
+  border-color: var(--color-gray-200);
+}
+
+.copyButton:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 1px;
+}
+
+.copied {
+  font-size: var(--font-size-xs);
+  color: var(--color-success-600);
+  font-family: var(--font-family-sans);
+  animation: fadeIn var(--transition-fast) ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
