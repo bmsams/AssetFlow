@@ -6,3 +6,4 @@ export { MetricCard, type MetricCardProps, type MetricCardTrend, type MetricCard
 export { Card, type CardProps, type CardVariant, type CardPadding } from './card/Card';
 export { Tabs } from './tabs/Tabs';
 export { SplitPanel, type SplitPanelProps } from './split-panel/SplitPanel';
+export { DataTable } from './data-table';
