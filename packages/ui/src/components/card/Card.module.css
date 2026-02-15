@@ -1,0 +1,94 @@
+.card {
+  background-color: var(--surface-card, #ffffff);
+  border-radius: var(--radius-lg, 0.5rem);
+  box-shadow: var(--shadow-card, 0 1px 3px rgba(0,0,0,0.06));
+  transition: all 200ms ease;
+  overflow: hidden;
+}
+
+/* Variants */
+.elevated {
+  box-shadow: var(--shadow-card-hover, 0 4px 6px rgba(0,0,0,0.07));
+}
+
+.outlined {
+  box-shadow: none;
+  border: 1px solid var(--color-border, #e5e7eb);
+}
+
+.flat {
+  box-shadow: none;
+  background-color: var(--surface-page, #fafbfc);
+}
+
+/* Padding */
+.paddingNone { padding: 0; }
+.paddingCompact { padding: var(--spacing-3, 0.75rem); }
+.paddingDefault { padding: var(--spacing-4, 1rem); }
+.paddingSpacious { padding: var(--spacing-6, 1.5rem); }
+
+/* Interactive */
+.interactive {
+  cursor: pointer;
+  user-select: none;
+}
+
+.interactive:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-1px);
+}
+
+.interactive:active {
+  transform: scale(0.98);
+}
+
+.interactive:focus-visible {
+  outline: 2px solid var(--color-border-focus, #0EA5E9);
+  outline-offset: 2px;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-3, 0.75rem) var(--spacing-4, 1rem);
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
+}
+
+.headerText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.headerTitle {
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-text-primary, #111827);
+  line-height: 1.25;
+}
+
+.headerSubtitle {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-muted, #9ca3af);
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2, 0.5rem);
+}
+
+/* Body */
+.body {
+  padding: var(--spacing-4, 1rem);
+}
+
+/* Footer */
+.footer {
+  padding: var(--spacing-3, 0.75rem) var(--spacing-4, 1rem);
+  border-top: 1px solid var(--color-border, #e5e7eb);
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-secondary, #4b5563);
+}
