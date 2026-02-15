@@ -1,0 +1,8 @@
+{
+  "name": "ams",
+  "private": true,
+  "workspaces": ["packages/*", "frontend"],
+  "devDependencies": {
+    "playwright": "^1.58.2"
+  }
+}
