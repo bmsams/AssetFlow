@@ -1,0 +1,103 @@
+.wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.trigger {
+  cursor: pointer;
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 200px;
+  max-width: 320px;
+  background-color: var(--surface-card, #ffffff);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--radius-lg, 0.5rem);
+  box-shadow: var(--shadow-dropdown, 0 10px 15px rgba(0,0,0,0.1));
+  padding: var(--spacing-1, 0.25rem) 0;
+  z-index: var(--z-dropdown, 1000);
+  animation: menuEnter 150ms ease;
+  outline: none;
+}
+
+@keyframes menuEnter {
+  from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.groupLabel {
+  font-size: var(--font-size-xs, 0.75rem);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-text-muted, #9ca3af);
+  padding: var(--spacing-2, 0.5rem) var(--spacing-3, 0.75rem) var(--spacing-1, 0.25rem);
+  user-select: none;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2, 0.5rem);
+  width: 100%;
+  padding: 6px var(--spacing-3, 0.75rem);
+  background: none;
+  border: none;
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-primary, #111827);
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 100ms;
+  outline: none;
+  min-height: 32px;
+}
+
+.item:hover,
+.item:focus-visible {
+  background-color: var(--color-gray-100, #f3f4f6);
+}
+
+[data-theme='dark'] .item:hover,
+[data-theme='dark'] .item:focus-visible {
+  background-color: var(--color-gray-700, #374151);
+}
+
+.item.danger { color: var(--color-error-500, #ef4444); }
+.item.danger:hover,
+.item.danger:focus-visible { background-color: var(--color-error-50, #fef2f2); }
+
+.item.disabled {
+  color: var(--color-text-muted, #9ca3af);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.item.disabled:hover { background-color: transparent; }
+
+.itemIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--color-text-secondary, #4b5563);
+}
+
+.item.danger .itemIcon { color: var(--color-error-500, #ef4444); }
+
+.itemLabel { flex: 1; }
+
+.itemShortcut {
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-muted, #9ca3af);
+  font-family: var(--font-family-mono, monospace);
+  margin-left: auto;
+  padding-left: var(--spacing-4, 1rem);
+}
+
+.separator {
+  height: 1px;
+  background-color: var(--color-border, #e5e7eb);
+  margin: var(--spacing-1, 0.25rem) 0;
+}
