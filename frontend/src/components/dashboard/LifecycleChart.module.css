@@ -1,0 +1,244 @@
+/* LifecycleChart Component Styles */
+.lifecycleChart {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  padding: var(--spacing-4);
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-4);
+}
+
+.title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.totalCount {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* Chart Container */
+.chartContainer {
+  display: flex;
+  gap: var(--spacing-6);
+  align-items: flex-start;
+}
+
+/* Bar Chart */
+.barChart {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.barRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  background: none;
+  border: none;
+  padding: var(--spacing-2);
+  margin: calc(-1 * var(--spacing-2));
+  border-radius: var(--radius-md);
+  width: calc(100% + var(--spacing-4));
+  text-align: left;
+  font: inherit;
+}
+
+.barRow.clickable {
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.barRow.clickable:hover {
+  background-color: var(--color-gray-50);
+}
+
+.barRow.clickable:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+[data-theme='dark'] .barRow.clickable:hover {
+  background-color: var(--color-gray-800);
+}
+
+.barRow:disabled {
+  cursor: default;
+}
+
+.barLabel {
+  width: 120px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.statusLabel {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.statusCount {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.barTrack {
+  flex: 1;
+  height: 24px;
+  background-color: var(--color-gray-100);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  border-radius: var(--radius-md);
+  transition: width var(--transition-slow);
+  min-width: 2px;
+}
+
+.barPercentage {
+  width: 50px;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Donut Chart */
+.donutContainer {
+  width: 140px;
+  height: 140px;
+  flex-shrink: 0;
+}
+
+.donutChart {
+  width: 100%;
+  height: 100%;
+}
+
+.donutSegment {
+  transition: opacity var(--transition-fast);
+}
+
+.donutSegment:hover {
+  opacity: 0.8;
+}
+
+.donutCenter {
+  fill: var(--color-surface);
+}
+
+.donutValue {
+  font-size: 16px;
+  font-weight: var(--font-weight-bold);
+  fill: var(--color-text-primary);
+}
+
+.donutLabel {
+  font-size: 8px;
+  fill: var(--color-text-secondary);
+}
+
+/* Legend */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-3);
+  margin-top: var(--spacing-4);
+  padding-top: var(--spacing-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.legendColor {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.legendLabel {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* Empty State */
+.emptyState {
+  text-align: center;
+  padding: var(--spacing-8);
+  color: var(--color-text-muted);
+}
+
+/* Loading State */
+.skeletonChart {
+  height: 200px;
+  background: linear-gradient(90deg, var(--color-gray-200) 25%, var(--color-gray-100) 50%, var(--color-gray-200) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-md);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Dark mode adjustments */
+[data-theme='dark'] .barTrack {
+  background-color: var(--color-gray-700);
+}
+
+[data-theme='dark'] .donutCenter {
+  fill: var(--color-surface);
+}
+
+[data-theme='dark'] .skeletonChart {
+  background: linear-gradient(90deg, var(--color-gray-700) 25%, var(--color-gray-600) 50%, var(--color-gray-700) 75%);
+  background-size: 200% 100%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .chartContainer {
+    flex-direction: column;
+  }
+
+  .donutContainer {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto;
+  }
+
+  .barLabel {
+    width: 100px;
+  }
+
+  .barPercentage {
+    width: 40px;
+  }
+}

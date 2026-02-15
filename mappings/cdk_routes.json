@@ -1,0 +1,2517 @@
+{
+  "routes": [
+    {
+      "service": "asset-service",
+      "handler": "create-asset",
+      "path": "/assets",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "asset-service",
+      "handler": "list-assets",
+      "path": "/assets",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "asset-service",
+      "handler": "search-assets",
+      "path": "/assets/search",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "asset-service",
+      "handler": "get-asset",
+      "path": "/assets/{assetId}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "asset-service",
+      "handler": "update-asset",
+      "path": "/assets/{assetId}",
+      "methods": [
+        "PUT"
+      ]
+    },
+    {
+      "service": "asset-service",
+      "handler": "delete-asset",
+      "path": "/assets/{assetId}",
+      "methods": [
+        "DELETE"
+      ]
+    },
+    {
+      "service": "asset-service",
+      "handler": "transition-state",
+      "path": "/assets/{assetId}/transition",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "asset-service",
+      "handler": "get-audit-log",
+      "path": "/assets/{assetId}/audit",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "asset-service",
+      "handler": "link-assets",
+      "path": "/assets/relationships",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "asset-service",
+      "handler": "unlink-assets",
+      "path": "/assets/relationships",
+      "methods": [
+        "DELETE"
+      ]
+    },
+    {
+      "service": "asset-service",
+      "handler": "get-related-assets",
+      "path": "/assets/{assetId}/relationships",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "building-handlers",
+      "path": "/admin/buildings",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "building-handlers",
+      "path": "/admin/buildings/{buildingId}",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "building-handlers",
+      "path": "/admin/buildings/{buildingId}/deactivate",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "floor-handlers",
+      "path": "/admin/floors",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "floor-handlers",
+      "path": "/admin/floors/{floorId}",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "floor-handlers",
+      "path": "/admin/floors/{floorId}/deactivate",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "room-handlers",
+      "path": "/admin/rooms",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "room-handlers",
+      "path": "/admin/rooms/{roomId}",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "room-handlers",
+      "path": "/admin/rooms/{roomId}/deactivate",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "rack-handlers",
+      "path": "/admin/racks",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "rack-handlers",
+      "path": "/admin/racks/{rackId}",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "rack-handlers",
+      "path": "/admin/racks/{rackId}/deactivate",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "department-handlers",
+      "path": "/admin/departments",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "department-handlers",
+      "path": "/admin/departments/{departmentId}",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "department-handlers",
+      "path": "/admin/departments/{departmentId}/deactivate",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "cost-center-handlers",
+      "path": "/admin/cost-centers",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "cost-center-handlers",
+      "path": "/admin/cost-centers/{costCenterId}",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "cost-center-handlers",
+      "path": "/admin/cost-centers/{costCenterId}/deactivate",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "vendor-handlers",
+      "path": "/admin/vendors",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "vendor-handlers",
+      "path": "/admin/vendors/{vendorId}",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "vendor-handlers",
+      "path": "/admin/vendors/{vendorId}/model-prices",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "vendor-handlers",
+      "path": "/admin/vendors/{vendorId}/model-prices/{modelId}",
+      "methods": [
+        "PUT",
+        "DELETE"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "vendor-handlers",
+      "path": "/admin/vendors/{vendorId}/deactivate",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "manufacturer-handlers",
+      "path": "/admin/manufacturers",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "manufacturer-handlers",
+      "path": "/admin/manufacturers/{manufacturerId}",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "manufacturer-handlers",
+      "path": "/admin/manufacturers/{manufacturerId}/deactivate",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "model-handlers",
+      "path": "/admin/models",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "model-handlers",
+      "path": "/admin/models/{modelId}",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "model-handlers",
+      "path": "/admin/models/{modelId}/deactivate",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "user-admin-handlers",
+      "path": "/admin/users",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "user-admin-handlers",
+      "path": "/admin/users/{userId}",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "user-admin-handlers",
+      "path": "/admin/users/{userId}/deactivate",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "user-admin-handlers",
+      "path": "/admin/users/{userId}/reactivate",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "user-admin-handlers",
+      "path": "/admin/users/{userId}/roles",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "user-admin-handlers",
+      "path": "/admin/users/{userId}/roles/{roleId}",
+      "methods": [
+        "DELETE"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "stockroom-handlers",
+      "path": "/admin/stockrooms",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "stockroom-handlers",
+      "path": "/admin/stockrooms/{stockroomId}",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "stockroom-handlers",
+      "path": "/admin/stockrooms/{stockroomId}/deactivate",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "bin-location-handlers",
+      "path": "/admin/bin-locations",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "bin-location-handlers",
+      "path": "/admin/bin-locations/{binId}",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "service": "admin-service",
+      "handler": "bin-location-handlers",
+      "path": "/admin/bin-locations/{binId}/deactivate",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "procurement-service",
+      "handler": "po-handlers",
+      "path": "/procurement/purchase-orders",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "service": "procurement-service",
+      "handler": "po-handlers",
+      "path": "/procurement/purchase-orders/{poId}",
+      "methods": [
+        "GET",
+        "PUT",
+        "DELETE"
+      ]
+    },
+    {
+      "service": "procurement-service",
+      "handler": "po-handlers",
+      "path": "/procurement/purchase-orders/{poId}/lines",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "service": "procurement-service",
+      "handler": "po-handlers",
+      "path": "/procurement/purchase-orders/{poId}/lines/{lineId}",
+      "methods": [
+        "PUT",
+        "DELETE"
+      ]
+    },
+    {
+      "service": "procurement-service",
+      "handler": "po-handlers",
+      "path": "/procurement/purchase-orders/{poId}/submit",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "procurement-service",
+      "handler": "po-handlers",
+      "path": "/procurement/purchase-orders/{poId}/send",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "procurement-service",
+      "handler": "po-handlers",
+      "path": "/procurement/purchase-orders/{poId}/cancel",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "procurement-service",
+      "handler": "po-handlers",
+      "path": "/procurement/purchase-orders/{poId}/approve",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "procurement-service",
+      "handler": "po-handlers",
+      "path": "/procurement/purchase-orders/{poId}/reject",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "procurement-service",
+      "handler": "approval-handlers",
+      "path": "/procurement/pending-approvals",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "report-service",
+      "handler": "report-handlers",
+      "path": "/reports/{reportType}/export",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "report-service",
+      "handler": "dashboard-handlers",
+      "path": "/dashboard/summary",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "report-service",
+      "handler": "dashboard-handlers",
+      "path": "/dashboard/compliance",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "report-service",
+      "handler": "dashboard-handlers",
+      "path": "/dashboard/lease-expirations",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "lifecycle-service",
+      "handler": "record-receiving",
+      "path": "/lifecycle/receiving/from-po",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "lifecycle-service",
+      "handler": "get-receiving",
+      "path": "/lifecycle/receiving/{receivingId}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "lifecycle-service",
+      "handler": "scan-asset",
+      "path": "/lifecycle/receiving/{receivingId}/scan",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "lifecycle-service",
+      "handler": "complete-receiving",
+      "path": "/lifecycle/receiving/{receivingId}/complete",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "lifecycle-service",
+      "handler": "cancel-receiving",
+      "path": "/lifecycle/receiving/{receivingId}/cancel",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "lifecycle-service",
+      "handler": "mark-for-inspection",
+      "path": "/lifecycle/inspection",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "lifecycle-service",
+      "handler": "get-inspection",
+      "path": "/lifecycle/inspection/{inspectionId}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "lifecycle-service",
+      "handler": "record-inspection-result",
+      "path": "/lifecycle/inspection/{inspectionId}/result",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "lifecycle-service",
+      "handler": "get-catalog-items",
+      "path": "/lifecycle/catalog/items",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "lifecycle-service",
+      "handler": "search-catalog",
+      "path": "/lifecycle/catalog/search",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "lifecycle-service",
+      "handler": "get-contracts-by-vendor",
+      "path": "/lifecycle/contracts",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "lifecycle-service",
+      "handler": "create-contract",
+      "path": "/lifecycle/contracts",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "lifecycle-service",
+      "handler": "update-contract",
+      "path": "/lifecycle/contracts/{contractId}",
+      "methods": [
+        "PUT"
+      ]
+    },
+    {
+      "service": "lifecycle-service",
+      "handler": "deploy-asset",
+      "path": "/lifecycle/deploy",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "lifecycle-service",
+      "handler": "initiate-retirement",
+      "path": "/lifecycle/retirement",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "lifecycle-service",
+      "handler": "complete-disposal",
+      "path": "/lifecycle/disposal/{assetId}/complete",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "lifecycle-service",
+      "handler": "submit-request",
+      "path": "/lifecycle/requests",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "lifecycle-service",
+      "handler": "get-request-status",
+      "path": "/lifecycle/requests/{requestId}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "lifecycle-service",
+      "handler": "route-for-approval",
+      "path": "/lifecycle/requests/{requestId}/route",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "lifecycle-service",
+      "handler": "approve-request",
+      "path": "/lifecycle/requests/{requestId}/approve",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "lifecycle-service",
+      "handler": "reject-request",
+      "path": "/lifecycle/requests/{requestId}/reject",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "lifecycle-service",
+      "handler": "check-stock",
+      "path": "/lifecycle/inventory/check",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "lifecycle-service",
+      "handler": "reserve-inventory",
+      "path": "/lifecycle/inventory/reserve",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "lifecycle-service",
+      "handler": "assign-to-user",
+      "path": "/lifecycle/assets/{assetId}/assign",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "lifecycle-service",
+      "handler": "create-purchase-order",
+      "path": "/lifecycle/purchase-orders",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "lifecycle-service",
+      "handler": "get-inspection-history",
+      "path": "/lifecycle/inspection/history",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "eam-service",
+      "handler": "work-order-handlers",
+      "path": "/eam/work-orders",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "service": "eam-service",
+      "handler": "work-order-handlers",
+      "path": "/eam/work-orders/{workOrderId}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "eam-service",
+      "handler": "work-order-handlers",
+      "path": "/eam/work-orders/{workOrderId}/complete",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "eam-service",
+      "handler": "work-order-handlers",
+      "path": "/eam/work-orders/{workOrderId}/assign",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "eam-service",
+      "handler": "maintenance-plan-handlers",
+      "path": "/eam/maintenance-plans",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "service": "eam-service",
+      "handler": "maintenance-plan-handlers",
+      "path": "/eam/maintenance-plans/{planId}",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "service": "eam-service",
+      "handler": "maintenance-plan-handlers",
+      "path": "/eam/maintenance-plans/check-due",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "eam-service",
+      "handler": "get-hierarchy",
+      "path": "/eam/hierarchy/{assetId}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "eam-service",
+      "handler": "link-parent-child",
+      "path": "/eam/hierarchy/link",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "eam-service",
+      "handler": "unlink-parent-child",
+      "path": "/eam/hierarchy/unlink",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "eam-service",
+      "handler": "propagate-status",
+      "path": "/eam/hierarchy/{assetId}/propagate-status",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "eam-service",
+      "handler": "create-linear-asset",
+      "path": "/eam/linear-assets",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "eam-service",
+      "handler": "get-linear-asset",
+      "path": "/eam/linear-assets/{linearAssetId}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "eam-service",
+      "handler": "list-segments",
+      "path": "/eam/linear-assets/{linearAssetId}/segments",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "eam-service",
+      "handler": "update-segment",
+      "path": "/eam/linear-assets/{linearAssetId}/segments/{segmentId}",
+      "methods": [
+        "PUT"
+      ]
+    },
+    {
+      "service": "eam-service",
+      "handler": "check-part-levels",
+      "path": "/eam/parts/levels",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "eam-service",
+      "handler": "consume-parts",
+      "path": "/eam/parts/consume",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "eam-service",
+      "handler": "reserve-parts",
+      "path": "/eam/parts/reserve",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "sam-service",
+      "handler": "get-compliance-position",
+      "path": "/reconciliation/compliance",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "sam-service",
+      "handler": "get-compliance-position",
+      "path": "/reconciliation/compliance/{productId}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "sam-service",
+      "handler": "run-reconciliation",
+      "path": "/reconciliation/run",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "sam-service",
+      "handler": "generate-compliance-report",
+      "path": "/reconciliation/compliance-report",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "sam-service",
+      "handler": "get-reconciliation-summary",
+      "path": "/reconciliation/summary",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "sam-service",
+      "handler": "identify-reclamation-candidates",
+      "path": "/reclamation/candidates",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "sam-service",
+      "handler": "initiate-reclamation",
+      "path": "/reclamation/initiate",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "sam-service",
+      "handler": "get-unused-subscriptions",
+      "path": "/reclamation/unused-subscriptions",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "sam-service",
+      "handler": "analyze-shadow-it",
+      "path": "/shadow-it/analyze",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "sam-service",
+      "handler": "apply-publisher-rules",
+      "path": "/publisher-packs/apply",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "sam-service",
+      "handler": "sync-saas-usage",
+      "path": "/saas/sync-usage",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "sam-service",
+      "handler": "get-workbench-summary",
+      "path": "/sam/workbench/summary",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "notification-service",
+      "handler": "send-notification",
+      "path": "/notifications/send",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "notification-service",
+      "handler": "get-notification-history",
+      "path": "/notifications/history",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "notification-service",
+      "handler": "mark-notification-read",
+      "path": "/notifications/{notificationId}/read",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "notification-service",
+      "handler": "get-preferences",
+      "path": "/users/{userId}/notification-preferences",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "notification-service",
+      "handler": "update-preferences",
+      "path": "/users/{userId}/notification-preferences",
+      "methods": [
+        "PUT"
+      ]
+    },
+    {
+      "service": "integration-service",
+      "handler": "get-vendor-catalog",
+      "path": "/integrations/vendor-catalog",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "integration-service",
+      "handler": "get-vendor-catalog",
+      "path": "/integrations/vendor-catalog/{vendorType}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "integration-service",
+      "handler": "sync-purchase-orders",
+      "path": "/integrations/erp/sync-purchase-orders",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "integration-service",
+      "handler": "sync-cost-centers",
+      "path": "/integrations/erp/sync-cost-centers",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "integration-service",
+      "handler": "process-asn",
+      "path": "/integrations/erp/process-asn",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "integration-service",
+      "handler": "ingest-sccm-data",
+      "path": "/integrations/discovery/sccm",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "integration-service",
+      "handler": "ingest-jamf-data",
+      "path": "/integrations/discovery/jamf",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "integration-service",
+      "handler": "ingest-tanium-data",
+      "path": "/integrations/discovery/tanium",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "ham-service",
+      "handler": "create-transfer",
+      "path": "/ham/transfers",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "ham-service",
+      "handler": "approve-transfer",
+      "path": "/ham/transfers/{transferId}/approve",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "ham-service",
+      "handler": "complete-transfer",
+      "path": "/ham/transfers/{transferId}/complete",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "ham-service",
+      "handler": "checkout-loaner",
+      "path": "/ham/loaners/checkout",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "ham-service",
+      "handler": "return-loaner",
+      "path": "/ham/loaners/{loanerId}/return",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "ham-service",
+      "handler": "get-overdue-loans",
+      "path": "/ham/loaners/overdue",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "ham-service",
+      "handler": "initiate-disposal",
+      "path": "/ham/disposal",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "ham-service",
+      "handler": "record-destruction",
+      "path": "/ham/disposal/{disposalId}/destruction",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "ham-service",
+      "handler": "record-audit-scan",
+      "path": "/ham/audits/scan",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "service": "ham-service",
+      "handler": "get-audit-discrepancies",
+      "path": "/ham/audits/discrepancies",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "ham-service",
+      "handler": "get-stockroom-inventory",
+      "path": "/ham/stockrooms/{stockroomId}/inventory",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "ham-service",
+      "handler": "update-inventory",
+      "path": "/ham/stockrooms/{stockroomId}/inventory",
+      "methods": [
+        "PUT"
+      ]
+    },
+    {
+      "service": "ham-service",
+      "handler": "bin-location-handlers",
+      "path": "/ham/bin-locations",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "service": "ham-service",
+      "handler": "bin-location-handlers",
+      "path": "/ham/bin-locations/{binId}",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "service": "ham-service",
+      "handler": "stockroom-admin-handlers",
+      "path": "/ham/stockroom-admin",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "service": "ham-service",
+      "handler": "stockroom-admin-handlers",
+      "path": "/ham/stockroom-admin/{stockroomId}",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    }
+  ],
+  "by_service": {
+    "asset-service": [
+      {
+        "service": "asset-service",
+        "handler": "create-asset",
+        "path": "/assets",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "asset-service",
+        "handler": "list-assets",
+        "path": "/assets",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "asset-service",
+        "handler": "search-assets",
+        "path": "/assets/search",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "asset-service",
+        "handler": "get-asset",
+        "path": "/assets/{assetId}",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "asset-service",
+        "handler": "update-asset",
+        "path": "/assets/{assetId}",
+        "methods": [
+          "PUT"
+        ]
+      },
+      {
+        "service": "asset-service",
+        "handler": "delete-asset",
+        "path": "/assets/{assetId}",
+        "methods": [
+          "DELETE"
+        ]
+      },
+      {
+        "service": "asset-service",
+        "handler": "transition-state",
+        "path": "/assets/{assetId}/transition",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "asset-service",
+        "handler": "get-audit-log",
+        "path": "/assets/{assetId}/audit",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "asset-service",
+        "handler": "link-assets",
+        "path": "/assets/relationships",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "asset-service",
+        "handler": "unlink-assets",
+        "path": "/assets/relationships",
+        "methods": [
+          "DELETE"
+        ]
+      },
+      {
+        "service": "asset-service",
+        "handler": "get-related-assets",
+        "path": "/assets/{assetId}/relationships",
+        "methods": [
+          "GET"
+        ]
+      }
+    ],
+    "admin-service": [
+      {
+        "service": "admin-service",
+        "handler": "building-handlers",
+        "path": "/admin/buildings",
+        "methods": [
+          "GET",
+          "POST"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "building-handlers",
+        "path": "/admin/buildings/{buildingId}",
+        "methods": [
+          "GET",
+          "PUT"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "building-handlers",
+        "path": "/admin/buildings/{buildingId}/deactivate",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "floor-handlers",
+        "path": "/admin/floors",
+        "methods": [
+          "GET",
+          "POST"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "floor-handlers",
+        "path": "/admin/floors/{floorId}",
+        "methods": [
+          "GET",
+          "PUT"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "floor-handlers",
+        "path": "/admin/floors/{floorId}/deactivate",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "room-handlers",
+        "path": "/admin/rooms",
+        "methods": [
+          "GET",
+          "POST"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "room-handlers",
+        "path": "/admin/rooms/{roomId}",
+        "methods": [
+          "GET",
+          "PUT"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "room-handlers",
+        "path": "/admin/rooms/{roomId}/deactivate",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "rack-handlers",
+        "path": "/admin/racks",
+        "methods": [
+          "GET",
+          "POST"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "rack-handlers",
+        "path": "/admin/racks/{rackId}",
+        "methods": [
+          "GET",
+          "PUT"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "rack-handlers",
+        "path": "/admin/racks/{rackId}/deactivate",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "department-handlers",
+        "path": "/admin/departments",
+        "methods": [
+          "GET",
+          "POST"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "department-handlers",
+        "path": "/admin/departments/{departmentId}",
+        "methods": [
+          "GET",
+          "PUT"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "department-handlers",
+        "path": "/admin/departments/{departmentId}/deactivate",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "cost-center-handlers",
+        "path": "/admin/cost-centers",
+        "methods": [
+          "GET",
+          "POST"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "cost-center-handlers",
+        "path": "/admin/cost-centers/{costCenterId}",
+        "methods": [
+          "GET",
+          "PUT"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "cost-center-handlers",
+        "path": "/admin/cost-centers/{costCenterId}/deactivate",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "vendor-handlers",
+        "path": "/admin/vendors",
+        "methods": [
+          "GET",
+          "POST"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "vendor-handlers",
+        "path": "/admin/vendors/{vendorId}",
+        "methods": [
+          "GET",
+          "PUT"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "vendor-handlers",
+        "path": "/admin/vendors/{vendorId}/model-prices",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "vendor-handlers",
+        "path": "/admin/vendors/{vendorId}/model-prices/{modelId}",
+        "methods": [
+          "PUT",
+          "DELETE"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "vendor-handlers",
+        "path": "/admin/vendors/{vendorId}/deactivate",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "manufacturer-handlers",
+        "path": "/admin/manufacturers",
+        "methods": [
+          "GET",
+          "POST"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "manufacturer-handlers",
+        "path": "/admin/manufacturers/{manufacturerId}",
+        "methods": [
+          "GET",
+          "PUT"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "manufacturer-handlers",
+        "path": "/admin/manufacturers/{manufacturerId}/deactivate",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "model-handlers",
+        "path": "/admin/models",
+        "methods": [
+          "GET",
+          "POST"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "model-handlers",
+        "path": "/admin/models/{modelId}",
+        "methods": [
+          "GET",
+          "PUT"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "model-handlers",
+        "path": "/admin/models/{modelId}/deactivate",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "user-admin-handlers",
+        "path": "/admin/users",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "user-admin-handlers",
+        "path": "/admin/users/{userId}",
+        "methods": [
+          "GET",
+          "PUT"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "user-admin-handlers",
+        "path": "/admin/users/{userId}/deactivate",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "user-admin-handlers",
+        "path": "/admin/users/{userId}/reactivate",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "user-admin-handlers",
+        "path": "/admin/users/{userId}/roles",
+        "methods": [
+          "GET",
+          "POST"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "user-admin-handlers",
+        "path": "/admin/users/{userId}/roles/{roleId}",
+        "methods": [
+          "DELETE"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "stockroom-handlers",
+        "path": "/admin/stockrooms",
+        "methods": [
+          "GET",
+          "POST"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "stockroom-handlers",
+        "path": "/admin/stockrooms/{stockroomId}",
+        "methods": [
+          "GET",
+          "PUT"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "stockroom-handlers",
+        "path": "/admin/stockrooms/{stockroomId}/deactivate",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "bin-location-handlers",
+        "path": "/admin/bin-locations",
+        "methods": [
+          "GET",
+          "POST"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "bin-location-handlers",
+        "path": "/admin/bin-locations/{binId}",
+        "methods": [
+          "GET",
+          "PUT"
+        ]
+      },
+      {
+        "service": "admin-service",
+        "handler": "bin-location-handlers",
+        "path": "/admin/bin-locations/{binId}/deactivate",
+        "methods": [
+          "POST"
+        ]
+      }
+    ],
+    "procurement-service": [
+      {
+        "service": "procurement-service",
+        "handler": "po-handlers",
+        "path": "/procurement/purchase-orders",
+        "methods": [
+          "GET",
+          "POST"
+        ]
+      },
+      {
+        "service": "procurement-service",
+        "handler": "po-handlers",
+        "path": "/procurement/purchase-orders/{poId}",
+        "methods": [
+          "GET",
+          "PUT",
+          "DELETE"
+        ]
+      },
+      {
+        "service": "procurement-service",
+        "handler": "po-handlers",
+        "path": "/procurement/purchase-orders/{poId}/lines",
+        "methods": [
+          "GET",
+          "POST"
+        ]
+      },
+      {
+        "service": "procurement-service",
+        "handler": "po-handlers",
+        "path": "/procurement/purchase-orders/{poId}/lines/{lineId}",
+        "methods": [
+          "PUT",
+          "DELETE"
+        ]
+      },
+      {
+        "service": "procurement-service",
+        "handler": "po-handlers",
+        "path": "/procurement/purchase-orders/{poId}/submit",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "procurement-service",
+        "handler": "po-handlers",
+        "path": "/procurement/purchase-orders/{poId}/send",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "procurement-service",
+        "handler": "po-handlers",
+        "path": "/procurement/purchase-orders/{poId}/cancel",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "procurement-service",
+        "handler": "po-handlers",
+        "path": "/procurement/purchase-orders/{poId}/approve",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "procurement-service",
+        "handler": "po-handlers",
+        "path": "/procurement/purchase-orders/{poId}/reject",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "procurement-service",
+        "handler": "approval-handlers",
+        "path": "/procurement/pending-approvals",
+        "methods": [
+          "GET"
+        ]
+      }
+    ],
+    "report-service": [
+      {
+        "service": "report-service",
+        "handler": "report-handlers",
+        "path": "/reports/{reportType}/export",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "report-service",
+        "handler": "dashboard-handlers",
+        "path": "/dashboard/summary",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "report-service",
+        "handler": "dashboard-handlers",
+        "path": "/dashboard/compliance",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "report-service",
+        "handler": "dashboard-handlers",
+        "path": "/dashboard/lease-expirations",
+        "methods": [
+          "GET"
+        ]
+      }
+    ],
+    "lifecycle-service": [
+      {
+        "service": "lifecycle-service",
+        "handler": "record-receiving",
+        "path": "/lifecycle/receiving/from-po",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "lifecycle-service",
+        "handler": "get-receiving",
+        "path": "/lifecycle/receiving/{receivingId}",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "lifecycle-service",
+        "handler": "scan-asset",
+        "path": "/lifecycle/receiving/{receivingId}/scan",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "lifecycle-service",
+        "handler": "complete-receiving",
+        "path": "/lifecycle/receiving/{receivingId}/complete",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "lifecycle-service",
+        "handler": "cancel-receiving",
+        "path": "/lifecycle/receiving/{receivingId}/cancel",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "lifecycle-service",
+        "handler": "mark-for-inspection",
+        "path": "/lifecycle/inspection",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "lifecycle-service",
+        "handler": "get-inspection",
+        "path": "/lifecycle/inspection/{inspectionId}",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "lifecycle-service",
+        "handler": "record-inspection-result",
+        "path": "/lifecycle/inspection/{inspectionId}/result",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "lifecycle-service",
+        "handler": "get-catalog-items",
+        "path": "/lifecycle/catalog/items",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "lifecycle-service",
+        "handler": "search-catalog",
+        "path": "/lifecycle/catalog/search",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "lifecycle-service",
+        "handler": "get-contracts-by-vendor",
+        "path": "/lifecycle/contracts",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "lifecycle-service",
+        "handler": "create-contract",
+        "path": "/lifecycle/contracts",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "lifecycle-service",
+        "handler": "update-contract",
+        "path": "/lifecycle/contracts/{contractId}",
+        "methods": [
+          "PUT"
+        ]
+      },
+      {
+        "service": "lifecycle-service",
+        "handler": "deploy-asset",
+        "path": "/lifecycle/deploy",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "lifecycle-service",
+        "handler": "initiate-retirement",
+        "path": "/lifecycle/retirement",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "lifecycle-service",
+        "handler": "complete-disposal",
+        "path": "/lifecycle/disposal/{assetId}/complete",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "lifecycle-service",
+        "handler": "submit-request",
+        "path": "/lifecycle/requests",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "lifecycle-service",
+        "handler": "get-request-status",
+        "path": "/lifecycle/requests/{requestId}",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "lifecycle-service",
+        "handler": "route-for-approval",
+        "path": "/lifecycle/requests/{requestId}/route",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "lifecycle-service",
+        "handler": "approve-request",
+        "path": "/lifecycle/requests/{requestId}/approve",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "lifecycle-service",
+        "handler": "reject-request",
+        "path": "/lifecycle/requests/{requestId}/reject",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "lifecycle-service",
+        "handler": "check-stock",
+        "path": "/lifecycle/inventory/check",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "lifecycle-service",
+        "handler": "reserve-inventory",
+        "path": "/lifecycle/inventory/reserve",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "lifecycle-service",
+        "handler": "assign-to-user",
+        "path": "/lifecycle/assets/{assetId}/assign",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "lifecycle-service",
+        "handler": "create-purchase-order",
+        "path": "/lifecycle/purchase-orders",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "lifecycle-service",
+        "handler": "get-inspection-history",
+        "path": "/lifecycle/inspection/history",
+        "methods": [
+          "GET"
+        ]
+      }
+    ],
+    "eam-service": [
+      {
+        "service": "eam-service",
+        "handler": "work-order-handlers",
+        "path": "/eam/work-orders",
+        "methods": [
+          "GET",
+          "POST"
+        ]
+      },
+      {
+        "service": "eam-service",
+        "handler": "work-order-handlers",
+        "path": "/eam/work-orders/{workOrderId}",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "eam-service",
+        "handler": "work-order-handlers",
+        "path": "/eam/work-orders/{workOrderId}/complete",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "eam-service",
+        "handler": "work-order-handlers",
+        "path": "/eam/work-orders/{workOrderId}/assign",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "eam-service",
+        "handler": "maintenance-plan-handlers",
+        "path": "/eam/maintenance-plans",
+        "methods": [
+          "GET",
+          "POST"
+        ]
+      },
+      {
+        "service": "eam-service",
+        "handler": "maintenance-plan-handlers",
+        "path": "/eam/maintenance-plans/{planId}",
+        "methods": [
+          "GET",
+          "PUT"
+        ]
+      },
+      {
+        "service": "eam-service",
+        "handler": "maintenance-plan-handlers",
+        "path": "/eam/maintenance-plans/check-due",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "eam-service",
+        "handler": "get-hierarchy",
+        "path": "/eam/hierarchy/{assetId}",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "eam-service",
+        "handler": "link-parent-child",
+        "path": "/eam/hierarchy/link",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "eam-service",
+        "handler": "unlink-parent-child",
+        "path": "/eam/hierarchy/unlink",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "eam-service",
+        "handler": "propagate-status",
+        "path": "/eam/hierarchy/{assetId}/propagate-status",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "eam-service",
+        "handler": "create-linear-asset",
+        "path": "/eam/linear-assets",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "eam-service",
+        "handler": "get-linear-asset",
+        "path": "/eam/linear-assets/{linearAssetId}",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "eam-service",
+        "handler": "list-segments",
+        "path": "/eam/linear-assets/{linearAssetId}/segments",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "eam-service",
+        "handler": "update-segment",
+        "path": "/eam/linear-assets/{linearAssetId}/segments/{segmentId}",
+        "methods": [
+          "PUT"
+        ]
+      },
+      {
+        "service": "eam-service",
+        "handler": "check-part-levels",
+        "path": "/eam/parts/levels",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "eam-service",
+        "handler": "consume-parts",
+        "path": "/eam/parts/consume",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "eam-service",
+        "handler": "reserve-parts",
+        "path": "/eam/parts/reserve",
+        "methods": [
+          "POST"
+        ]
+      }
+    ],
+    "sam-service": [
+      {
+        "service": "sam-service",
+        "handler": "get-compliance-position",
+        "path": "/reconciliation/compliance",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "sam-service",
+        "handler": "get-compliance-position",
+        "path": "/reconciliation/compliance/{productId}",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "sam-service",
+        "handler": "run-reconciliation",
+        "path": "/reconciliation/run",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "sam-service",
+        "handler": "generate-compliance-report",
+        "path": "/reconciliation/compliance-report",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "sam-service",
+        "handler": "get-reconciliation-summary",
+        "path": "/reconciliation/summary",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "sam-service",
+        "handler": "identify-reclamation-candidates",
+        "path": "/reclamation/candidates",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "sam-service",
+        "handler": "initiate-reclamation",
+        "path": "/reclamation/initiate",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "sam-service",
+        "handler": "get-unused-subscriptions",
+        "path": "/reclamation/unused-subscriptions",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "sam-service",
+        "handler": "analyze-shadow-it",
+        "path": "/shadow-it/analyze",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "sam-service",
+        "handler": "apply-publisher-rules",
+        "path": "/publisher-packs/apply",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "sam-service",
+        "handler": "sync-saas-usage",
+        "path": "/saas/sync-usage",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "sam-service",
+        "handler": "get-workbench-summary",
+        "path": "/sam/workbench/summary",
+        "methods": [
+          "GET"
+        ]
+      }
+    ],
+    "notification-service": [
+      {
+        "service": "notification-service",
+        "handler": "send-notification",
+        "path": "/notifications/send",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "notification-service",
+        "handler": "get-notification-history",
+        "path": "/notifications/history",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "notification-service",
+        "handler": "mark-notification-read",
+        "path": "/notifications/{notificationId}/read",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "notification-service",
+        "handler": "get-preferences",
+        "path": "/users/{userId}/notification-preferences",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "notification-service",
+        "handler": "update-preferences",
+        "path": "/users/{userId}/notification-preferences",
+        "methods": [
+          "PUT"
+        ]
+      }
+    ],
+    "integration-service": [
+      {
+        "service": "integration-service",
+        "handler": "get-vendor-catalog",
+        "path": "/integrations/vendor-catalog",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "integration-service",
+        "handler": "get-vendor-catalog",
+        "path": "/integrations/vendor-catalog/{vendorType}",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "integration-service",
+        "handler": "sync-purchase-orders",
+        "path": "/integrations/erp/sync-purchase-orders",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "integration-service",
+        "handler": "sync-cost-centers",
+        "path": "/integrations/erp/sync-cost-centers",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "integration-service",
+        "handler": "process-asn",
+        "path": "/integrations/erp/process-asn",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "integration-service",
+        "handler": "ingest-sccm-data",
+        "path": "/integrations/discovery/sccm",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "integration-service",
+        "handler": "ingest-jamf-data",
+        "path": "/integrations/discovery/jamf",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "integration-service",
+        "handler": "ingest-tanium-data",
+        "path": "/integrations/discovery/tanium",
+        "methods": [
+          "POST"
+        ]
+      }
+    ],
+    "ham-service": [
+      {
+        "service": "ham-service",
+        "handler": "create-transfer",
+        "path": "/ham/transfers",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "ham-service",
+        "handler": "approve-transfer",
+        "path": "/ham/transfers/{transferId}/approve",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "ham-service",
+        "handler": "complete-transfer",
+        "path": "/ham/transfers/{transferId}/complete",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "ham-service",
+        "handler": "checkout-loaner",
+        "path": "/ham/loaners/checkout",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "ham-service",
+        "handler": "return-loaner",
+        "path": "/ham/loaners/{loanerId}/return",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "ham-service",
+        "handler": "get-overdue-loans",
+        "path": "/ham/loaners/overdue",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "ham-service",
+        "handler": "initiate-disposal",
+        "path": "/ham/disposal",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "ham-service",
+        "handler": "record-destruction",
+        "path": "/ham/disposal/{disposalId}/destruction",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "ham-service",
+        "handler": "record-audit-scan",
+        "path": "/ham/audits/scan",
+        "methods": [
+          "POST"
+        ]
+      },
+      {
+        "service": "ham-service",
+        "handler": "get-audit-discrepancies",
+        "path": "/ham/audits/discrepancies",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "ham-service",
+        "handler": "get-stockroom-inventory",
+        "path": "/ham/stockrooms/{stockroomId}/inventory",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "ham-service",
+        "handler": "update-inventory",
+        "path": "/ham/stockrooms/{stockroomId}/inventory",
+        "methods": [
+          "PUT"
+        ]
+      },
+      {
+        "service": "ham-service",
+        "handler": "bin-location-handlers",
+        "path": "/ham/bin-locations",
+        "methods": [
+          "GET",
+          "POST"
+        ]
+      },
+      {
+        "service": "ham-service",
+        "handler": "bin-location-handlers",
+        "path": "/ham/bin-locations/{binId}",
+        "methods": [
+          "GET",
+          "PUT"
+        ]
+      },
+      {
+        "service": "ham-service",
+        "handler": "stockroom-admin-handlers",
+        "path": "/ham/stockroom-admin",
+        "methods": [
+          "GET",
+          "POST"
+        ]
+      },
+      {
+        "service": "ham-service",
+        "handler": "stockroom-admin-handlers",
+        "path": "/ham/stockroom-admin/{stockroomId}",
+        "methods": [
+          "GET",
+          "PUT"
+        ]
+      }
+    ]
+  },
+  "total": 151
+}

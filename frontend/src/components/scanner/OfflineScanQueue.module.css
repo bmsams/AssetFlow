@@ -1,0 +1,421 @@
+/* OfflineScanQueue Component Styles */
+/* Implements Requirement 13.3: Offline scanning with sync */
+
+.queueContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.queueContainer.empty {
+  padding: var(--spacing-6);
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: var(--color-text-tertiary);
+}
+
+.emptyState svg {
+  width: 48px;
+  height: 48px;
+  margin-bottom: var(--spacing-3);
+  opacity: 0.5;
+}
+
+.emptyState p {
+  margin: 0;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.emptyState span {
+  margin-top: var(--spacing-1);
+  font-size: var(--font-size-sm);
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 var(--spacing-2);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary-700);
+  background-color: var(--color-primary-100);
+  border-radius: var(--radius-full);
+}
+
+.headerActions {
+  display: flex;
+  gap: var(--spacing-2);
+}
+
+.clearButton,
+.syncButton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.clearButton {
+  color: var(--color-text-secondary);
+  background: none;
+  border: 1px solid var(--color-border);
+}
+
+.clearButton:hover {
+  background-color: var(--color-background-hover);
+}
+
+.syncButton {
+  color: white;
+  background-color: var(--color-primary-600);
+  border: none;
+}
+
+.syncButton:hover:not(:disabled) {
+  background-color: var(--color-primary-700);
+}
+
+.syncButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.syncButton svg {
+  width: 16px;
+  height: 16px;
+}
+
+.spinnerIcon {
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Offline Warning */
+.offlineWarning {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3) var(--spacing-4);
+  background-color: var(--color-warning-50);
+  color: var(--color-warning-700);
+  font-size: var(--font-size-sm);
+}
+
+.offlineWarning svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* Summary */
+.summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3) var(--spacing-4);
+  background-color: var(--color-background);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.summaryItem {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.summaryDot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+}
+
+.summaryDot[data-status="pending"] {
+  background-color: var(--color-warning-500);
+}
+
+.summaryDot[data-status="syncing"] {
+  background-color: var(--color-primary-500);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.summaryDot[data-status="synced"] {
+  background-color: var(--color-success-500);
+}
+
+.summaryDot[data-status="failed"] {
+  background-color: var(--color-error-500);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Scan List */
+.scanList {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Scan Item */
+.scanItem {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.scanItem:last-child {
+  border-bottom: none;
+}
+
+.scanHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  width: 100%;
+  padding: var(--spacing-3) var(--spacing-4);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.2s;
+}
+
+.scanHeader:hover {
+  background-color: var(--color-background-hover);
+}
+
+.statusIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.statusIcon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.pendingIcon {
+  color: var(--color-warning-500);
+}
+
+.syncingIcon {
+  color: var(--color-primary-500);
+  animation: spin 1s linear infinite;
+}
+
+.syncedIcon {
+  color: var(--color-success-500);
+}
+
+.failedIcon {
+  color: var(--color-error-500);
+}
+
+.scanInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.barcodeValue {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scanTime {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+}
+
+.expandIcon {
+  width: 20px;
+  height: 20px;
+  color: var(--color-text-tertiary);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.expandIcon.expanded {
+  transform: rotate(180deg);
+}
+
+/* Scan Details */
+.scanDetails {
+  padding: var(--spacing-3) var(--spacing-4);
+  padding-left: calc(var(--spacing-4) + 32px + var(--spacing-3));
+  background-color: var(--color-background);
+  border-top: 1px solid var(--color-border);
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: var(--spacing-2) 0;
+}
+
+.detailRow:first-child {
+  padding-top: 0;
+}
+
+.detailLabel {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.detailValue {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  text-align: right;
+}
+
+.errorText {
+  color: var(--color-error-600);
+}
+
+/* Item Actions */
+.itemActions {
+  display: flex;
+  gap: var(--spacing-2);
+  margin-top: var(--spacing-3);
+  padding-top: var(--spacing-3);
+  border-top: 1px solid var(--color-border);
+}
+
+.retryButton,
+.removeButton {
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.retryButton {
+  color: var(--color-primary-600);
+  background-color: var(--color-primary-50);
+  border: 1px solid var(--color-primary-200);
+}
+
+.retryButton:hover {
+  background-color: var(--color-primary-100);
+}
+
+.removeButton {
+  color: var(--color-text-secondary);
+  background: none;
+  border: 1px solid var(--color-border);
+}
+
+.removeButton:hover {
+  color: var(--color-error-600);
+  border-color: var(--color-error-200);
+  background-color: var(--color-error-50);
+}
+
+/* Status-specific styles */
+.statusPending .scanHeader {
+  border-left: 3px solid var(--color-warning-500);
+}
+
+.statusSyncing .scanHeader {
+  border-left: 3px solid var(--color-primary-500);
+}
+
+.statusSynced .scanHeader {
+  border-left: 3px solid var(--color-success-500);
+}
+
+.statusFailed .scanHeader {
+  border-left: 3px solid var(--color-error-500);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .queueContainer {
+    border-radius: 0;
+    max-width: 100%;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-3);
+  }
+
+  .headerActions {
+    width: 100%;
+  }
+
+  .syncButton {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .scanDetails {
+    padding-left: var(--spacing-4);
+  }
+}

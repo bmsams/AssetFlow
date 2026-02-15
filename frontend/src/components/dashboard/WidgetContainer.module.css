@@ -1,0 +1,266 @@
+/* WidgetContainer Component Styles */
+/* Implements Requirements 12.7, 12.8: Configurable widgets with drill-down navigation */
+
+.widgetContainer {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+  transition: box-shadow var(--transition-normal), border-color var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.widgetContainer:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.widgetContainer:focus-within {
+  border-color: var(--color-border-focus);
+}
+
+/* Size variants */
+.sizeSmall {
+  grid-column: span 3;
+  min-height: 150px;
+}
+
+.sizeMedium {
+  grid-column: span 4;
+  min-height: 200px;
+}
+
+.sizeLarge {
+  grid-column: span 6;
+  min-height: 300px;
+}
+
+/* Responsive size adjustments */
+@media (max-width: 1024px) {
+  .sizeSmall {
+    grid-column: span 6;
+  }
+
+  .sizeMedium {
+    grid-column: span 6;
+  }
+
+  .sizeLarge {
+    grid-column: span 12;
+  }
+}
+
+@media (max-width: 768px) {
+  .sizeSmall,
+  .sizeMedium,
+  .sizeLarge {
+    grid-column: span 12;
+  }
+}
+
+/* Edit mode styling */
+.editing {
+  border-style: dashed;
+  border-color: var(--color-primary-400);
+}
+
+.editing:hover {
+  border-color: var(--color-primary-500);
+}
+
+/* Loading state */
+.loading {
+  pointer-events: none;
+}
+
+/* Widget Header */
+.widgetHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-3) var(--spacing-4);
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  flex-shrink: 0;
+}
+
+.widgetTitle {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  white-space: normal;
+  line-height: 1.3;
+  max-width: 100%;
+}
+
+.widgetActions {
+  display: flex;
+  gap: var(--spacing-1);
+  align-items: center;
+}
+
+/* Action buttons */
+.actionButton,
+.drillDownButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  min-height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-md);
+  background-color: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.actionButton:hover,
+.drillDownButton:hover {
+  background-color: var(--color-gray-100);
+  color: var(--color-text-primary);
+}
+
+.actionButton:focus-visible,
+.drillDownButton:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+[data-theme='dark'] .actionButton:hover,
+[data-theme='dark'] .drillDownButton:hover {
+  background-color: var(--color-gray-700);
+}
+
+.removeButton:hover {
+  background-color: var(--color-error-500);
+  color: white;
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Widget Content */
+.widgetContent {
+  flex: 1;
+  padding: var(--spacing-4);
+  overflow: auto;
+}
+
+/* Loading State */
+.loadingState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 100px;
+}
+
+.loadingSpinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--color-gray-200);
+  border-top-color: var(--color-primary-500);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Widget Footer (drill-down link) */
+.widgetFooter {
+  padding: var(--spacing-2) var(--spacing-4);
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-gray-50);
+  opacity: 0;
+  transform: translateY(100%);
+  transition: opacity var(--transition-normal), transform var(--transition-normal);
+}
+
+.widgetContainer:hover .widgetFooter,
+.widgetContainer:focus-within .widgetFooter {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+[data-theme='dark'] .widgetFooter {
+  background-color: var(--color-gray-800);
+}
+
+.drillDownLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  width: 100%;
+  padding: var(--spacing-2);
+  border: none;
+  border-radius: var(--radius-md);
+  background-color: transparent;
+  color: var(--color-primary-600);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.drillDownLink:hover {
+  background-color: var(--color-primary-50);
+  color: var(--color-primary-700);
+}
+
+.drillDownLink:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+[data-theme='dark'] .drillDownLink {
+  color: var(--color-primary-400);
+}
+
+[data-theme='dark'] .drillDownLink:hover {
+  background-color: var(--color-primary-900);
+  color: var(--color-primary-300);
+}
+
+.arrowIcon {
+  width: 14px;
+  height: 14px;
+  transition: transform var(--transition-fast);
+}
+
+.drillDownLink:hover .arrowIcon {
+  transform: translateX(4px);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .loadingSpinner {
+    animation: none;
+  }
+
+  .widgetFooter {
+    transition: none;
+  }
+
+  .drillDownLink:hover .arrowIcon {
+    transform: none;
+  }
+}

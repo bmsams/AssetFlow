@@ -1,0 +1,73 @@
+/* MockDataBanner - Dismissible info banner for pages using sample data */
+.banner {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3) var(--spacing-4);
+  background-color: var(--color-info-50);
+  border: 1px solid var(--color-info-200);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-4);
+}
+
+.icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: var(--color-info-600);
+}
+
+.message {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  color: var(--color-info-800);
+  line-height: var(--line-height-normal);
+  margin: 0;
+}
+
+.dismissButton {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--color-info-600);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.dismissButton:hover {
+  background-color: var(--color-info-100);
+}
+
+.dismissButton:focus {
+  outline: 2px solid var(--color-info-500);
+  outline-offset: 2px;
+}
+
+/* Dark mode */
+[data-theme='dark'] .banner {
+  background-color: var(--color-info-50);
+  border-color: var(--color-info-200);
+}
+
+[data-theme='dark'] .icon {
+  color: var(--color-info-700);
+}
+
+[data-theme='dark'] .message {
+  color: var(--color-info-800);
+}
+
+[data-theme='dark'] .dismissButton {
+  color: var(--color-info-700);
+}
+
+[data-theme='dark'] .dismissButton:hover {
+  background-color: var(--color-info-100);
+}

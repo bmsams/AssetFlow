@@ -1,0 +1,143 @@
+/* Container */
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+/* Fieldset */
+.fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.legend {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-3);
+}
+
+.required {
+  color: var(--color-error-500);
+  margin-left: var(--spacing-1);
+}
+
+/* Options Grid */
+.options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-3);
+}
+
+/* Option Card */
+.option {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-3);
+  padding: var(--spacing-4);
+  background-color: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.option:hover:not(.optionDisabled) {
+  border-color: var(--color-primary-300);
+  background-color: var(--color-primary-50);
+}
+
+.option:focus {
+  outline: none;
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px var(--color-primary-100);
+}
+
+.optionSelected {
+  border-color: var(--color-primary-500);
+  background-color: var(--color-primary-50);
+}
+
+.optionDisabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Option Icon */
+.optionIcon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-primary-100);
+  border-radius: var(--radius-md);
+  color: var(--color-primary-600);
+}
+
+.optionIcon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.optionSelected .optionIcon {
+  background-color: var(--color-primary-500);
+  color: white;
+}
+
+/* Option Content */
+.optionContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+  flex: 1;
+}
+
+.optionLabel {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.optionDescription {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+/* Checkmark */
+.checkmark {
+  position: absolute;
+  top: var(--spacing-2);
+  right: var(--spacing-2);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-primary-500);
+  border-radius: 50%;
+  color: white;
+}
+
+.checkmark svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Error */
+.error {
+  font-size: var(--font-size-sm);
+  color: var(--color-error-500);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .options {
+    grid-template-columns: 1fr;
+  }
+}

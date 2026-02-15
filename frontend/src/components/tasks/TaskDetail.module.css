@@ -1,0 +1,461 @@
+/**
+ * TaskDetail component styles
+ * Mobile-optimized task detail view
+ */
+
+.taskDetail {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--color-background, #f3f4f6);
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm, 8px);
+  padding: var(--spacing-md, 16px);
+  background: var(--color-surface, #ffffff);
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
+}
+
+.backButton {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary, #6b7280);
+  cursor: pointer;
+  border-radius: var(--radius-md, 8px);
+  transition: background-color 0.2s;
+}
+
+.backButton:hover {
+  background: var(--color-surface-secondary, #f9fafb);
+}
+
+.backButton svg {
+  width: 24px;
+  height: 24px;
+}
+
+.headerContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs, 8px);
+  margin-bottom: var(--spacing-xs, 8px);
+}
+
+.priorityBadge,
+.statusBadge,
+.overdueBadge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm, 4px);
+  letter-spacing: 0.5px;
+}
+
+.priorityUrgent {
+  background-color: var(--color-danger-light, #fee2e2);
+  color: var(--color-danger, #dc2626);
+}
+
+.priorityHigh {
+  background-color: var(--color-warning-light, #fef3c7);
+  color: var(--color-warning-dark, #d97706);
+}
+
+.priorityMedium {
+  background-color: var(--color-primary-light, #dbeafe);
+  color: var(--color-primary, #2563eb);
+}
+
+.priorityLow {
+  background-color: var(--color-secondary-light, #f3f4f6);
+  color: var(--color-secondary, #6b7280);
+}
+
+.statusPending {
+  background-color: var(--color-warning-light, #fef3c7);
+  color: var(--color-warning-dark, #d97706);
+}
+
+.statusInprogress {
+  background-color: var(--color-primary-light, #dbeafe);
+  color: var(--color-primary, #2563eb);
+}
+
+.statusCompleted {
+  background-color: var(--color-success-light, #d1fae5);
+  color: var(--color-success, #059669);
+}
+
+.statusCancelled {
+  background-color: var(--color-secondary-light, #f3f4f6);
+  color: var(--color-secondary, #6b7280);
+}
+
+.overdueBadge {
+  background-color: var(--color-danger-light, #fee2e2);
+  color: var(--color-danger, #dc2626);
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #111827);
+  margin: 0 0 4px 0;
+  line-height: 1.3;
+}
+
+.taskType {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary, #6b7280);
+}
+
+/* Content */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-md, 16px);
+}
+
+.section {
+  margin-bottom: var(--spacing-lg, 24px);
+}
+
+.section:last-child {
+  margin-bottom: 0;
+}
+
+.sectionTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-secondary, #6b7280);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 var(--spacing-sm, 12px) 0;
+}
+
+.description {
+  font-size: 1rem;
+  color: var(--color-text-primary, #111827);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Asset card */
+.assetCard {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md, 16px);
+  padding: var(--spacing-md, 16px);
+  background: var(--color-surface, #ffffff);
+  border-radius: var(--radius-md, 8px);
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.1));
+}
+
+.assetIcon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: var(--color-primary-light, #dbeafe);
+  border-radius: var(--radius-md, 8px);
+  color: var(--color-primary, #2563eb);
+}
+
+.assetIcon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.assetInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.assetTag {
+  font-size: 0.8125rem;
+  font-family: var(--font-mono, monospace);
+  color: var(--color-primary, #2563eb);
+}
+
+.assetName {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-primary, #111827);
+}
+
+.assetLocation {
+  font-size: 0.8125rem;
+  color: var(--color-text-tertiary, #9ca3af);
+}
+
+/* Schedule grid */
+.scheduleGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-sm, 12px);
+}
+
+.scheduleItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--spacing-sm, 12px);
+  background: var(--color-surface, #ffffff);
+  border-radius: var(--radius-md, 8px);
+}
+
+.scheduleLabel {
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary, #9ca3af);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.scheduleValue {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-text-primary, #111827);
+}
+
+.scheduleValue.overdue {
+  color: var(--color-danger, #dc2626);
+}
+
+/* Location card */
+.locationCard {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 12px);
+  padding: var(--spacing-md, 16px);
+  background: var(--color-surface, #ffffff);
+  border-radius: var(--radius-md, 8px);
+  color: var(--color-text-primary, #111827);
+}
+
+.locationCard svg {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: var(--color-text-tertiary, #9ca3af);
+}
+
+/* Instructions */
+.instructions {
+  padding: var(--spacing-md, 16px);
+  background: var(--color-surface, #ffffff);
+  border-radius: var(--radius-md, 8px);
+}
+
+.instructionLine {
+  font-size: 0.9375rem;
+  color: var(--color-text-primary, #111827);
+  line-height: 1.6;
+  margin: 0 0 var(--spacing-xs, 8px) 0;
+}
+
+.instructionLine:last-child {
+  margin-bottom: 0;
+}
+
+/* Parts list */
+.partsList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.partItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 12px);
+  padding: var(--spacing-sm, 12px) var(--spacing-md, 16px);
+  background: var(--color-surface, #ffffff);
+  border-radius: var(--radius-md, 8px);
+  margin-bottom: var(--spacing-xs, 8px);
+  font-size: 0.9375rem;
+  color: var(--color-text-primary, #111827);
+}
+
+.partItem:last-child {
+  margin-bottom: 0;
+}
+
+.partItem svg {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  color: var(--color-success, #059669);
+}
+
+/* Evidence grid */
+.evidenceGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--spacing-sm, 12px);
+}
+
+.evidenceItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs, 4px);
+}
+
+.evidenceImage {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: var(--radius-md, 8px);
+  border: 1px solid var(--color-border, #e5e7eb);
+}
+
+.evidenceNotes {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary, #6b7280);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.evidenceDate {
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary, #9ca3af);
+}
+
+/* Completion notes */
+.completionNotes {
+  font-size: 0.9375rem;
+  color: var(--color-text-primary, #111827);
+  line-height: 1.6;
+  margin: 0;
+  padding: var(--spacing-md, 16px);
+  background: var(--color-success-light, #d1fae5);
+  border-radius: var(--radius-md, 8px);
+}
+
+/* Assignment card */
+.assignmentCard {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md, 16px);
+  padding: var(--spacing-md, 16px);
+  background: var(--color-surface, #ffffff);
+  border-radius: var(--radius-md, 8px);
+}
+
+.assigneeAvatar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: var(--color-primary, #2563eb);
+  border-radius: 50%;
+  color: white;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.assigneeInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.assigneeName {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-primary, #111827);
+}
+
+.assigneeEmail {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary, #6b7280);
+}
+
+.assignedDate {
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary, #9ca3af);
+}
+
+/* Status section */
+.statusSection {
+  border-top: 1px solid var(--color-border, #e5e7eb);
+}
+
+/* Dark mode */
+:global(.dark) .header,
+:global(.dark) .assetCard,
+:global(.dark) .scheduleItem,
+:global(.dark) .locationCard,
+:global(.dark) .instructions,
+:global(.dark) .partItem,
+:global(.dark) .assignmentCard {
+  background: var(--color-surface-dark, #1f2937);
+}
+
+:global(.dark) .header {
+  border-color: var(--color-border-dark, #374151);
+}
+
+:global(.dark) .title,
+:global(.dark) .description,
+:global(.dark) .assetName,
+:global(.dark) .scheduleValue,
+:global(.dark) .locationCard,
+:global(.dark) .instructionLine,
+:global(.dark) .partItem,
+:global(.dark) .assigneeName {
+  color: var(--color-text-primary-dark, #f9fafb);
+}
+
+:global(.dark) .content {
+  background: var(--color-background-dark, #111827);
+}
+
+:global(.dark) .statusSection {
+  border-color: var(--color-border-dark, #374151);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .header {
+    padding: var(--spacing-sm, 12px);
+  }
+
+  .title {
+    font-size: 1.125rem;
+  }
+
+  .content {
+    padding: var(--spacing-sm, 12px);
+  }
+
+  .scheduleGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .evidenceGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

@@ -1,0 +1,262 @@
+/* ComplianceIndicators Component Styles */
+.complianceIndicators {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  padding: var(--spacing-4);
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-4);
+}
+
+.title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+/* Status Summary */
+.statusSummary {
+  display: flex;
+  gap: var(--spacing-4);
+}
+
+.summaryItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.summaryDot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+}
+
+.summaryItem.compliant .summaryDot {
+  background-color: var(--color-success-500);
+}
+
+.summaryItem.atRisk .summaryDot {
+  background-color: var(--color-warning-500);
+}
+
+.summaryItem.nonCompliant .summaryDot {
+  background-color: var(--color-error-500);
+}
+
+/* Indicator Grid */
+.indicatorGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-4);
+}
+
+/* Indicator Card */
+.indicatorCard {
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-4);
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  text-align: left;
+  transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.indicatorCard:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.indicatorCard:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+/* Status-based border colors */
+.indicatorCard.compliant {
+  border-left: 4px solid var(--color-success-500);
+}
+
+.indicatorCard.at_risk {
+  border-left: 4px solid var(--color-warning-500);
+}
+
+.indicatorCard.non_compliant {
+  border-left: 4px solid var(--color-error-500);
+}
+
+/* Card Header */
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-3);
+}
+
+.typeIcon {
+  font-size: var(--font-size-xl);
+}
+
+/* Status Badge */
+.statusBadge {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-full);
+}
+
+.badgeCompliant {
+  background-color: rgba(34, 197, 94, 0.15);
+  color: var(--color-success-500);
+}
+
+.badgeAt_risk,
+.badgeAtrisk {
+  background-color: rgba(245, 158, 11, 0.15);
+  color: var(--color-warning-500);
+}
+
+.badgeNon_compliant,
+.badgeNoncompliant {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: var(--color-error-500);
+}
+
+/* Card Content */
+.cardTitle {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-1) 0;
+}
+
+.cardDescription {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-3) 0;
+  line-height: var(--line-height-relaxed);
+}
+
+/* Progress Bar */
+.progressContainer {
+  margin-bottom: var(--spacing-3);
+}
+
+.progressTrack {
+  height: 8px;
+  background-color: var(--color-gray-200);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: var(--spacing-1);
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width var(--transition-slow);
+}
+
+.indicatorCard.compliant .progressFill {
+  background-color: var(--color-success-500);
+}
+
+.indicatorCard.at_risk .progressFill {
+  background-color: var(--color-warning-500);
+}
+
+.indicatorCard.non_compliant .progressFill {
+  background-color: var(--color-error-500);
+}
+
+.progressLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Card Footer */
+.cardFooter {
+  margin-top: auto;
+  padding-top: var(--spacing-3);
+  border-top: 1px solid var(--color-border);
+}
+
+.lastChecked {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* Empty State */
+.emptyState {
+  text-align: center;
+  padding: var(--spacing-8);
+  color: var(--color-text-muted);
+}
+
+/* Loading State */
+.skeletonGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-4);
+}
+
+.skeletonCard {
+  height: 180px;
+  background: linear-gradient(90deg, var(--color-gray-200) 25%, var(--color-gray-100) 50%, var(--color-gray-200) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-lg);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Dark mode adjustments */
+[data-theme='dark'] .indicatorCard {
+  background-color: var(--color-gray-800);
+}
+
+[data-theme='dark'] .indicatorCard:hover {
+  border-color: var(--color-gray-600);
+}
+
+[data-theme='dark'] .progressTrack {
+  background-color: var(--color-gray-700);
+}
+
+[data-theme='dark'] .skeletonCard {
+  background: linear-gradient(90deg, var(--color-gray-700) 25%, var(--color-gray-600) 50%, var(--color-gray-700) 75%);
+  background-size: 200% 100%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .statusSummary {
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+  }
+
+  .indicatorGrid {
+    grid-template-columns: 1fr;
+  }
+}

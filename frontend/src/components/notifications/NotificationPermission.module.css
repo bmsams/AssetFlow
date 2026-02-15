@@ -1,0 +1,297 @@
+/**
+ * NotificationPermission Component Styles
+ * Implements Requirement 13.6: Mobile interface shall implement push notifications
+ */
+
+.container {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md, 1rem);
+  padding: var(--spacing-lg, 1.5rem);
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--radius-lg, 0.75rem);
+  position: relative;
+}
+
+/* Variant: Card (default) */
+.card {
+  flex-direction: column;
+  text-align: center;
+  max-width: 400px;
+  margin: 0 auto;
+  box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+}
+
+.card .iconContainer {
+  margin: 0 auto var(--spacing-sm, 0.5rem);
+}
+
+.card .actions {
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Variant: Banner */
+.banner {
+  flex-direction: row;
+  align-items: center;
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+  padding: var(--spacing-md, 1rem) var(--spacing-lg, 1.5rem);
+}
+
+.banner .content {
+  flex: 1;
+}
+
+.banner .actions {
+  flex-direction: row;
+  flex-shrink: 0;
+}
+
+/* Variant: Modal */
+.modal {
+  flex-direction: column;
+  text-align: center;
+  max-width: 450px;
+  padding: var(--spacing-xl, 2rem);
+  box-shadow: var(--shadow-xl, 0 20px 25px -5px rgba(0, 0, 0, 0.1));
+}
+
+.modal .iconContainer {
+  margin: 0 auto var(--spacing-md, 1rem);
+  width: 64px;
+  height: 64px;
+}
+
+.modal .icon {
+  width: 100%;
+  height: 100%;
+}
+
+/* Denied state */
+.denied {
+  background: var(--color-warning-bg, #fffbeb);
+  border-color: var(--color-warning-border, #fcd34d);
+}
+
+.denied .icon {
+  color: var(--color-warning, #f59e0b);
+}
+
+/* Icon container */
+.iconContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: var(--color-primary-bg, #eff6ff);
+  border-radius: var(--radius-full, 9999px);
+  flex-shrink: 0;
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  color: var(--color-primary, #3b82f6);
+}
+
+/* Content */
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  margin: 0 0 var(--spacing-xs, 0.25rem);
+  font-size: var(--font-size-lg, 1.125rem);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-text-primary, #111827);
+  line-height: 1.4;
+}
+
+.description {
+  margin: 0;
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-secondary, #6b7280);
+  line-height: 1.5;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  gap: var(--spacing-sm, 0.5rem);
+  margin-top: var(--spacing-md, 1rem);
+}
+
+.enableButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs, 0.25rem);
+  padding: var(--spacing-sm, 0.5rem) var(--spacing-lg, 1.5rem);
+  background: var(--color-primary, #3b82f6);
+  color: white;
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-medium, 500);
+  border: none;
+  border-radius: var(--radius-md, 0.5rem);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  min-height: 40px;
+}
+
+.enableButton:hover:not(:disabled) {
+  background: var(--color-primary-hover, #2563eb);
+}
+
+.enableButton:focus-visible {
+  outline: 2px solid var(--color-primary, #3b82f6);
+  outline-offset: 2px;
+}
+
+.enableButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.dismissTextButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm, 0.5rem) var(--spacing-md, 1rem);
+  background: transparent;
+  color: var(--color-text-secondary, #6b7280);
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-medium, 500);
+  border: none;
+  border-radius: var(--radius-md, 0.5rem);
+  cursor: pointer;
+  transition: color 0.2s ease, background-color 0.2s ease;
+  min-height: 40px;
+}
+
+.dismissTextButton:hover:not(:disabled) {
+  color: var(--color-text-primary, #111827);
+  background: var(--color-hover-bg, #f3f4f6);
+}
+
+.dismissTextButton:focus-visible {
+  outline: 2px solid var(--color-primary, #3b82f6);
+  outline-offset: 2px;
+}
+
+.dismissTextButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Dismiss button (X icon) */
+.dismissButton {
+  position: absolute;
+  top: var(--spacing-sm, 0.5rem);
+  right: var(--spacing-sm, 0.5rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md, 0.5rem);
+  cursor: pointer;
+  color: var(--color-text-tertiary, #9ca3af);
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.dismissButton:hover:not(:disabled) {
+  color: var(--color-text-secondary, #6b7280);
+  background: var(--color-hover-bg, #f3f4f6);
+}
+
+.dismissButton:focus-visible {
+  outline: 2px solid var(--color-primary, #3b82f6);
+  outline-offset: 2px;
+}
+
+.dismissButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.dismissButton svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Spinner */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .container {
+    background: var(--color-surface-dark, #1f2937);
+    border-color: var(--color-border-dark, #374151);
+  }
+
+  .title {
+    color: var(--color-text-primary-dark, #f9fafb);
+  }
+
+  .description {
+    color: var(--color-text-secondary-dark, #9ca3af);
+  }
+
+  .iconContainer {
+    background: var(--color-primary-bg-dark, #1e3a5f);
+  }
+
+  .denied {
+    background: var(--color-warning-bg-dark, #422006);
+    border-color: var(--color-warning-border-dark, #92400e);
+  }
+
+  .dismissTextButton:hover:not(:disabled) {
+    color: var(--color-text-primary-dark, #f9fafb);
+    background: var(--color-hover-bg-dark, #374151);
+  }
+
+  .dismissButton:hover:not(:disabled) {
+    color: var(--color-text-secondary-dark, #9ca3af);
+    background: var(--color-hover-bg-dark, #374151);
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 640px) {
+  .banner {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .banner .actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .banner .enableButton {
+    width: 100%;
+  }
+}

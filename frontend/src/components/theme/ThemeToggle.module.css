@@ -1,0 +1,124 @@
+/* Theme Toggle Button */
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.toggle:hover {
+  background-color: var(--color-gray-100);
+}
+
+.toggle:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+[data-theme='dark'] .toggle:hover {
+  background-color: var(--color-gray-800);
+}
+
+/* Sizes */
+.sm {
+  padding: var(--spacing-1);
+  min-height: 32px;
+  min-width: 32px;
+}
+
+.sm .icon {
+  width: 16px;
+  height: 16px;
+}
+
+.md {
+  padding: var(--spacing-2);
+  min-height: 40px;
+  min-width: 40px;
+}
+
+.md .icon {
+  width: 20px;
+  height: 20px;
+}
+
+.lg {
+  padding: var(--spacing-3);
+  min-height: 48px;
+  min-width: 48px;
+}
+
+.lg .icon {
+  width: 24px;
+  height: 24px;
+}
+
+/* Icon Container */
+.iconContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Icons */
+.icon {
+  position: absolute;
+  opacity: 0;
+  transform: scale(0.8) rotate(-90deg);
+  transition: all var(--transition-normal);
+}
+
+.icon.active {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
+
+.sunIcon {
+  color: var(--color-warning-500);
+}
+
+.moonIcon {
+  color: var(--color-primary-400);
+}
+
+/* System Indicator */
+.systemIndicator {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 10px;
+  height: 10px;
+  background-color: var(--color-surface);
+  border-radius: var(--radius-full);
+  color: var(--color-primary-500);
+}
+
+/* Label */
+.label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .icon {
+    transition: opacity var(--transition-fast);
+    transform: none;
+  }
+
+  .icon.active {
+    transform: none;
+  }
+}

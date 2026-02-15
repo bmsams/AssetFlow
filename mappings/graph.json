@@ -1,0 +1,2501 @@
+{
+  "edges": [
+    {
+      "from": "approval_delegations",
+      "to": "users",
+      "type": "fk",
+      "label": "delegate_id -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "approval_delegations",
+      "to": "users",
+      "type": "fk",
+      "label": "delegator_id -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "approval_records",
+      "to": "users",
+      "type": "fk",
+      "label": "delegated_from -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "approval_records",
+      "to": "users",
+      "type": "fk",
+      "label": "performed_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "approval_records",
+      "to": "purchase_orders",
+      "type": "fk",
+      "label": "po_id -> po_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "approval_thresholds",
+      "to": "roles",
+      "type": "fk",
+      "label": "approver_role_id -> role_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "asset_relationships",
+      "to": "users",
+      "type": "fk",
+      "label": "created_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "asset_relationships",
+      "to": "assets",
+      "type": "fk",
+      "label": "source_asset_id -> asset_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "asset_relationships",
+      "to": "assets",
+      "type": "fk",
+      "label": "target_asset_id -> asset_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "assets",
+      "to": "users",
+      "type": "fk",
+      "label": "created_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "assets",
+      "to": "users",
+      "type": "fk",
+      "label": "updated_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "audit_log",
+      "to": "users",
+      "type": "fk",
+      "label": "user_id -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "audit_records",
+      "to": "users",
+      "type": "fk",
+      "label": "approved_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "audit_records",
+      "to": "users",
+      "type": "fk",
+      "label": "auditor_id -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "audit_records",
+      "to": "users",
+      "type": "fk",
+      "label": "completed_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "audit_records",
+      "to": "users",
+      "type": "fk",
+      "label": "created_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "audit_records",
+      "to": "users",
+      "type": "fk",
+      "label": "secondary_auditor_id -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "audit_records",
+      "to": "stockrooms",
+      "type": "fk",
+      "label": "stockroom_id -> stockroom_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "audit_records",
+      "to": "users",
+      "type": "fk",
+      "label": "updated_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "audit_records",
+      "to": "audit_records",
+      "type": "fk",
+      "label": "recount_audit_id -> audit_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "audit_scans",
+      "to": "assets",
+      "type": "fk",
+      "label": "asset_id -> asset_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "audit_scans",
+      "to": "audit_records",
+      "type": "fk",
+      "label": "audit_id -> audit_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "audit_scans",
+      "to": "users",
+      "type": "fk",
+      "label": "resolved_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "audit_scans",
+      "to": "users",
+      "type": "fk",
+      "label": "scanned_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "bin_locations",
+      "to": "stockrooms",
+      "type": "fk",
+      "label": "stockroom_id -> stockroom_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "buildings",
+      "to": "users",
+      "type": "fk",
+      "label": "created_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "buildings",
+      "to": "users",
+      "type": "fk",
+      "label": "updated_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "contracts",
+      "to": "users",
+      "type": "fk",
+      "label": "created_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "contracts",
+      "to": "users",
+      "type": "fk",
+      "label": "owner_id -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "contracts",
+      "to": "contracts",
+      "type": "fk",
+      "label": "parent_contract_id -> contract_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "contracts",
+      "to": "contracts",
+      "type": "fk",
+      "label": "previous_contract_id -> contract_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "contracts",
+      "to": "users",
+      "type": "fk",
+      "label": "updated_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "contracts",
+      "to": "vendors",
+      "type": "fk",
+      "label": "vendor_id -> vendor_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "cost_centers",
+      "to": "users",
+      "type": "fk",
+      "label": "created_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "cost_centers",
+      "to": "users",
+      "type": "fk",
+      "label": "manager_id -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "cost_centers",
+      "to": "cost_centers",
+      "type": "fk",
+      "label": "parent_cost_center_id -> cost_center_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "cost_centers",
+      "to": "users",
+      "type": "fk",
+      "label": "updated_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "cost_centers",
+      "to": "departments",
+      "type": "fk",
+      "label": "department_id -> department_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "departments",
+      "to": "departments",
+      "type": "fk",
+      "label": "parent_department_id -> department_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "depreciation_schedules",
+      "to": "assets",
+      "type": "fk",
+      "label": "asset_id -> asset_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "depreciation_schedules",
+      "to": "users",
+      "type": "fk",
+      "label": "created_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "depreciation_schedules",
+      "to": "users",
+      "type": "fk",
+      "label": "posted_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "discovery_records",
+      "to": "assets",
+      "type": "fk",
+      "label": "created_asset_id -> asset_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "discovery_records",
+      "to": "assets",
+      "type": "fk",
+      "label": "matched_asset_id -> asset_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "enterprise_assets",
+      "to": "assets",
+      "type": "fk",
+      "label": "asset_id -> asset_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "enterprise_assets",
+      "to": "facilities",
+      "type": "fk",
+      "label": "facility_id -> facility_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "enterprise_assets",
+      "to": "enterprise_assets",
+      "type": "fk",
+      "label": "parent_asset_id -> asset_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "entitlements",
+      "to": "contracts",
+      "type": "fk",
+      "label": "contract_id -> contract_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "entitlements",
+      "to": "users",
+      "type": "fk",
+      "label": "created_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "entitlements",
+      "to": "purchase_orders",
+      "type": "fk",
+      "label": "purchase_order_id -> po_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "entitlements",
+      "to": "software_products",
+      "type": "fk",
+      "label": "software_product_id -> product_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "entitlements",
+      "to": "users",
+      "type": "fk",
+      "label": "updated_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "facilities",
+      "to": "users",
+      "type": "fk",
+      "label": "created_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "facilities",
+      "to": "users",
+      "type": "fk",
+      "label": "updated_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "floors",
+      "to": "buildings",
+      "type": "fk",
+      "label": "building_id -> building_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "floors",
+      "to": "users",
+      "type": "fk",
+      "label": "created_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "floors",
+      "to": "users",
+      "type": "fk",
+      "label": "updated_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "hardware_assets",
+      "to": "assets",
+      "type": "fk",
+      "label": "asset_id -> asset_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "hardware_assets",
+      "to": "users",
+      "type": "fk",
+      "label": "assigned_to -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "hardware_assets",
+      "to": "cost_centers",
+      "type": "fk",
+      "label": "cost_center_id -> cost_center_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "hardware_assets",
+      "to": "departments",
+      "type": "fk",
+      "label": "department_id -> department_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "hardware_assets",
+      "to": "contracts",
+      "type": "fk",
+      "label": "lease_contract_id -> contract_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "hardware_assets",
+      "to": "users",
+      "type": "fk",
+      "label": "managed_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "hardware_assets",
+      "to": "manufacturers",
+      "type": "fk",
+      "label": "manufacturer_id -> manufacturer_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "hardware_assets",
+      "to": "models",
+      "type": "fk",
+      "label": "model_id -> model_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "hardware_assets",
+      "to": "purchase_orders",
+      "type": "fk",
+      "label": "purchase_order_id -> po_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "hardware_assets",
+      "to": "stockrooms",
+      "type": "fk",
+      "label": "stockroom_id -> stockroom_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "hardware_assets",
+      "to": "vendors",
+      "type": "fk",
+      "label": "vendor_id -> vendor_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "inspection_records",
+      "to": "assets",
+      "type": "fk",
+      "label": "asset_id -> asset_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "inspection_records",
+      "to": "users",
+      "type": "fk",
+      "label": "inspected_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "inspection_records",
+      "to": "receiving_lines",
+      "type": "fk",
+      "label": "receiving_line_id -> line_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "lease_payments",
+      "to": "users",
+      "type": "fk",
+      "label": "approved_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "lease_payments",
+      "to": "contracts",
+      "type": "fk",
+      "label": "contract_id -> contract_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "lease_payments",
+      "to": "users",
+      "type": "fk",
+      "label": "created_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "lease_payments",
+      "to": "users",
+      "type": "fk",
+      "label": "updated_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "linear_asset_segments",
+      "to": "linear_assets",
+      "type": "fk",
+      "label": "linear_asset_id -> linear_asset_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "linear_assets",
+      "to": "enterprise_assets",
+      "type": "fk",
+      "label": "asset_id -> asset_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "loaner_checkouts",
+      "to": "assets",
+      "type": "fk",
+      "label": "asset_id -> asset_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "loaner_checkouts",
+      "to": "users",
+      "type": "fk",
+      "label": "checked_out_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "loaner_checkouts",
+      "to": "users",
+      "type": "fk",
+      "label": "checked_out_to -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "loaner_checkouts",
+      "to": "cost_centers",
+      "type": "fk",
+      "label": "cost_center_id -> cost_center_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "loaner_checkouts",
+      "to": "users",
+      "type": "fk",
+      "label": "created_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "loaner_checkouts",
+      "to": "departments",
+      "type": "fk",
+      "label": "department_id -> department_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "loaner_checkouts",
+      "to": "users",
+      "type": "fk",
+      "label": "extension_approved_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "loaner_checkouts",
+      "to": "users",
+      "type": "fk",
+      "label": "returned_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "loaner_checkouts",
+      "to": "users",
+      "type": "fk",
+      "label": "updated_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "maintenance_plans",
+      "to": "assets",
+      "type": "fk",
+      "label": "asset_id -> asset_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "maintenance_plans",
+      "to": "users",
+      "type": "fk",
+      "label": "created_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "maintenance_plans",
+      "to": "users",
+      "type": "fk",
+      "label": "default_assigned_to -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "maintenance_plans",
+      "to": "users",
+      "type": "fk",
+      "label": "updated_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "models",
+      "to": "manufacturers",
+      "type": "fk",
+      "label": "manufacturer_id -> manufacturer_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "po_lines",
+      "to": "purchase_orders",
+      "type": "fk",
+      "label": "po_id -> po_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "purchase_order_lines",
+      "to": "purchase_orders",
+      "type": "fk",
+      "label": "po_id -> po_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "purchase_orders",
+      "to": "contracts",
+      "type": "fk",
+      "label": "contract_id -> contract_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "purchase_orders",
+      "to": "cost_centers",
+      "type": "fk",
+      "label": "cost_center_id -> cost_center_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "purchase_orders",
+      "to": "users",
+      "type": "fk",
+      "label": "created_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "purchase_orders",
+      "to": "departments",
+      "type": "fk",
+      "label": "department_id -> department_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "purchase_orders",
+      "to": "users",
+      "type": "fk",
+      "label": "updated_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "purchase_orders",
+      "to": "users",
+      "type": "fk",
+      "label": "approved_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "purchase_orders",
+      "to": "users",
+      "type": "fk",
+      "label": "rejected_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "purchase_orders",
+      "to": "users",
+      "type": "fk",
+      "label": "requested_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "purchase_orders",
+      "to": "vendors",
+      "type": "fk",
+      "label": "vendor_id -> vendor_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "racks",
+      "to": "users",
+      "type": "fk",
+      "label": "created_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "racks",
+      "to": "rooms",
+      "type": "fk",
+      "label": "room_id -> room_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "racks",
+      "to": "users",
+      "type": "fk",
+      "label": "updated_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "receiving_lines",
+      "to": "purchase_order_lines",
+      "type": "fk",
+      "label": "po_line_id -> line_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "receiving_lines",
+      "to": "receiving_records",
+      "type": "fk",
+      "label": "receiving_id -> receiving_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "receiving_records",
+      "to": "users",
+      "type": "fk",
+      "label": "completed_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "receiving_records",
+      "to": "users",
+      "type": "fk",
+      "label": "created_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "receiving_records",
+      "to": "purchase_orders",
+      "type": "fk",
+      "label": "po_id -> po_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "receiving_records",
+      "to": "users",
+      "type": "fk",
+      "label": "received_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "receiving_records",
+      "to": "stockrooms",
+      "type": "fk",
+      "label": "stockroom_id -> stockroom_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "receiving_records",
+      "to": "users",
+      "type": "fk",
+      "label": "updated_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "receiving_records",
+      "to": "vendors",
+      "type": "fk",
+      "label": "vendor_id -> vendor_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "reclamation_candidates",
+      "to": "users",
+      "type": "fk",
+      "label": "approved_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "reclamation_candidates",
+      "to": "users",
+      "type": "fk",
+      "label": "created_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "reclamation_candidates",
+      "to": "entitlements",
+      "type": "fk",
+      "label": "entitlement_id -> entitlement_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "reclamation_candidates",
+      "to": "software_installations",
+      "type": "fk",
+      "label": "installation_id -> installation_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "reclamation_candidates",
+      "to": "reclamation_rules",
+      "type": "fk",
+      "label": "reclamation_rule_id -> rule_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "reclamation_rules",
+      "to": "users",
+      "type": "fk",
+      "label": "created_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "reclamation_rules",
+      "to": "software_products",
+      "type": "fk",
+      "label": "software_product_id -> product_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "reclamation_rules",
+      "to": "users",
+      "type": "fk",
+      "label": "updated_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "reconciliation_results",
+      "to": "users",
+      "type": "fk",
+      "label": "created_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "reconciliation_results",
+      "to": "software_products",
+      "type": "fk",
+      "label": "software_product_id -> product_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "role_permissions",
+      "to": "permissions",
+      "type": "fk",
+      "label": "permission_id -> permission_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "role_permissions",
+      "to": "roles",
+      "type": "fk",
+      "label": "role_id -> role_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "rooms",
+      "to": "users",
+      "type": "fk",
+      "label": "created_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "rooms",
+      "to": "floors",
+      "type": "fk",
+      "label": "floor_id -> floor_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "rooms",
+      "to": "users",
+      "type": "fk",
+      "label": "updated_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "saas_subscriptions",
+      "to": "contracts",
+      "type": "fk",
+      "label": "contract_id -> contract_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "saas_subscriptions",
+      "to": "users",
+      "type": "fk",
+      "label": "created_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "saas_subscriptions",
+      "to": "software_products",
+      "type": "fk",
+      "label": "software_product_id -> product_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "saas_subscriptions",
+      "to": "users",
+      "type": "fk",
+      "label": "updated_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "software_assets",
+      "to": "assets",
+      "type": "fk",
+      "label": "asset_id -> asset_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "software_assets",
+      "to": "users",
+      "type": "fk",
+      "label": "created_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "software_assets",
+      "to": "software_products",
+      "type": "fk",
+      "label": "software_product_id -> product_id",
+      "on_delete": "SET NULL"
+    },
+    {
+      "from": "software_assets",
+      "to": "users",
+      "type": "fk",
+      "label": "updated_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "software_assets",
+      "to": "vendors",
+      "type": "fk",
+      "label": "vendor_id -> vendor_id",
+      "on_delete": "SET NULL"
+    },
+    {
+      "from": "software_installations",
+      "to": "users",
+      "type": "fk",
+      "label": "authorized_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "software_installations",
+      "to": "entitlements",
+      "type": "fk",
+      "label": "entitlement_id -> entitlement_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "software_installations",
+      "to": "hardware_assets",
+      "type": "fk",
+      "label": "hardware_asset_id -> asset_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "software_installations",
+      "to": "software_products",
+      "type": "fk",
+      "label": "software_product_id -> product_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "software_products",
+      "to": "users",
+      "type": "fk",
+      "label": "created_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "software_products",
+      "to": "users",
+      "type": "fk",
+      "label": "updated_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "spare_parts",
+      "to": "users",
+      "type": "fk",
+      "label": "created_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "spare_parts",
+      "to": "vendors",
+      "type": "fk",
+      "label": "preferred_vendor_id -> vendor_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "spare_parts",
+      "to": "spare_parts",
+      "type": "fk",
+      "label": "replacement_part_id -> part_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "spare_parts",
+      "to": "users",
+      "type": "fk",
+      "label": "updated_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "stockroom_inventory",
+      "to": "stockrooms",
+      "type": "fk",
+      "label": "stockroom_id -> stockroom_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "stockroom_rules",
+      "to": "users",
+      "type": "fk",
+      "label": "created_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "stockroom_rules",
+      "to": "cost_centers",
+      "type": "fk",
+      "label": "replenish_cost_center_id -> cost_center_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "stockroom_rules",
+      "to": "vendors",
+      "type": "fk",
+      "label": "replenish_vendor_id -> vendor_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "stockroom_rules",
+      "to": "stockrooms",
+      "type": "fk",
+      "label": "stockroom_id -> stockroom_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "stockroom_rules",
+      "to": "users",
+      "type": "fk",
+      "label": "updated_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "stockrooms",
+      "to": "cost_centers",
+      "type": "fk",
+      "label": "cost_center_id -> cost_center_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "stockrooms",
+      "to": "users",
+      "type": "fk",
+      "label": "created_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "stockrooms",
+      "to": "users",
+      "type": "fk",
+      "label": "manager_id -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "stockrooms",
+      "to": "stockrooms",
+      "type": "fk",
+      "label": "parent_stockroom_id -> stockroom_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "stockrooms",
+      "to": "users",
+      "type": "fk",
+      "label": "updated_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "transfer_order_lines",
+      "to": "assets",
+      "type": "fk",
+      "label": "asset_id -> asset_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "transfer_order_lines",
+      "to": "transfer_orders",
+      "type": "fk",
+      "label": "transfer_id -> transfer_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "transfer_orders",
+      "to": "users",
+      "type": "fk",
+      "label": "approved_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "transfer_orders",
+      "to": "users",
+      "type": "fk",
+      "label": "created_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "transfer_orders",
+      "to": "stockrooms",
+      "type": "fk",
+      "label": "from_stockroom_id -> stockroom_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "transfer_orders",
+      "to": "users",
+      "type": "fk",
+      "label": "received_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "transfer_orders",
+      "to": "users",
+      "type": "fk",
+      "label": "requested_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "transfer_orders",
+      "to": "users",
+      "type": "fk",
+      "label": "shipped_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "transfer_orders",
+      "to": "stockrooms",
+      "type": "fk",
+      "label": "to_stockroom_id -> stockroom_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "transfer_orders",
+      "to": "users",
+      "type": "fk",
+      "label": "updated_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "user_roles",
+      "to": "users",
+      "type": "fk",
+      "label": "assigned_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "user_roles",
+      "to": "roles",
+      "type": "fk",
+      "label": "role_id -> role_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "user_roles",
+      "to": "users",
+      "type": "fk",
+      "label": "user_id -> user_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "users",
+      "to": "departments",
+      "type": "fk",
+      "label": "department_id -> department_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "users",
+      "to": "users",
+      "type": "fk",
+      "label": "manager_id -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "vendor_model_prices",
+      "to": "users",
+      "type": "fk",
+      "label": "created_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "vendor_model_prices",
+      "to": "models",
+      "type": "fk",
+      "label": "model_id -> model_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "vendor_model_prices",
+      "to": "users",
+      "type": "fk",
+      "label": "updated_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "vendor_model_prices",
+      "to": "vendors",
+      "type": "fk",
+      "label": "vendor_id -> vendor_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "work_order_parts",
+      "to": "users",
+      "type": "fk",
+      "label": "issued_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "work_order_parts",
+      "to": "spare_parts",
+      "type": "fk",
+      "label": "part_id -> part_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "work_order_parts",
+      "to": "work_orders",
+      "type": "fk",
+      "label": "work_order_id -> work_order_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "work_orders",
+      "to": "users",
+      "type": "fk",
+      "label": "approved_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "work_orders",
+      "to": "assets",
+      "type": "fk",
+      "label": "asset_id -> asset_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "work_orders",
+      "to": "users",
+      "type": "fk",
+      "label": "assigned_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "work_orders",
+      "to": "users",
+      "type": "fk",
+      "label": "assigned_to -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "work_orders",
+      "to": "users",
+      "type": "fk",
+      "label": "created_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "work_orders",
+      "to": "facilities",
+      "type": "fk",
+      "label": "facility_id -> facility_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "work_orders",
+      "to": "maintenance_plans",
+      "type": "fk",
+      "label": "maintenance_plan_id -> plan_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "work_orders",
+      "to": "work_orders",
+      "type": "fk",
+      "label": "parent_work_order_id -> work_order_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "work_orders",
+      "to": "users",
+      "type": "fk",
+      "label": "updated_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "svc:asset-service",
+      "to": "asset_relationships",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:asset-service",
+      "to": "assets",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:asset-service",
+      "to": "audit_log",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:asset-service",
+      "to": "hardware_assets",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:asset-service",
+      "to": "users",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:ham-service",
+      "to": "assets",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:ham-service",
+      "to": "audit_records",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:ham-service",
+      "to": "audit_scans",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:ham-service",
+      "to": "bin_locations",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:ham-service",
+      "to": "buildings",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:ham-service",
+      "to": "hardware_assets",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:ham-service",
+      "to": "loaner_checkouts",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:ham-service",
+      "to": "stockroom_inventory",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:ham-service",
+      "to": "stockrooms",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:ham-service",
+      "to": "transfer_order_lines",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:ham-service",
+      "to": "transfer_orders",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:ham-service",
+      "to": "users",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:sam-service",
+      "to": "assets",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:sam-service",
+      "to": "audit_log",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:sam-service",
+      "to": "contracts",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:sam-service",
+      "to": "departments",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:sam-service",
+      "to": "entitlements",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:sam-service",
+      "to": "hardware_assets",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:sam-service",
+      "to": "purchase_orders",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:sam-service",
+      "to": "reclamation_candidates",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:sam-service",
+      "to": "reclamation_rules",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:sam-service",
+      "to": "reconciliation_results",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:sam-service",
+      "to": "saas_subscriptions",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:sam-service",
+      "to": "software_installations",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:sam-service",
+      "to": "software_products",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:sam-service",
+      "to": "users",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:sam-service",
+      "to": "vendors",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:eam-service",
+      "to": "assets",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:eam-service",
+      "to": "enterprise_assets",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:eam-service",
+      "to": "linear_asset_segments",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:eam-service",
+      "to": "linear_assets",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:eam-service",
+      "to": "maintenance_plans",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:eam-service",
+      "to": "spare_parts",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:eam-service",
+      "to": "users",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:eam-service",
+      "to": "work_order_parts",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:eam-service",
+      "to": "work_orders",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "asset_relationships",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "assets",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "audit_log",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "contracts",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "cost_centers",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "hardware_assets",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "inspection_records",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "purchase_order_lines",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "purchase_orders",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "receiving_lines",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "receiving_records",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "stockroom_inventory",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "stockrooms",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "users",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "vendors",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:integration-service",
+      "to": "assets",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:integration-service",
+      "to": "cost_centers",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:integration-service",
+      "to": "discovery_records",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:integration-service",
+      "to": "discovery_source_configs",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:integration-service",
+      "to": "hardware_assets",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:integration-service",
+      "to": "purchase_orders",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:integration-service",
+      "to": "vendors",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:admin-service",
+      "to": "assets",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:admin-service",
+      "to": "bin_locations",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:admin-service",
+      "to": "buildings",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:admin-service",
+      "to": "cost_centers",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:admin-service",
+      "to": "departments",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:admin-service",
+      "to": "floors",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:admin-service",
+      "to": "hardware_assets",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:admin-service",
+      "to": "manufacturers",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:admin-service",
+      "to": "models",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:admin-service",
+      "to": "purchase_orders",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:admin-service",
+      "to": "racks",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:admin-service",
+      "to": "roles",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:admin-service",
+      "to": "rooms",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:admin-service",
+      "to": "stockroom_inventory",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:admin-service",
+      "to": "stockrooms",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:admin-service",
+      "to": "user_roles",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:admin-service",
+      "to": "users",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:admin-service",
+      "to": "vendor_model_prices",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:admin-service",
+      "to": "vendors",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:notification-service",
+      "to": "contracts",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:notification-service",
+      "to": "loaner_checkouts",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:notification-service",
+      "to": "reconciliation_results",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:notification-service",
+      "to": "stockroom_inventory",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:procurement-service",
+      "to": "approval_delegations",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:procurement-service",
+      "to": "approval_records",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:procurement-service",
+      "to": "approval_thresholds",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:procurement-service",
+      "to": "cost_centers",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:procurement-service",
+      "to": "purchase_order_lines",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:procurement-service",
+      "to": "purchase_orders",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:procurement-service",
+      "to": "roles",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:procurement-service",
+      "to": "user_roles",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:procurement-service",
+      "to": "users",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:procurement-service",
+      "to": "vendors",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:report-service",
+      "to": "assets",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:report-service",
+      "to": "bin_locations",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:report-service",
+      "to": "cost_centers",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:report-service",
+      "to": "departments",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:report-service",
+      "to": "depreciation_schedules",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:report-service",
+      "to": "enterprise_assets",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:report-service",
+      "to": "hardware_assets",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:report-service",
+      "to": "maintenance_plans",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:report-service",
+      "to": "purchase_order_lines",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:report-service",
+      "to": "purchase_orders",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:report-service",
+      "to": "reconciliation_results",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:report-service",
+      "to": "software_assets",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:report-service",
+      "to": "software_products",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:report-service",
+      "to": "stockrooms",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:report-service",
+      "to": "transfer_orders",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:report-service",
+      "to": "users",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:report-service",
+      "to": "vendors",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:report-service",
+      "to": "work_orders",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:asset-service",
+      "to": "@ams/cache",
+      "type": "imports"
+    },
+    {
+      "from": "svc:asset-service",
+      "to": "@ams/database",
+      "type": "imports"
+    },
+    {
+      "from": "svc:asset-service",
+      "to": "@ams/events",
+      "type": "imports"
+    },
+    {
+      "from": "svc:asset-service",
+      "to": "@ams/search",
+      "type": "imports"
+    },
+    {
+      "from": "svc:asset-service",
+      "to": "@ams/types",
+      "type": "imports"
+    },
+    {
+      "from": "svc:asset-service",
+      "to": "@ams/utils",
+      "type": "imports"
+    },
+    {
+      "from": "svc:ham-service",
+      "to": "@ams/cache",
+      "type": "imports"
+    },
+    {
+      "from": "svc:ham-service",
+      "to": "@ams/database",
+      "type": "imports"
+    },
+    {
+      "from": "svc:ham-service",
+      "to": "@ams/events",
+      "type": "imports"
+    },
+    {
+      "from": "svc:ham-service",
+      "to": "@ams/types",
+      "type": "imports"
+    },
+    {
+      "from": "svc:ham-service",
+      "to": "@ams/utils",
+      "type": "imports"
+    },
+    {
+      "from": "svc:sam-service",
+      "to": "@ams/cache",
+      "type": "imports"
+    },
+    {
+      "from": "svc:sam-service",
+      "to": "@ams/database",
+      "type": "imports"
+    },
+    {
+      "from": "svc:sam-service",
+      "to": "@ams/events",
+      "type": "imports"
+    },
+    {
+      "from": "svc:sam-service",
+      "to": "@ams/types",
+      "type": "imports"
+    },
+    {
+      "from": "svc:sam-service",
+      "to": "@ams/utils",
+      "type": "imports"
+    },
+    {
+      "from": "svc:eam-service",
+      "to": "@ams/cache",
+      "type": "imports"
+    },
+    {
+      "from": "svc:eam-service",
+      "to": "@ams/database",
+      "type": "imports"
+    },
+    {
+      "from": "svc:eam-service",
+      "to": "@ams/events",
+      "type": "imports"
+    },
+    {
+      "from": "svc:eam-service",
+      "to": "@ams/types",
+      "type": "imports"
+    },
+    {
+      "from": "svc:eam-service",
+      "to": "@ams/utils",
+      "type": "imports"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "@ams/cache",
+      "type": "imports"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "@ams/database",
+      "type": "imports"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "@ams/events",
+      "type": "imports"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "@ams/types",
+      "type": "imports"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "@ams/utils",
+      "type": "imports"
+    },
+    {
+      "from": "svc:integration-service",
+      "to": "@ams/cache",
+      "type": "imports"
+    },
+    {
+      "from": "svc:integration-service",
+      "to": "@ams/database",
+      "type": "imports"
+    },
+    {
+      "from": "svc:integration-service",
+      "to": "@ams/events",
+      "type": "imports"
+    },
+    {
+      "from": "svc:integration-service",
+      "to": "@ams/types",
+      "type": "imports"
+    },
+    {
+      "from": "svc:integration-service",
+      "to": "@ams/utils",
+      "type": "imports"
+    },
+    {
+      "from": "svc:admin-service",
+      "to": "@ams/cache",
+      "type": "imports"
+    },
+    {
+      "from": "svc:admin-service",
+      "to": "@ams/database",
+      "type": "imports"
+    },
+    {
+      "from": "svc:admin-service",
+      "to": "@ams/events",
+      "type": "imports"
+    },
+    {
+      "from": "svc:admin-service",
+      "to": "@ams/types",
+      "type": "imports"
+    },
+    {
+      "from": "svc:admin-service",
+      "to": "@ams/utils",
+      "type": "imports"
+    },
+    {
+      "from": "svc:notification-service",
+      "to": "@ams/cache",
+      "type": "imports"
+    },
+    {
+      "from": "svc:notification-service",
+      "to": "@ams/events",
+      "type": "imports"
+    },
+    {
+      "from": "svc:notification-service",
+      "to": "@ams/types",
+      "type": "imports"
+    },
+    {
+      "from": "svc:notification-service",
+      "to": "@ams/utils",
+      "type": "imports"
+    },
+    {
+      "from": "svc:procurement-service",
+      "to": "@ams/cache",
+      "type": "imports"
+    },
+    {
+      "from": "svc:procurement-service",
+      "to": "@ams/database",
+      "type": "imports"
+    },
+    {
+      "from": "svc:procurement-service",
+      "to": "@ams/events",
+      "type": "imports"
+    },
+    {
+      "from": "svc:procurement-service",
+      "to": "@ams/types",
+      "type": "imports"
+    },
+    {
+      "from": "svc:procurement-service",
+      "to": "@ams/utils",
+      "type": "imports"
+    },
+    {
+      "from": "svc:report-service",
+      "to": "@ams/cache",
+      "type": "imports"
+    },
+    {
+      "from": "svc:report-service",
+      "to": "@ams/database",
+      "type": "imports"
+    },
+    {
+      "from": "svc:report-service",
+      "to": "@ams/types",
+      "type": "imports"
+    },
+    {
+      "from": "svc:report-service",
+      "to": "@ams/utils",
+      "type": "imports"
+    },
+    {
+      "from": "page:AssetCreatePage",
+      "to": "api:asset-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:AssetEditPage",
+      "to": "api:asset-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:AssetLifecyclePage",
+      "to": "api:asset-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:AssetsPage",
+      "to": "api:asset-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:ContractsPage",
+      "to": "api:contracts-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:ContractsPage",
+      "to": "api:contracts-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:DashboardPage",
+      "to": "api:dashboard-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:EnterpriseAssetsPage",
+      "to": "api:asset-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:HardwareAssetsPage",
+      "to": "api:asset-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:LicenseWorkbenchPage",
+      "to": "api:sam-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:LoginPage",
+      "to": "api:auth-service",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:ProcurementPage",
+      "to": "api:procurement-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:ServiceCatalogPage",
+      "to": "api:catalog-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:SoftwareAssetsPage",
+      "to": "api:asset-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:StockroomPage",
+      "to": "api:admin-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:admin/CostCenterForm",
+      "to": "api:admin-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:admin/CostCentersPage",
+      "to": "api:admin-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:admin/DepartmentForm",
+      "to": "api:admin-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:admin/DepartmentsPage",
+      "to": "api:admin-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:admin/LocationsPage",
+      "to": "api:admin-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:admin/ManufacturerForm",
+      "to": "api:admin-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:admin/ManufacturersPage",
+      "to": "api:admin-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:admin/ModelForm",
+      "to": "api:admin-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:admin/ModelsPage",
+      "to": "api:admin-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:admin/StoragePage",
+      "to": "api:admin-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:admin/UserEditPage",
+      "to": "api:admin-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:admin/UsersPage",
+      "to": "api:admin-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:admin/VendorForm",
+      "to": "api:admin-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:admin/VendorsPage",
+      "to": "api:admin-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:ham/TransfersPage",
+      "to": "api:ham-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:ham/LoanerManagementPage",
+      "to": "api:ham-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:ham/AuditScanPage",
+      "to": "api:ham-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:ham/DisposalPage",
+      "to": "api:ham-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:eam/WorkOrdersPage",
+      "to": "api:eam-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:eam/MaintenancePlansPage",
+      "to": "api:eam-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:eam/LinearAssetsPage",
+      "to": "api:eam-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:eam/PartsInventoryPage",
+      "to": "api:eam-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:NotificationPreferencesPage",
+      "to": "api:notification-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "component:NotificationBell",
+      "to": "api:notification-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:LicenseWorkbenchPage",
+      "to": "api:sam-api",
+      "type": "frontend_uses_api_actions",
+      "detail": "runReconciliation, initiateReclamation, analyzeShadowIt, generateComplianceReport, syncSaasUsage, applyPublisherRules, getUnusedSubscriptions"
+    },
+    {
+      "from": "page:procurement/ApprovalWorkflow",
+      "to": "api:api-client",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:procurement/InspectionForm",
+      "to": "api:receiving-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:procurement/InspectionForm",
+      "to": "api:receiving-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:procurement/POLineEditor",
+      "to": "api:procurement-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:procurement/PurchaseOrderDetailPage",
+      "to": "api:procurement-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:procurement/PurchaseOrderForm",
+      "to": "api:procurement-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:procurement/PurchaseOrderForm",
+      "to": "api:admin-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:procurement/PurchaseOrdersPage",
+      "to": "api:procurement-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:procurement/ReceivingForm",
+      "to": "api:procurement-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:procurement/ReceivingForm",
+      "to": "api:receiving-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:procurement/ReceivingForm",
+      "to": "api:receiving-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:reports/AssetAgingReport",
+      "to": "api:report-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:reports/AssetByDepartmentReport",
+      "to": "api:report-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:reports/AssetByLocationReport",
+      "to": "api:report-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:reports/AssetSummaryReport",
+      "to": "api:report-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:reports/CostCenterUtilizationReport",
+      "to": "api:report-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:reports/MaintenanceComplianceReport",
+      "to": "api:report-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:reports/ProcurementSpendingReport",
+      "to": "api:report-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:reports/ReportExportButton",
+      "to": "api:report-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:reports/WorkOrderSummaryReport",
+      "to": "api:report-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "svc:asset-service",
+      "to": "sns:asset-events",
+      "type": "publishes_events"
+    },
+    {
+      "from": "svc:ham-service",
+      "to": "sns:asset-events",
+      "type": "publishes_events"
+    },
+    {
+      "from": "svc:sam-service",
+      "to": "sns:asset-events",
+      "type": "publishes_events"
+    },
+    {
+      "from": "svc:eam-service",
+      "to": "sns:asset-events",
+      "type": "publishes_events"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "sns:asset-events",
+      "type": "publishes_events"
+    },
+    {
+      "from": "svc:integration-service",
+      "to": "sns:asset-events",
+      "type": "publishes_events"
+    },
+    {
+      "from": "svc:admin-service",
+      "to": "sns:asset-events",
+      "type": "publishes_events"
+    },
+    {
+      "from": "svc:notification-service",
+      "to": "sns:asset-events",
+      "type": "publishes_events"
+    },
+    {
+      "from": "svc:procurement-service",
+      "to": "sns:asset-events",
+      "type": "publishes_events"
+    },
+    {
+      "from": "svc:report-service",
+      "to": "sns:asset-events",
+      "type": "publishes_events"
+    }
+  ],
+  "node_count": 143
+}

@@ -1,0 +1,245 @@
+/**
+ * ResponsiveTable Component Styles
+ * 
+ * Implements Requirement 9: Mobile Responsive Tables
+ * - Horizontal scrolling when table exceeds viewport width
+ * - Visual scroll indicators when content overflows
+ * - Smooth touch scrolling on mobile devices
+ * - CSS variables for dark mode support
+ */
+
+/* Wrapper container with relative positioning for indicators */
+.wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* Scrollable container */
+.container {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+/* Ensure table respects minimum width */
+.container > table {
+  min-width: var(--table-min-width, 600px);
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Custom scrollbar styling for webkit browsers */
+.container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.container::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: var(--radius-sm);
+}
+
+.container::-webkit-scrollbar-thumb {
+  background-color: var(--color-border);
+  border-radius: var(--radius-sm);
+  transition: background-color 0.2s;
+}
+
+.container::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-text-tertiary);
+}
+
+/* Focus styles for keyboard navigation */
+.container:focus {
+  outline: none;
+}
+
+.container:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Scroll indicator buttons */
+.scrollIndicator {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-md);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.scrollIndicator:hover {
+  background-color: var(--color-background-hover);
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-lg);
+}
+
+.scrollIndicator:focus {
+  outline: none;
+}
+
+.scrollIndicator:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
+
+.scrollIndicator:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+/* Left scroll indicator */
+.scrollIndicatorLeft {
+  left: var(--spacing-2);
+}
+
+.scrollIndicatorLeft .scrollIcon {
+  transform: rotate(180deg);
+}
+
+/* Right scroll indicator */
+.scrollIndicatorRight {
+  right: var(--spacing-2);
+}
+
+/* Scroll icon */
+.scrollIcon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Gradient fade effect on edges when scrollable */
+.wrapper::before,
+.wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 24px;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.wrapper::before {
+  left: 0;
+  background: linear-gradient(
+    to right,
+    var(--color-surface) 0%,
+    transparent 100%
+  );
+}
+
+.wrapper::after {
+  right: 0;
+  background: linear-gradient(
+    to left,
+    var(--color-surface) 0%,
+    transparent 100%
+  );
+}
+
+/* Show gradient when scroll indicators are visible */
+.wrapper:has(.scrollIndicatorLeft)::before {
+  opacity: 1;
+}
+
+.wrapper:has(.scrollIndicatorRight)::after {
+  opacity: 1;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .scrollIndicator {
+    width: 28px;
+    height: 28px;
+  }
+
+  .scrollIcon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .scrollIndicatorLeft {
+    left: var(--spacing-1);
+  }
+
+  .scrollIndicatorRight {
+    right: var(--spacing-1);
+  }
+}
+
+/* Hide scroll indicators on touch devices - users can swipe */
+@media (hover: none) and (pointer: coarse) {
+  .scrollIndicator {
+    display: none;
+  }
+
+  .wrapper::before,
+  .wrapper::after {
+    display: none;
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .scrollIndicator,
+  .container::-webkit-scrollbar-thumb {
+    transition: none;
+  }
+
+  .scrollIndicator:active {
+    transform: translateY(-50%);
+  }
+
+  .wrapper::before,
+  .wrapper::after {
+    transition: none;
+  }
+}
+
+/* High contrast mode support */
+@media (forced-colors: active) {
+  .scrollIndicator {
+    border: 2px solid currentColor;
+  }
+
+  .container:focus-visible {
+    outline: 3px solid currentColor;
+  }
+}
+
+/* Print styles - remove scroll indicators */
+@media print {
+  .scrollIndicator {
+    display: none;
+  }
+
+  .wrapper::before,
+  .wrapper::after {
+    display: none;
+  }
+
+  .container {
+    overflow: visible;
+  }
+
+  .container > table {
+    min-width: auto;
+  }
+}

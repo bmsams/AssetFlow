@@ -1,0 +1,200 @@
+/* Attributes Container */
+.attributesContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+}
+
+/* Section */
+.section {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-4);
+}
+
+.sectionTitle {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-4) 0;
+  padding-bottom: var(--spacing-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Attribute Grid */
+.attributeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-4);
+  margin: 0;
+}
+
+/* Attribute Row */
+.attributeRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.valueContainer {
+  margin: 0;
+}
+
+.value {
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  word-break: break-word;
+}
+
+/* Editable Value */
+.editable {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  padding: var(--spacing-1) var(--spacing-2);
+  margin: calc(-1 * var(--spacing-1)) calc(-1 * var(--spacing-2));
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.editable:hover {
+  background-color: var(--color-surface-hover);
+}
+
+.editable:focus {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
+
+.editIcon {
+  width: 14px;
+  height: 14px;
+  color: var(--color-text-tertiary);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.editable:hover .editIcon,
+.editable:focus .editIcon {
+  opacity: 1;
+}
+
+/* Edit Container */
+.editContainer {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.editInput {
+  flex: 1;
+  padding: var(--spacing-2);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-primary-500);
+  border-radius: var(--radius-md);
+  outline: none;
+}
+
+.editInput:focus {
+  box-shadow: 0 0 0 3px var(--color-primary-100);
+}
+
+.editActions {
+  display: flex;
+  gap: var(--spacing-1);
+}
+
+.saveButton,
+.cancelButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.saveButton {
+  color: white;
+  background-color: var(--color-success-500);
+}
+
+.saveButton:hover {
+  background-color: var(--color-success-600);
+}
+
+.cancelButton {
+  color: var(--color-text-secondary);
+  background-color: var(--color-surface-hover);
+}
+
+.cancelButton:hover {
+  color: var(--color-text-primary);
+  background-color: var(--color-neutral-200);
+}
+
+.saveButton svg,
+.cancelButton svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Skeleton Loading States */
+.skeletonSectionTitle {
+  width: 150px;
+  height: 24px;
+  background: linear-gradient(90deg, var(--color-surface-hover) 25%, var(--color-surface) 50%, var(--color-surface-hover) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-4);
+}
+
+.skeletonLabel {
+  width: 100px;
+  height: 16px;
+  background: linear-gradient(90deg, var(--color-surface-hover) 25%, var(--color-surface) 50%, var(--color-surface-hover) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+.skeletonValue {
+  width: 180px;
+  height: 20px;
+  background: linear-gradient(90deg, var(--color-surface-hover) 25%, var(--color-surface) 50%, var(--color-surface-hover) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+  margin-top: var(--spacing-1);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .attributeGrid {
+    grid-template-columns: 1fr;
+  }
+}

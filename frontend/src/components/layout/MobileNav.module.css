@@ -1,0 +1,127 @@
+/* Mobile Bottom Navigation */
+.mobileNav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  z-index: var(--z-fixed);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* Hide on desktop */
+@media (min-width: 768px) {
+  .mobileNav {
+    display: none;
+  }
+}
+
+/* Navigation List */
+.navList {
+  display: flex;
+  justify-content: space-around;
+  align-items: stretch;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  height: 64px;
+}
+
+/* Navigation Item */
+.navItem {
+  flex: 1;
+  display: flex;
+  min-width: 0;
+}
+
+/* Navigation Link/Button */
+.navLink {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-1);
+  width: 100%;
+  min-height: 64px;
+  padding: var(--spacing-2);
+  background: transparent;
+  border: none;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+  /* Touch-friendly: minimum 44px touch target */
+  min-width: 44px;
+}
+
+.navLink:hover {
+  background-color: var(--color-gray-100);
+  color: var(--color-text-primary);
+}
+
+[data-theme='dark'] .navLink:hover {
+  background-color: var(--color-gray-700);
+}
+
+.navLink:active {
+  background-color: var(--color-gray-200);
+}
+
+[data-theme='dark'] .navLink:active {
+  background-color: var(--color-gray-600);
+}
+
+.navLink.active {
+  color: var(--color-primary-600);
+}
+
+[data-theme='dark'] .navLink.active {
+  color: var(--color-primary-400);
+}
+
+/* Navigation Icon */
+.navIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.navIcon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Navigation Label */
+.navLabel {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Active indicator */
+.navLink.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32px;
+  height: 3px;
+  background-color: var(--color-primary-600);
+  border-radius: 0 0 var(--radius-full) var(--radius-full);
+}
+
+[data-theme='dark'] .navLink.active::before {
+  background-color: var(--color-primary-400);
+}
+
+/* Position relative for active indicator */
+.navItem {
+  position: relative;
+}

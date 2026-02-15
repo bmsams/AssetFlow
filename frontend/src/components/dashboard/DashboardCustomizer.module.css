@@ -1,0 +1,228 @@
+/* DashboardCustomizer Component Styles */
+/* Implements Requirement 12.7: Dashboard widgets shall be configurable per user */
+
+.customizer {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-3);
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Buttons */
+.button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-3);
+  border: none;
+  border-radius: var(--radius-md);
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+  white-space: nowrap;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.button:hover {
+  background-color: var(--color-gray-100);
+  color: var(--color-text-primary);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+[data-theme='dark'] .button:hover {
+  background-color: var(--color-gray-700);
+}
+
+.button.active {
+  background-color: var(--color-primary-100);
+  color: var(--color-primary-700);
+}
+
+[data-theme='dark'] .button.active {
+  background-color: var(--color-primary-900);
+  color: var(--color-primary-300);
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.buttonText {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .buttonText {
+    display: inline;
+  }
+}
+
+/* Special button variants */
+.resetButton:hover {
+  background-color: var(--color-warning-500);
+  background-color: rgba(245, 158, 11, 0.1);
+  color: var(--color-warning-500);
+}
+
+.saveButton {
+  background-color: var(--color-gray-100);
+  color: var(--color-text-muted);
+}
+
+.saveButton.hasChanges {
+  background-color: var(--color-primary-600);
+  color: white;
+}
+
+.saveButton.hasChanges:hover {
+  background-color: var(--color-primary-700);
+}
+
+[data-theme='dark'] .saveButton {
+  background-color: var(--color-gray-700);
+}
+
+[data-theme='dark'] .saveButton.hasChanges {
+  background-color: var(--color-primary-600);
+}
+
+/* Divider */
+.divider {
+  width: 1px;
+  height: 24px;
+  background-color: var(--color-border);
+  margin: 0 var(--spacing-1);
+}
+
+/* Unsaved Indicator */
+.unsavedIndicator {
+  font-size: var(--font-size-xs);
+  color: var(--color-warning-500);
+  padding: var(--spacing-1) var(--spacing-2);
+  background-color: rgba(245, 158, 11, 0.1);
+  border-radius: var(--radius-sm);
+}
+
+/* Confirmation Dialog */
+.confirmOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal);
+  padding: var(--spacing-4);
+}
+
+.confirmDialog {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  padding: var(--spacing-6);
+  max-width: 400px;
+  width: 100%;
+}
+
+.confirmTitle {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-2) 0;
+}
+
+.confirmDescription {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-6) 0;
+  line-height: var(--line-height-relaxed);
+}
+
+.confirmActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-3);
+}
+
+.confirmCancel,
+.confirmReset {
+  padding: var(--spacing-2) var(--spacing-4);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.confirmCancel {
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
+.confirmCancel:hover {
+  background-color: var(--color-gray-100);
+}
+
+[data-theme='dark'] .confirmCancel:hover {
+  background-color: var(--color-gray-700);
+}
+
+.confirmReset {
+  border: none;
+  background-color: var(--color-error-500);
+  color: white;
+}
+
+.confirmReset:hover {
+  background-color: var(--color-error-500);
+  filter: brightness(0.9);
+}
+
+.confirmCancel:focus-visible,
+.confirmReset:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .customizer {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .divider {
+    display: none;
+  }
+
+  .confirmActions {
+    flex-direction: column;
+  }
+
+  .confirmCancel,
+  .confirmReset {
+    width: 100%;
+  }
+}

@@ -1,0 +1,94 @@
+/* ProcurementPage Component Styles */
+
+/* Error Banner */
+.errorBanner {
+  margin-bottom: var(--spacing-6);
+}
+
+/* Stats Section */
+.statsSection {
+  margin-bottom: var(--spacing-6);
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-4);
+}
+
+@media (min-width: 1024px) {
+  .statsGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Content Grid */
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-6);
+}
+
+@media (min-width: 1024px) {
+  .contentGrid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+  }
+
+  .requestsSection {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .purchaseOrdersSection {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .receivingSection {
+    grid-column: 1 / 3;
+    grid-row: 2;
+  }
+}
+
+@media (min-width: 1280px) {
+  .contentGrid {
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto;
+  }
+
+  .requestsSection {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .purchaseOrdersSection {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .receivingSection {
+    grid-column: 3;
+    grid-row: 1;
+  }
+}
+
+/* Section Styles */
+.requestsSection,
+.purchaseOrdersSection,
+.receivingSection {
+  min-width: 0; /* Prevent grid blowout */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+}

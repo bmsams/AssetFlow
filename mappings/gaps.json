@@ -1,0 +1,667 @@
+{
+  "orphan_handlers": [],
+  "dead_tables": [
+    {
+      "table": "facilities",
+      "referenced_by_view": true,
+      "column_count": 24,
+      "has_fks": true
+    },
+    {
+      "table": "lease_payments",
+      "referenced_by_view": true,
+      "column_count": 32,
+      "has_fks": true
+    },
+    {
+      "table": "permissions",
+      "referenced_by_view": true,
+      "column_count": 6,
+      "has_fks": false
+    },
+    {
+      "table": "po_lines",
+      "referenced_by_view": false,
+      "column_count": 14,
+      "has_fks": true
+    },
+    {
+      "table": "role_permissions",
+      "referenced_by_view": true,
+      "column_count": 3,
+      "has_fks": true
+    },
+    {
+      "table": "stockroom_rules",
+      "referenced_by_view": false,
+      "column_count": 28,
+      "has_fks": true
+    }
+  ],
+  "missing_fk_indexes": [
+    {
+      "table": "approval_records",
+      "column": "delegated_from",
+      "references": "users.user_id"
+    },
+    {
+      "table": "approval_thresholds",
+      "column": "approver_role_id",
+      "references": "roles.role_id"
+    },
+    {
+      "table": "asset_relationships",
+      "column": "created_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "assets",
+      "column": "updated_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "audit_records",
+      "column": "approved_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "audit_records",
+      "column": "completed_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "audit_records",
+      "column": "created_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "audit_records",
+      "column": "secondary_auditor_id",
+      "references": "users.user_id"
+    },
+    {
+      "table": "audit_records",
+      "column": "updated_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "audit_records",
+      "column": "recount_audit_id",
+      "references": "audit_records.audit_id"
+    },
+    {
+      "table": "audit_scans",
+      "column": "resolved_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "buildings",
+      "column": "created_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "buildings",
+      "column": "updated_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "contracts",
+      "column": "created_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "contracts",
+      "column": "previous_contract_id",
+      "references": "contracts.contract_id"
+    },
+    {
+      "table": "contracts",
+      "column": "updated_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "cost_centers",
+      "column": "created_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "cost_centers",
+      "column": "updated_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "depreciation_schedules",
+      "column": "created_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "depreciation_schedules",
+      "column": "posted_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "entitlements",
+      "column": "created_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "entitlements",
+      "column": "updated_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "facilities",
+      "column": "created_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "facilities",
+      "column": "updated_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "floors",
+      "column": "created_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "floors",
+      "column": "updated_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "hardware_assets",
+      "column": "lease_contract_id",
+      "references": "contracts.contract_id"
+    },
+    {
+      "table": "hardware_assets",
+      "column": "managed_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "hardware_assets",
+      "column": "purchase_order_id",
+      "references": "purchase_orders.po_id"
+    },
+    {
+      "table": "inspection_records",
+      "column": "inspected_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "lease_payments",
+      "column": "approved_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "lease_payments",
+      "column": "created_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "lease_payments",
+      "column": "updated_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "loaner_checkouts",
+      "column": "cost_center_id",
+      "references": "cost_centers.cost_center_id"
+    },
+    {
+      "table": "loaner_checkouts",
+      "column": "created_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "loaner_checkouts",
+      "column": "extension_approved_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "loaner_checkouts",
+      "column": "returned_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "loaner_checkouts",
+      "column": "updated_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "maintenance_plans",
+      "column": "created_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "maintenance_plans",
+      "column": "updated_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "purchase_orders",
+      "column": "created_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "purchase_orders",
+      "column": "updated_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "purchase_orders",
+      "column": "rejected_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "racks",
+      "column": "created_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "racks",
+      "column": "updated_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "receiving_records",
+      "column": "completed_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "receiving_records",
+      "column": "created_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "receiving_records",
+      "column": "updated_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "reclamation_candidates",
+      "column": "approved_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "reclamation_candidates",
+      "column": "created_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "reclamation_rules",
+      "column": "created_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "reclamation_rules",
+      "column": "updated_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "reconciliation_results",
+      "column": "created_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "rooms",
+      "column": "created_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "rooms",
+      "column": "updated_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "saas_subscriptions",
+      "column": "created_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "saas_subscriptions",
+      "column": "updated_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "software_assets",
+      "column": "created_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "software_assets",
+      "column": "updated_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "software_installations",
+      "column": "authorized_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "software_products",
+      "column": "created_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "software_products",
+      "column": "updated_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "spare_parts",
+      "column": "created_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "spare_parts",
+      "column": "replacement_part_id",
+      "references": "spare_parts.part_id"
+    },
+    {
+      "table": "spare_parts",
+      "column": "updated_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "stockroom_rules",
+      "column": "created_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "stockroom_rules",
+      "column": "replenish_cost_center_id",
+      "references": "cost_centers.cost_center_id"
+    },
+    {
+      "table": "stockroom_rules",
+      "column": "updated_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "stockrooms",
+      "column": "cost_center_id",
+      "references": "cost_centers.cost_center_id"
+    },
+    {
+      "table": "stockrooms",
+      "column": "created_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "stockrooms",
+      "column": "updated_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "transfer_orders",
+      "column": "created_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "transfer_orders",
+      "column": "received_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "transfer_orders",
+      "column": "shipped_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "transfer_orders",
+      "column": "updated_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "user_roles",
+      "column": "assigned_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "vendor_model_prices",
+      "column": "created_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "vendor_model_prices",
+      "column": "updated_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "work_order_parts",
+      "column": "issued_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "work_orders",
+      "column": "approved_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "work_orders",
+      "column": "assigned_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "work_orders",
+      "column": "created_by",
+      "references": "users.user_id"
+    },
+    {
+      "table": "work_orders",
+      "column": "updated_by",
+      "references": "users.user_id"
+    }
+  ],
+  "handlers_without_export": [
+    {
+      "service": "ham-service",
+      "file": "src/handlers/bin-location-handlers.ts"
+    },
+    {
+      "service": "ham-service",
+      "file": "src/handlers/stockroom-admin-handlers.ts"
+    },
+    {
+      "service": "eam-service",
+      "file": "src/handlers/create-maintenance-plan.ts"
+    },
+    {
+      "service": "admin-service",
+      "file": "src/handlers/index.ts"
+    },
+    {
+      "service": "notification-service",
+      "file": "src/notification/channel-handlers.ts"
+    },
+    {
+      "service": "procurement-service",
+      "file": "src/handlers/index.ts"
+    },
+    {
+      "service": "report-service",
+      "file": "src/handlers/asset-report-handlers.ts"
+    },
+    {
+      "service": "report-service",
+      "file": "src/handlers/operational-report-handlers.ts"
+    },
+    {
+      "service": "report-service",
+      "file": "src/handlers/schedule-handlers.ts"
+    },
+    {
+      "service": "report-service",
+      "file": "src/handlers/template-handlers.ts"
+    }
+  ],
+  "tables_without_service": [
+    "facilities",
+    "lease_payments",
+    "permissions",
+    "po_lines",
+    "role_permissions",
+    "stockroom_rules"
+  ],
+  "views_referencing_missing_tables": [],
+  "frontend_pages_without_api": [
+    {
+      "page": "AssetsPage.test",
+      "file": "pages/AssetsPage.test.tsx"
+    },
+    {
+      "page": "index",
+      "file": "pages/index.ts"
+    },
+    {
+      "page": "LicenseWorkbenchPage.test",
+      "file": "pages/LicenseWorkbenchPage.test.tsx"
+    },
+    {
+      "page": "NotFoundPage",
+      "file": "pages/NotFoundPage.tsx"
+    },
+    {
+      "page": "ProcurementPage.test",
+      "file": "pages/ProcurementPage.test.tsx"
+    },
+    {
+      "page": "ReportsPage",
+      "file": "pages/ReportsPage.tsx"
+    },
+    {
+      "page": "ServiceCatalogPage.test",
+      "file": "pages/ServiceCatalogPage.test.tsx"
+    },
+    {
+      "page": "SettingsPage.test",
+      "file": "pages/SettingsPage.test.tsx"
+    },
+    {
+      "page": "SettingsPage",
+      "file": "pages/SettingsPage.tsx"
+    },
+    {
+      "page": "StockroomPage.test",
+      "file": "pages/StockroomPage.test.tsx"
+    },
+    {
+      "page": "AccessDeniedPage",
+      "file": "pages/AccessDeniedPage.tsx"
+    },
+    {
+      "page": "admin/index",
+      "file": "pages/admin/index.ts"
+    },
+    {
+      "page": "procurement/index",
+      "file": "pages/procurement/index.ts"
+    },
+    {
+      "page": "reports/index",
+      "file": "pages/reports/index.ts"
+    },
+    {
+      "page": "reports/ReportsPage",
+      "file": "pages/reports/ReportsPage.tsx"
+    }
+  ],
+
+  "api_clients_without_pages": [
+    {
+      "client": "api-client.test",
+      "file": "services/api-client.test.ts",
+      "endpoint_count": 0
+    },
+    {
+      "client": "index",
+      "file": "services/index.ts",
+      "endpoint_count": 0
+    },
+    {
+      "client": "lifecycle-api",
+      "file": "services/lifecycle-api.ts",
+      "endpoint_count": 3
+    },
+    {
+      "client": "pagination.property.test",
+      "file": "services/pagination.property.test.ts",
+      "endpoint_count": 0
+    },
+    {
+      "client": "push-notification-service.test",
+      "file": "services/push-notification-service.test.ts",
+      "endpoint_count": 0
+    },
+    {
+      "client": "push-notification-service",
+      "file": "services/push-notification-service.ts",
+      "endpoint_count": 0
+    },
+    {
+      "client": "stockroom-api",
+      "file": "services/stockroom-api.ts",
+      "endpoint_count": 2
+    },
+    {
+      "client": "websocket-events",
+      "file": "services/websocket-events.ts",
+      "endpoint_count": 0
+    },
+    {
+      "client": "websocket-service.test",
+      "file": "services/websocket-service.test.ts",
+      "endpoint_count": 0
+    },
+    {
+      "client": "websocket-service",
+      "file": "services/websocket-service.ts",
+      "endpoint_count": 0
+    }
+  ],
+  "unmatched_cdk_handlers": [],
+  "missing_handler_files": [],
+  "incremental_changes": {
+    "new_pages_added": [
+      "ham/TransfersPage",
+      "ham/LoanerManagementPage",
+      "ham/AuditScanPage",
+      "ham/DisposalPage",
+      "eam/WorkOrdersPage",
+      "eam/MaintenancePlansPage",
+      "eam/LinearAssetsPage",
+      "eam/PartsInventoryPage",
+      "AccessDeniedPage",
+      "NotificationPreferencesPage"
+    ],
+    "new_api_clients_added": [
+      "ham-api",
+      "eam-api",
+      "notification-api"
+    ],
+    "updated_api_clients": [
+      "sam-api (added 7 action endpoints)"
+    ],
+    "new_components_added": [
+      "NotificationBell",
+      "NotificationPanel"
+    ],
+    "new_utilities_added": [
+      "utils/role-mapping.ts",
+      "utils/landing-page.ts",
+      "utils/navigation.ts",
+      "types/roles.ts"
+    ],
+    "updated_components": [
+      "Header.tsx (added NotificationBell)",
+      "ProtectedRoute.tsx (shows AccessDeniedPage)",
+      "Sidebar.tsx (NavItem roles field)",
+      "useAuth.ts (real Cognito role extraction)",
+      "LoginPage.tsx (role-based landing redirect)",
+      "App.tsx (role-filtered navigation)",
+      "routes.tsx (new routes + role arrays)"
+    ]
+  }
+}

@@ -1,0 +1,198 @@
+/* Container */
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  padding: var(--spacing-4);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.count {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+}
+
+/* Attributes List */
+.attributesList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+/* Attribute Row */
+.attributeRow,
+.addRow {
+  display: flex;
+  gap: var(--spacing-2);
+  align-items: center;
+}
+
+/* Inputs */
+.keyInput,
+.valueInput {
+  flex: 1;
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.keyInput {
+  max-width: 180px;
+}
+
+.keyInput:hover:not(:disabled),
+.valueInput:hover:not(:disabled) {
+  border-color: var(--color-neutral-400);
+}
+
+.keyInput:focus,
+.valueInput:focus {
+  outline: none;
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px var(--color-primary-100);
+}
+
+.keyInput:disabled,
+.valueInput:disabled {
+  background-color: var(--color-surface-hover);
+  color: var(--color-text-tertiary);
+  cursor: not-allowed;
+}
+
+.inputError {
+  border-color: var(--color-error-500);
+}
+
+.inputError:focus {
+  border-color: var(--color-error-500);
+  box-shadow: 0 0 0 3px var(--color-error-100);
+}
+
+/* Buttons */
+.removeButton,
+.addButton {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.removeButton {
+  color: var(--color-text-secondary);
+  background-color: transparent;
+}
+
+.removeButton:hover:not(:disabled) {
+  color: var(--color-error-500);
+  background-color: var(--color-error-50);
+}
+
+.removeButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.addButton {
+  color: white;
+  background-color: var(--color-primary-500);
+}
+
+.addButton:hover:not(:disabled) {
+  background-color: var(--color-primary-600);
+}
+
+.addButton:disabled {
+  background-color: var(--color-neutral-300);
+  cursor: not-allowed;
+}
+
+.removeButton svg,
+.addButton svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Add Section */
+.addSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+  padding-top: var(--spacing-2);
+  border-top: 1px dashed var(--color-border);
+}
+
+/* Key Error */
+.keyError {
+  font-size: var(--font-size-sm);
+  color: var(--color-error-500);
+  margin-left: var(--spacing-1);
+}
+
+/* Empty State */
+.emptyState {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+  text-align: center;
+  padding: var(--spacing-4);
+  margin: 0;
+}
+
+/* Max Reached */
+.maxReached {
+  font-size: var(--font-size-sm);
+  color: var(--color-warning-600);
+  text-align: center;
+  padding: var(--spacing-2);
+  margin: 0;
+  background-color: var(--color-warning-50);
+  border-radius: var(--radius-md);
+}
+
+/* Error */
+.error {
+  font-size: var(--font-size-sm);
+  color: var(--color-error-500);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .attributeRow,
+  .addRow {
+    flex-wrap: wrap;
+  }
+
+  .keyInput {
+    max-width: none;
+    flex: 1 1 100%;
+  }
+
+  .valueInput {
+    flex: 1 1 calc(100% - 44px);
+  }
+}

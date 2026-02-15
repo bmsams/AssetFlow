@@ -1,0 +1,299 @@
+/**
+ * EvidenceCapture component styles
+ * Mobile-optimized photo capture interface
+ */
+
+.evidenceCapture {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--color-background, #000000);
+}
+
+/* Preview container */
+.previewContainer {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000000;
+  overflow: hidden;
+}
+
+.video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.capturedImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000000;
+}
+
+.hiddenCanvas {
+  display: none;
+}
+
+/* Mock preview */
+.mockPreview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-tertiary, #9ca3af);
+  text-align: center;
+  padding: var(--spacing-lg, 24px);
+}
+
+.mockPreview svg {
+  width: 64px;
+  height: 64px;
+  margin-bottom: var(--spacing-md, 16px);
+  opacity: 0.5;
+}
+
+.mockPreview p {
+  font-size: 0.875rem;
+}
+
+/* Status overlay */
+.statusOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  text-align: center;
+  padding: var(--spacing-lg, 24px);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: var(--spacing-md, 16px);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.errorIcon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: var(--spacing-md, 16px);
+  color: var(--color-danger, #dc2626);
+}
+
+/* Notes section */
+.notesSection {
+  padding: var(--spacing-md, 16px);
+  background: var(--color-surface, #ffffff);
+}
+
+.notesLabel {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-secondary, #6b7280);
+  margin-bottom: var(--spacing-xs, 8px);
+}
+
+.notesInput {
+  width: 100%;
+  padding: var(--spacing-sm, 12px);
+  font-size: 1rem;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--radius-md, 8px);
+  background: var(--color-surface-secondary, #f9fafb);
+  color: var(--color-text-primary, #111827);
+  resize: none;
+  font-family: inherit;
+}
+
+.notesInput:focus {
+  outline: none;
+  border-color: var(--color-primary, #2563eb);
+  box-shadow: 0 0 0 3px var(--color-primary-light, rgba(37, 99, 235, 0.1));
+}
+
+.notesInput::placeholder {
+  color: var(--color-text-tertiary, #9ca3af);
+}
+
+/* Controls */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-lg, 24px);
+  padding: var(--spacing-lg, 24px);
+  background: var(--color-surface, #ffffff);
+  border-top: 1px solid var(--color-border, #e5e7eb);
+}
+
+/* Capture button */
+.captureButton {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 4px solid var(--color-primary, #2563eb);
+  background: transparent;
+  padding: 4px;
+  cursor: pointer;
+  transition: transform 0.1s, opacity 0.2s;
+}
+
+.captureButton:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+
+.captureButton:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.captureButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.captureButtonInner {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--color-primary, #2563eb);
+  transition: background-color 0.2s;
+}
+
+.captureButton:hover:not(:disabled) .captureButtonInner {
+  background: var(--color-primary-dark, #1d4ed8);
+}
+
+/* Cancel button */
+.cancelButton {
+  position: absolute;
+  left: var(--spacing-md, 16px);
+  padding: var(--spacing-sm, 12px) var(--spacing-md, 16px);
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary, #6b7280);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.cancelButton:hover {
+  color: var(--color-text-primary, #111827);
+}
+
+/* Retake and confirm buttons */
+.retakeButton,
+.confirmButton {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs, 8px);
+  padding: var(--spacing-sm, 12px) var(--spacing-lg, 24px);
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.retakeButton {
+  border: 1px solid var(--color-border, #e5e7eb);
+  background: var(--color-surface, #ffffff);
+  color: var(--color-text-secondary, #6b7280);
+}
+
+.retakeButton:hover {
+  border-color: var(--color-text-secondary, #6b7280);
+  color: var(--color-text-primary, #111827);
+}
+
+.retakeButton svg,
+.confirmButton svg {
+  width: 20px;
+  height: 20px;
+}
+
+.confirmButton {
+  border: none;
+  background: var(--color-success, #059669);
+  color: white;
+}
+
+.confirmButton:hover {
+  background: var(--color-success-dark, #047857);
+}
+
+/* Retry button */
+.retryButton {
+  margin: var(--spacing-md, 16px);
+  padding: var(--spacing-sm, 12px) var(--spacing-lg, 24px);
+  font-size: 1rem;
+  font-weight: 500;
+  border: 1px solid var(--color-primary, #2563eb);
+  border-radius: var(--radius-md, 8px);
+  background: transparent;
+  color: var(--color-primary, #2563eb);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.retryButton:hover {
+  background: var(--color-primary, #2563eb);
+  color: white;
+}
+
+/* Dark mode */
+:global(.dark) .notesSection,
+:global(.dark) .controls {
+  background: var(--color-surface-dark, #1f2937);
+  border-color: var(--color-border-dark, #374151);
+}
+
+:global(.dark) .notesInput {
+  background: var(--color-surface-secondary-dark, #374151);
+  border-color: var(--color-border-dark, #4b5563);
+  color: var(--color-text-primary-dark, #f9fafb);
+}
+
+:global(.dark) .retakeButton {
+  background: var(--color-surface-dark, #1f2937);
+  border-color: var(--color-border-dark, #4b5563);
+  color: var(--color-text-secondary-dark, #9ca3af);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .controls {
+    padding: var(--spacing-md, 16px);
+    gap: var(--spacing-md, 16px);
+  }
+
+  .captureButton {
+    width: 64px;
+    height: 64px;
+  }
+
+  .retakeButton,
+  .confirmButton {
+    padding: var(--spacing-sm, 10px) var(--spacing-md, 16px);
+    font-size: 0.9375rem;
+  }
+}

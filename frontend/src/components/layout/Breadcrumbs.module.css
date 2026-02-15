@@ -1,0 +1,161 @@
+/* Breadcrumbs Navigation Container */
+.breadcrumbs {
+  margin-bottom: var(--spacing-4);
+}
+
+/* Breadcrumb List */
+.breadcrumbList {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-1);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: var(--font-size-sm);
+}
+
+/* Individual Breadcrumb Item */
+.breadcrumbItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  min-width: 0; /* Allow text truncation */
+}
+
+/* Separator between items */
+.breadcrumbSeparator {
+  color: var(--color-text-muted);
+  margin: 0 var(--spacing-1);
+  flex-shrink: 0;
+}
+
+/* Ellipsis for truncated items */
+.breadcrumbEllipsis {
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-medium);
+  padding: 0 var(--spacing-1);
+}
+
+/* Clickable breadcrumb link */
+.breadcrumbLink {
+  color: var(--color-primary-600);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.breadcrumbLink:hover {
+  color: var(--color-primary-700);
+  text-decoration: underline;
+}
+
+.breadcrumbLink:focus {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.breadcrumbLink:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Dark mode link styles */
+[data-theme='dark'] .breadcrumbLink {
+  color: var(--color-primary-400);
+}
+
+[data-theme='dark'] .breadcrumbLink:hover {
+  color: var(--color-primary-300);
+}
+
+/* Current page (non-clickable) */
+.breadcrumbCurrent {
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 250px;
+}
+
+/* Dark mode current page */
+[data-theme='dark'] .breadcrumbCurrent {
+  color: var(--color-text-secondary);
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 767px) {
+  .breadcrumbs {
+    margin-bottom: var(--spacing-3);
+  }
+
+  .breadcrumbList {
+    overflow: hidden;
+    flex-wrap: nowrap;
+  }
+
+  /* Truncate long labels on mobile */
+  .breadcrumbLink {
+    max-width: 100px;
+  }
+
+  .breadcrumbCurrent {
+    max-width: 120px;
+  }
+
+  /* Hide middle items on very small screens when there are many items */
+  .breadcrumbList:has(.breadcrumbItem:nth-child(5)) .breadcrumbItem:not(:first-child):not(:last-child):not(:nth-last-child(2)) {
+    display: none;
+  }
+}
+
+/* Very small screens - more aggressive truncation */
+@media (max-width: 480px) {
+  .breadcrumbLink {
+    max-width: 80px;
+  }
+
+  .breadcrumbCurrent {
+    max-width: 100px;
+  }
+
+  /* Show only first and last items on very small screens with many items */
+  .breadcrumbList:has(.breadcrumbItem:nth-child(4)) .breadcrumbItem:not(:first-child):not(:last-child) {
+    display: none;
+  }
+
+  /* Add ellipsis indicator when items are hidden */
+  .breadcrumbList:has(.breadcrumbItem:nth-child(4)) .breadcrumbItem:first-child::after {
+    content: '…';
+    color: var(--color-text-muted);
+    margin-left: var(--spacing-2);
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .breadcrumbLink {
+    transition: none;
+  }
+}
+
+/* High contrast mode support */
+@media (forced-colors: active) {
+  .breadcrumbLink {
+    text-decoration: underline;
+  }
+
+  .breadcrumbLink:focus {
+    outline: 2px solid CanvasText;
+  }
+
+  .breadcrumbCurrent {
+    font-weight: bold;
+  }
+}

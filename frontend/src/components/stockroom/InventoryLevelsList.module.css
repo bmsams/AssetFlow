@@ -1,0 +1,303 @@
+/* InventoryLevelsList Component Styles */
+.container {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.count {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  background-color: var(--color-primary-100);
+  color: var(--color-primary-700);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-full);
+  font-weight: var(--font-weight-medium);
+}
+
+/* List */
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.item {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.itemButton {
+  width: 100%;
+  padding: var(--spacing-4);
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.itemButton:hover {
+  background-color: var(--color-gray-50);
+}
+
+.itemButton:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: -2px;
+}
+
+/* Item Header */
+.itemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-2);
+}
+
+.stockroomName {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.stockroomType {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  background-color: var(--color-gray-100);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-sm);
+}
+
+/* Item Body */
+.itemBody {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-2);
+}
+
+.location {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.location svg {
+  width: 14px;
+  height: 14px;
+}
+
+.value {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+/* Item Meta */
+.itemMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-3);
+}
+
+.itemCount {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.manager {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* Utilization */
+.utilizationContainer {
+  margin-top: var(--spacing-2);
+}
+
+.utilizationHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-1);
+}
+
+.utilizationLabel {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.utilizationValue {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.progressBar {
+  height: 6px;
+  background-color: var(--color-gray-200);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width var(--transition-normal);
+}
+
+/* View All Button */
+.viewAllButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  width: 100%;
+  padding: var(--spacing-3);
+  background-color: var(--color-gray-50);
+  border: none;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-primary-600);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.viewAllButton:hover {
+  background-color: var(--color-gray-100);
+}
+
+.viewAllButton:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: -2px;
+}
+
+.viewAllButton svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-8);
+  color: var(--color-text-muted);
+}
+
+.emptyIcon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: var(--spacing-3);
+  opacity: 0.5;
+}
+
+.emptyState p {
+  margin: 0;
+  font-size: var(--font-size-sm);
+}
+
+/* Skeleton Loading */
+.skeletonItem {
+  padding: var(--spacing-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.skeletonItem:last-child {
+  border-bottom: none;
+}
+
+.skeletonHeader,
+.skeletonBody,
+.skeletonProgress {
+  background: linear-gradient(90deg, var(--color-gray-200) 25%, var(--color-gray-100) 50%, var(--color-gray-200) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+.skeletonHeader {
+  height: 20px;
+  width: 60%;
+  margin-bottom: var(--spacing-3);
+}
+
+.skeletonBody {
+  height: 16px;
+  width: 80%;
+  margin-bottom: var(--spacing-3);
+}
+
+.skeletonProgress {
+  height: 6px;
+  width: 100%;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Dark mode */
+[data-theme='dark'] .itemButton:hover {
+  background-color: var(--color-gray-800);
+}
+
+[data-theme='dark'] .count {
+  background-color: rgba(59, 130, 246, 0.2);
+  color: var(--color-primary-400);
+}
+
+[data-theme='dark'] .stockroomType {
+  background-color: var(--color-gray-700);
+  color: var(--color-text-secondary);
+}
+
+[data-theme='dark'] .viewAllButton {
+  background-color: var(--color-gray-800);
+}
+
+[data-theme='dark'] .viewAllButton:hover {
+  background-color: var(--color-gray-700);
+}
+
+[data-theme='dark'] .progressBar {
+  background-color: var(--color-gray-700);
+}
+
+[data-theme='dark'] .skeletonHeader,
+[data-theme='dark'] .skeletonBody,
+[data-theme='dark'] .skeletonProgress {
+  background: linear-gradient(90deg, var(--color-gray-700) 25%, var(--color-gray-600) 50%, var(--color-gray-700) 75%);
+  background-size: 200% 100%;
+}

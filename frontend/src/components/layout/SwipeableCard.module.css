@@ -1,0 +1,126 @@
+/* Swipeable Card Container */
+.container {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+}
+
+/* Card Content */
+.card {
+  position: relative;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  transition: transform var(--transition-fast);
+  z-index: 1;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.card.dragging {
+  transition: none;
+}
+
+/* Action Backgrounds */
+.actionBackground {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-4);
+  color: white;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+  opacity: 0.8;
+  transition: opacity var(--transition-fast);
+}
+
+.actionBackground.actionActive {
+  opacity: 1;
+}
+
+/* Left action (revealed when swiping right) */
+.actionLeft {
+  left: 0;
+  right: 50%;
+  justify-content: flex-start;
+}
+
+/* Right action (revealed when swiping left) */
+.actionRight {
+  left: 50%;
+  right: 0;
+  justify-content: flex-end;
+}
+
+/* Action Colors */
+.actionPrimary {
+  background-color: var(--color-primary-600);
+}
+
+.actionSuccess {
+  background-color: var(--color-success-500);
+}
+
+.actionWarning {
+  background-color: var(--color-warning-500);
+}
+
+.actionDanger {
+  background-color: var(--color-error-500);
+}
+
+/* Action Icon */
+.actionIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.actionIcon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Action Label */
+.actionLabel {
+  white-space: nowrap;
+}
+
+/* Touch-friendly sizing */
+.card {
+  min-height: 64px;
+}
+
+/* Focus styles for keyboard navigation */
+.card:focus-visible {
+  outline: 3px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+  
+  .actionBackground {
+    transition: none;
+  }
+}
+
+/* Desktop: Disable swipe, show hover actions instead */
+@media (min-width: 768px) {
+  .card {
+    touch-action: auto;
+  }
+  
+  .actionBackground {
+    display: none;
+  }
+}

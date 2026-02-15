@@ -1,0 +1,112 @@
+/* Layout Container */
+.layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Content Area (next to sidebar) */
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Desktop: Add left margin for sidebar */
+@media (min-width: 768px) {
+  .content {
+    margin-left: 260px;
+  }
+}
+
+/* Main Content */
+.main {
+  flex: 1;
+  padding: var(--spacing-6);
+  background-color: var(--color-background);
+}
+
+/* Responsive padding */
+@media (max-width: 640px) {
+  .main {
+    padding: var(--spacing-4);
+  }
+}
+
+/* Mobile: Add bottom padding for mobile nav */
+@media (max-width: 767px) {
+  .main {
+    padding-bottom: calc(var(--spacing-4) + 64px + env(safe-area-inset-bottom, 0));
+  }
+}
+
+/* More Drawer Navigation Styles */
+.moreNavGroup {
+  margin-bottom: var(--spacing-6);
+}
+
+.moreNavGroup:last-child {
+  margin-bottom: 0;
+}
+
+.moreNavGroupTitle {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  padding: var(--spacing-2) 0;
+  margin-bottom: var(--spacing-2);
+}
+
+.moreNavList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.moreNavLink {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-fast);
+  min-height: 48px;
+}
+
+.moreNavLink:hover {
+  background-color: var(--color-gray-100);
+  color: var(--color-text-primary);
+}
+
+[data-theme='dark'] .moreNavLink:hover {
+  background-color: var(--color-gray-700);
+}
+
+.moreNavLink:active {
+  background-color: var(--color-gray-200);
+}
+
+[data-theme='dark'] .moreNavLink:active {
+  background-color: var(--color-gray-600);
+}
+
+.moreNavIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.moreNavIcon svg {
+  width: 100%;
+  height: 100%;
+}

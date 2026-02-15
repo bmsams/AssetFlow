@@ -1,0 +1,293 @@
+/* Asset Detail Page Container */
+.assetDetailPage {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+/* State Transition Bar */
+.transitionBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-3, 0.75rem);
+  padding: var(--spacing-3, 0.75rem) var(--spacing-4, 1rem);
+  background-color: var(--color-surface, #fff);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--radius-lg, 0.5rem);
+}
+
+.transitionLabel {
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-text-secondary, #6b7280);
+}
+
+.transitionActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2, 0.5rem);
+}
+
+.transitionButton {
+  padding: var(--spacing-1, 0.25rem) var(--spacing-3, 0.75rem);
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-primary-700, #1d4ed8);
+  background-color: var(--color-primary-50, #eff6ff);
+  border: 1px solid var(--color-primary-200, #bfdbfe);
+  border-radius: var(--radius-md, 0.375rem);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: capitalize;
+}
+
+.transitionButton:hover:not(:disabled) {
+  background-color: var(--color-primary-100, #dbeafe);
+  border-color: var(--color-primary-300, #93c5fd);
+}
+
+.transitionButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.transitionError {
+  width: 100%;
+  margin: 0;
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-danger-600, #dc2626);
+}
+
+/* Edit Mode Banner */
+.editModeBanner {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3) var(--spacing-4);
+  background-color: var(--color-warning-50);
+  border: 1px solid var(--color-warning-200);
+  border-radius: var(--radius-lg);
+  color: var(--color-warning-800);
+  font-size: var(--font-size-sm);
+}
+
+.editModeBanner svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.editModeBanner span {
+  flex: 1;
+}
+
+.exitEditButton {
+  padding: var(--spacing-1) var(--spacing-3);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-warning-700);
+  background-color: white;
+  border: 1px solid var(--color-warning-300);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.exitEditButton:hover {
+  background-color: var(--color-warning-100);
+  border-color: var(--color-warning-400);
+}
+
+/* Tabs Container */
+.tabsContainer {
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--spacing-2);
+}
+
+.tabs {
+  display: flex;
+  gap: var(--spacing-1);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+/* Tab Button */
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3) var(--spacing-4);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  margin-bottom: -1px;
+}
+
+.tab:hover:not(:disabled) {
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-hover);
+}
+
+.tab:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tab svg {
+  width: 18px;
+  height: 18px;
+}
+
+.tabActive {
+  color: var(--color-primary-600);
+  border-bottom-color: var(--color-primary-500);
+}
+
+.tabActive:hover {
+  color: var(--color-primary-600);
+}
+
+/* Tab Badge */
+.tabBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 var(--spacing-1);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-tertiary);
+  background-color: var(--color-surface-hover);
+  border-radius: var(--radius-full);
+}
+
+.tabActive .tabBadge {
+  color: var(--color-primary-700);
+  background-color: var(--color-primary-100);
+}
+
+/* Tab Content */
+.tabContent {
+  padding: var(--spacing-2) 0;
+}
+
+/* Error State */
+.errorState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-12) var(--spacing-6);
+  text-align: center;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  margin-top: var(--spacing-8);
+}
+
+.errorIcon {
+  width: 64px;
+  height: 64px;
+  color: var(--color-danger-400);
+  margin-bottom: var(--spacing-4);
+}
+
+.errorTitle {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-2) 0;
+}
+
+.errorMessage {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-6) 0;
+}
+
+.errorActions {
+  display: flex;
+  gap: var(--spacing-3);
+}
+
+.backButton {
+  padding: var(--spacing-2) var(--spacing-4);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.backButton:hover {
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-border-hover);
+}
+
+.retryButton {
+  padding: var(--spacing-2) var(--spacing-4);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: white;
+  background-color: var(--color-primary-500);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.retryButton:hover {
+  background-color: var(--color-primary-600);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .editModeBanner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-2);
+  }
+
+  .exitEditButton {
+    align-self: flex-end;
+  }
+
+  .tab {
+    padding: var(--spacing-2) var(--spacing-3);
+  }
+
+  .tab span {
+    display: none;
+  }
+
+  .tab svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+@media (min-width: 769px) {
+  .tab span {
+    display: inline;
+  }
+}

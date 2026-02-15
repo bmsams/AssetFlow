@@ -1,0 +1,61 @@
+/**
+ * StatusBadge Component Styles
+ * 
+ * Uses CSS custom properties for dynamic colors to support:
+ * - Predefined status variants
+ * - Custom color configurations
+ * - Dark mode theming via CSS variables
+ */
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px; /* Full rounded pill shape */
+  font-weight: var(--font-weight-medium, 500);
+  line-height: 1;
+  white-space: nowrap;
+  text-transform: capitalize;
+  
+  /* Dynamic colors via CSS custom properties */
+  background-color: var(--status-badge-bg);
+  color: var(--status-badge-text);
+  
+  /* Smooth transitions for theme changes */
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Size variants */
+.size-sm {
+  font-size: var(--font-size-xs, 0.75rem);
+  padding: 0.125rem 0.5rem;
+  min-height: 1.25rem;
+}
+
+.size-md {
+  font-size: var(--font-size-sm, 0.875rem);
+  padding: 0.25rem 0.75rem;
+  min-height: 1.5rem;
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .statusBadge {
+    /* Slightly reduce opacity for better dark mode appearance */
+    /* The actual colors are handled by CSS variables in the theme */
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .statusBadge {
+    transition: none;
+  }
+}
+
+/* High contrast mode support */
+@media (forced-colors: active) {
+  .statusBadge {
+    border: 1px solid currentColor;
+  }
+}

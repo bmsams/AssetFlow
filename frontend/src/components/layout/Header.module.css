@@ -1,0 +1,73 @@
+/* Header Container */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  padding: 0 var(--spacing-4);
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+}
+
+/* Desktop: Add left margin for sidebar */
+@media (min-width: 768px) {
+  .header {
+    margin-left: 260px;
+  }
+}
+
+/* Left Section */
+.left {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+/* Menu Button (Mobile Only) */
+.menuButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.menuButton:hover {
+  background-color: var(--color-gray-100);
+}
+
+[data-theme='dark'] .menuButton:hover {
+  background-color: var(--color-gray-700);
+}
+
+/* Hide menu button on desktop */
+@media (min-width: 768px) {
+  .menuButton {
+    display: none;
+  }
+}
+
+/* Title */
+.title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+/* Right Section */
+.right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}

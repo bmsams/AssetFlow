@@ -1,0 +1,239 @@
+/**
+ * TaskCard component styles
+ * Mobile-optimized task card display
+ */
+
+.taskCard {
+  margin-bottom: var(--spacing-sm, 8px);
+}
+
+.cardContent {
+  padding: var(--spacing-md, 16px);
+  background: var(--color-surface, #ffffff);
+  border-radius: var(--radius-md, 8px);
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.1));
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-sm, 8px);
+}
+
+/* Priority badges */
+.priorityBadge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm, 4px);
+  letter-spacing: 0.5px;
+}
+
+.priorityUrgent {
+  background-color: var(--color-danger-light, #fee2e2);
+  color: var(--color-danger, #dc2626);
+}
+
+.priorityHigh {
+  background-color: var(--color-warning-light, #fef3c7);
+  color: var(--color-warning-dark, #d97706);
+}
+
+.priorityMedium {
+  background-color: var(--color-primary-light, #dbeafe);
+  color: var(--color-primary, #2563eb);
+}
+
+.priorityLow {
+  background-color: var(--color-secondary-light, #f3f4f6);
+  color: var(--color-secondary, #6b7280);
+}
+
+/* Status badges */
+.statusBadge {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm, 4px);
+}
+
+.statusPending {
+  background-color: var(--color-warning-light, #fef3c7);
+  color: var(--color-warning-dark, #d97706);
+}
+
+.statusInprogress {
+  background-color: var(--color-primary-light, #dbeafe);
+  color: var(--color-primary, #2563eb);
+}
+
+.statusCompleted {
+  background-color: var(--color-success-light, #d1fae5);
+  color: var(--color-success, #059669);
+}
+
+.statusCancelled {
+  background-color: var(--color-secondary-light, #f3f4f6);
+  color: var(--color-secondary, #6b7280);
+}
+
+/* Title and type */
+.title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #111827);
+  margin: 0 0 4px 0;
+  line-height: 1.4;
+}
+
+.taskType {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary, #6b7280);
+  display: block;
+  margin-bottom: var(--spacing-sm, 8px);
+}
+
+/* Asset info */
+.assetInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs, 4px);
+  margin-bottom: var(--spacing-xs, 4px);
+  padding: var(--spacing-xs, 4px) var(--spacing-sm, 8px);
+  background-color: var(--color-surface-secondary, #f9fafb);
+  border-radius: var(--radius-sm, 4px);
+}
+
+.assetIcon {
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-secondary, #6b7280);
+  flex-shrink: 0;
+}
+
+.assetTag {
+  font-size: 0.8125rem;
+  font-family: var(--font-mono, monospace);
+  color: var(--color-text-secondary, #6b7280);
+}
+
+/* Location info */
+.locationInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs, 4px);
+  margin-bottom: var(--spacing-sm, 8px);
+}
+
+.locationIcon {
+  width: 14px;
+  height: 14px;
+  color: var(--color-text-tertiary, #9ca3af);
+  flex-shrink: 0;
+}
+
+.locationText {
+  font-size: 0.8125rem;
+  color: var(--color-text-tertiary, #9ca3af);
+}
+
+/* Footer */
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--spacing-sm, 8px);
+  padding-top: var(--spacing-sm, 8px);
+  border-top: 1px solid var(--color-border, #e5e7eb);
+}
+
+.dueDate {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs, 4px);
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary, #6b7280);
+}
+
+.dueDate.overdue {
+  color: var(--color-danger, #dc2626);
+  font-weight: 500;
+}
+
+.clockIcon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.duration {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs, 4px);
+  font-size: 0.8125rem;
+  color: var(--color-text-tertiary, #9ca3af);
+}
+
+.durationIcon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+/* Swipe hint */
+.swipeHint {
+  margin-top: var(--spacing-sm, 8px);
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary, #9ca3af);
+  opacity: 0.7;
+}
+
+.swipeRight,
+.swipeLeft {
+  display: inline-block;
+}
+
+/* Dark mode support */
+:global(.dark) .cardContent {
+  background: var(--color-surface-dark, #1f2937);
+  box-shadow: var(--shadow-sm-dark, 0 1px 3px rgba(0, 0, 0, 0.3));
+}
+
+:global(.dark) .title {
+  color: var(--color-text-primary-dark, #f9fafb);
+}
+
+:global(.dark) .taskType,
+:global(.dark) .assetTag,
+:global(.dark) .dueDate,
+:global(.dark) .locationText {
+  color: var(--color-text-secondary-dark, #9ca3af);
+}
+
+:global(.dark) .assetInfo {
+  background-color: var(--color-surface-secondary-dark, #374151);
+}
+
+:global(.dark) .cardFooter {
+  border-top-color: var(--color-border-dark, #374151);
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .cardContent {
+    padding: var(--spacing-sm, 12px);
+  }
+
+  .title {
+    font-size: 0.9375rem;
+  }
+
+  .cardFooter {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs, 4px);
+  }
+}

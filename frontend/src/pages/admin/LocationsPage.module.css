@@ -1,0 +1,214 @@
+/* Tree Structure */
+.tree {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.treeNode {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.treeNode:last-child {
+  border-bottom: none;
+}
+
+.nodeRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3) var(--spacing-4);
+  transition: background-color 0.15s;
+}
+
+.nodeRow:hover {
+  background-color: var(--color-background);
+}
+
+/* Expand/Collapse Button */
+.expandButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.expandButton:hover {
+  background-color: var(--color-gray-100);
+  color: var(--color-text-secondary);
+}
+
+.expandPlaceholder {
+  width: 24px;
+  flex-shrink: 0;
+}
+
+.chevron {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s;
+}
+
+.chevron.expanded {
+  transform: rotate(90deg);
+}
+
+/* Node Icon */
+.nodeIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: var(--color-primary-500);
+  flex-shrink: 0;
+}
+
+.nodeIcon svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Node Label */
+.nodeLabel {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nodeLabel strong {
+  font-family: var(--font-mono);
+  color: var(--color-primary-600);
+}
+
+/* Node Metadata */
+.nodeCount {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  white-space: nowrap;
+}
+
+.nodeType {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  background-color: var(--color-gray-100);
+  padding: 2px var(--spacing-2);
+  border-radius: var(--radius-sm);
+  text-transform: capitalize;
+}
+
+.nodeDetail {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  font-family: var(--font-mono);
+}
+
+/* Node Actions */
+.nodeActions {
+  display: flex;
+  gap: var(--spacing-1);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.nodeRow:hover .nodeActions {
+  opacity: 1;
+}
+
+/* Children Container */
+.children {
+  padding-left: var(--spacing-8);
+  border-top: 1px solid var(--color-border);
+  background-color: color-mix(in srgb, var(--color-background) 50%, transparent);
+}
+
+.emptyChildren {
+  padding: var(--spacing-3) var(--spacing-4);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+}
+
+/* Modal */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--spacing-4);
+}
+
+.modal {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 450px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modalTitle {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+  padding: var(--spacing-4) var(--spacing-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.modalBody {
+  padding: var(--spacing-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-3);
+  padding: var(--spacing-4) var(--spacing-5);
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-background);
+}
+
+/* Skeleton */
+.skeletonRow {
+  padding: var(--spacing-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.skeletonRow:last-child {
+  border-bottom: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .nodeActions {
+    opacity: 1;
+  }
+
+  .children {
+    padding-left: var(--spacing-4);
+  }
+
+  .nodeLabel {
+    max-width: 150px;
+  }
+}
