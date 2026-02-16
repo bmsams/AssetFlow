@@ -2172,8 +2172,9 @@
     },
     {
       "from": "page:ContractsPage",
-      "to": "api:contracts-api",
-      "type": "frontend_uses_api"
+      "to": "pkg:@ams/ui",
+      "type": "frontend_uses_component",
+      "detail": "DataTable"
     },
     {
       "from": "page:DashboardPage",
@@ -2274,6 +2275,12 @@
       "from": "page:admin/UserEditPage",
       "to": "api:admin-api",
       "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:admin/UserEditPage",
+      "to": "pkg:@ams/ui",
+      "type": "frontend_uses_component",
+      "detail": "Form"
     },
     {
       "from": "page:admin/UsersPage",
@@ -2495,7 +2502,19 @@
       "from": "svc:report-service",
       "to": "sns:asset-events",
       "type": "publishes_events"
+    },
+    {
+      "from": "frontend",
+      "to": "pkg:@ams/ui",
+      "type": "workspace_dependency",
+      "detail": "workspace:* — active, exports: DataTable, Form, MonoText, StatusBadge, DropdownMenu, MetricCard, Card, Tabs, SplitPanel, KPIBanner, ActivityFeed, DetailHeader, LifecycleTimeline, PageTransition, Header, Sidebar, CommandPalette, AppShell"
+    },
+    {
+      "from": "component:MainLayout",
+      "to": "pkg:@ams/ui",
+      "type": "frontend_uses_component",
+      "detail": "PageTransition (from @ams/ui/layouts)"
     }
   ],
-  "node_count": 143
+  "node_count": 145
 }

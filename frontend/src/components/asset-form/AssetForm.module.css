@@ -170,3 +170,72 @@
   color: var(--color-error, #dc2626);
   font-size: var(--font-size-sm);
 }
+
+/* Textarea (for fields not supported by Form.Input) */
+.textarea {
+  width: 100%;
+  padding: var(--spacing-2, 0.5rem) var(--spacing-3, 0.75rem);
+  font-size: var(--font-size-sm, 0.875rem);
+  font-family: var(--font-family-sans);
+  color: var(--color-text-primary, #111827);
+  background-color: var(--surface-card, #ffffff);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--radius-md, 0.375rem);
+  resize: vertical;
+  min-height: 80px;
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.textarea::placeholder {
+  color: var(--color-text-muted, #9ca3af);
+}
+
+.textarea:hover:not(:disabled) {
+  border-color: var(--color-border-hover, #d1d5db);
+}
+
+.textarea:focus {
+  border-color: var(--color-border-focus, #0EA5E9);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+}
+
+.textarea:disabled {
+  background-color: var(--color-gray-50, #f9fafb);
+  color: var(--color-text-muted, #9ca3af);
+  cursor: not-allowed;
+}
+
+.textareaError {
+  border-color: var(--color-error-500, #ef4444);
+}
+
+.textareaError:focus {
+  border-color: var(--color-error-500, #ef4444);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Checkbox (for fields not supported by Form.Input) */
+.checkboxContainer {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2, 0.5rem);
+  cursor: pointer;
+}
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-primary-500, #0EA5E9);
+  cursor: pointer;
+}
+
+.checkbox:disabled {
+  cursor: not-allowed;
+}
+
+.checkboxLabel {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-primary, #111827);
+  cursor: pointer;
+}

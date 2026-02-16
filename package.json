@@ -2,6 +2,11 @@
   "name": "ams",
   "private": true,
   "workspaces": ["packages/*", "frontend"],
+  "scripts": {
+    "e2e": "npx playwright test -c e2e/playwright.config.ts",
+    "e2e:ui": "npx playwright test -c e2e/playwright.config.ts --ui",
+    "e2e:report": "npx playwright show-report output/playwright/report"
+  },
   "devDependencies": {
     "playwright": "^1.58.2"
   }

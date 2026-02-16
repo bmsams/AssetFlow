@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { PageLayout } from '../components/layout/PageLayout';
 import { ErrorMessage } from '../components/ui/ErrorMessage';
 import { EmptyState } from '../components/ui/EmptyState';
+import { DataTable } from '@ams/ui';
 import { getContracts } from '../services/contracts-api';
 import type { Contract } from '../services/contracts-api';
 import styles from './Page.module.css';
@@ -48,12 +49,6 @@ export function ContractsPage() {
           />
         )}
 
-        {isLoading && (
-          <div aria-live="polite" aria-busy="true">
-            <p>Loading contracts...</p>
-          </div>
-        )}
-
         {!isLoading && !error && contracts.length === 0 && (
           <EmptyState
             title="No contracts found"
@@ -61,33 +56,59 @@ export function ContractsPage() {
           />
         )}
 
-        {!isLoading && !error && contracts.length > 0 && (
-          <table className={styles.dataTable || ''} role="table" aria-label="Contracts list">
-            <thead>
-              <tr>
-                <th scope="col">Contract #</th>
-                <th scope="col">Vendor</th>
-                <th scope="col">Type</th>
-                <th scope="col">Status</th>
-                <th scope="col">Start Date</th>
-                <th scope="col">End Date</th>
-                <th scope="col">Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              {contracts.map((contract) => (
-                <tr key={contract.contractId}>
-                  <td>{contract.contractNumber}</td>
-                  <td>{contract.vendorName ?? contract.vendorId}</td>
-                  <td>{contract.contractType}</td>
-                  <td>{contract.status}</td>
-                  <td>{new Date(contract.startDate).toLocaleDateString()}</td>
-                  <td>{new Date(contract.endDate).toLocaleDateString()}</td>
-                  <td>${contract.totalValue.toLocaleString()}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        {(isLoading || (!error && contracts.length > 0)) && (
+          <DataTable data={contracts} keyField="contractId" loading={isLoading}>
+            <DataTable.Toolbar>
+              <DataTable.Search placeholder="Search contracts..." />
+            </DataTable.Toolbar>
+            <DataTable.Column
+              id="contractNumber"
+              header="Contract #"
+              accessor="contractNumber"
+              sortable
+            />
+            <DataTable.Column
+              id="vendor"
+              header="Vendor"
+              accessor="vendorName"
+              sortable
+              render={(val: string | null, row: Contract) => val ?? row.vendorId}
+            />
+            <DataTable.Column
+              id="contractType"
+              header="Type"
+              accessor="contractType"
+              sortable
+            />
+            <DataTable.Column
+              id="status"
+              header="Status"
+              accessor="status"
+              sortable
+            />
+            <DataTable.Column
+              id="startDate"
+              header="Start Date"
+              accessor="startDate"
+              sortable
+              render={(val: string) => new Date(val).toLocaleDateString()}
+            />
+            <DataTable.Column
+              id="endDate"
+              header="End Date"
+              accessor="endDate"
+              sortable
+              render={(val: string) => new Date(val).toLocaleDateString()}
+            />
+            <DataTable.Column
+              id="totalValue"
+              header="Value"
+              accessor="totalValue"
+              sortable
+              render={(val: number) => `$${val.toLocaleString()}`}
+            />
+            <DataTable.Pagination showTotal />
+          </DataTable>
         )}
       </div>
     </PageLayout>

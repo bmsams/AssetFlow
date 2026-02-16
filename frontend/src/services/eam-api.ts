@@ -259,7 +259,7 @@ export async function updateMaintenancePlan(planId: string, data: UpdateMaintena
 }
 
 export async function checkDueMaintenance(): Promise<MaintenancePlan[]> {
-  const response = await apiClient.get<MaintenancePlan[]>('/eam/maintenance-plans/due');
+  const response = await apiClient.get<MaintenancePlan[]>('/eam/maintenance-plans/check-due');
   if (!response.success || !response.data) {
     throw new ApiError(
       response.error?.code || 'FETCH_FAILED',
@@ -345,7 +345,7 @@ export async function updateSegment(linearAssetId: string, segmentId: string, da
 // ============================================================================
 
 export async function checkPartLevels(): Promise<PartLevel[]> {
-  const response = await apiClient.get<PartLevel[]>('/eam/parts');
+  const response = await apiClient.get<PartLevel[]>('/eam/parts/levels');
   if (!response.success || !response.data) {
     throw new ApiError(
       response.error?.code || 'FETCH_FAILED',

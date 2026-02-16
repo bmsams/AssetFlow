@@ -170,7 +170,7 @@ export async function getLicenseWorkbenchSummary(): Promise<LicenseWorkbenchSumm
  */
 export async function runReconciliation(): Promise<ReconciliationResult> {
   const response = await apiClient.post<ReconciliationResult>(
-    '/sam/reconciliation/run'
+    '/reconciliation/run'
   );
 
   if (!response.success || !response.data) {
@@ -190,7 +190,7 @@ export async function runReconciliation(): Promise<ReconciliationResult> {
  */
 export async function initiateReclamation(): Promise<ReclamationResult> {
   const response = await apiClient.post<ReclamationResult>(
-    '/sam/reclamation/initiate'
+    '/reclamation/initiate'
   );
 
   if (!response.success || !response.data) {
@@ -210,7 +210,7 @@ export async function initiateReclamation(): Promise<ReclamationResult> {
  */
 export async function analyzeShadowIt(): Promise<ShadowItReport> {
   const response = await apiClient.post<ShadowItReport>(
-    '/sam/shadow-it/analyze'
+    '/shadow-it/analyze'
   );
 
   if (!response.success || !response.data) {
@@ -230,7 +230,7 @@ export async function analyzeShadowIt(): Promise<ShadowItReport> {
  */
 export async function generateComplianceReport(): Promise<ComplianceReport> {
   const response = await apiClient.post<ComplianceReport>(
-    '/sam/compliance/report'
+    '/reconciliation/compliance-report'
   );
 
   if (!response.success || !response.data) {
@@ -250,7 +250,7 @@ export async function generateComplianceReport(): Promise<ComplianceReport> {
  */
 export async function syncSaasUsage(): Promise<SyncResult> {
   const response = await apiClient.post<SyncResult>(
-    '/sam/saas/sync'
+    '/saas/sync-usage'
   );
 
   if (!response.success || !response.data) {
@@ -270,7 +270,7 @@ export async function syncSaasUsage(): Promise<SyncResult> {
  */
 export async function applyPublisherRules(): Promise<RulesResult> {
   const response = await apiClient.post<RulesResult>(
-    '/sam/publisher-rules/apply'
+    '/publisher-packs/apply'
   );
 
   if (!response.success || !response.data) {
@@ -290,7 +290,7 @@ export async function applyPublisherRules(): Promise<RulesResult> {
  */
 export async function getUnusedSubscriptions(): Promise<UnusedSubscription[]> {
   const response = await apiClient.get<UnusedSubscription[]>(
-    '/sam/subscriptions/unused'
+    '/reclamation/unused-subscriptions'
   );
 
   if (!response.success || !response.data) {

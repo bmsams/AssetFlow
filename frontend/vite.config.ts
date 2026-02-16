@@ -16,12 +16,14 @@ export default defineConfig({
       '@/services': fileURLToPath(new URL('./src/services', import.meta.url)),
       '@/styles': fileURLToPath(new URL('./src/styles', import.meta.url)),
       '@ams/ui/tour': fileURLToPath(new URL('../packages/ui/src/tour/index.ts', import.meta.url)),
+      '@ams/ui/layouts': fileURLToPath(new URL('../packages/ui/src/layouts/index.ts', import.meta.url)),
       '@ams/ui': fileURLToPath(new URL('../packages/ui/src/index.ts', import.meta.url)),
     },
   },
   server: {
     port: 3000,
-    open: true,
+    // Avoid popping a real browser when Playwright boots the dev server.
+    open: process.env.E2E !== '1',
   },
   build: {
     outDir: 'dist',

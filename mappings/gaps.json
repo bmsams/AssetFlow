@@ -642,7 +642,16 @@
       "notification-api"
     ],
     "updated_api_clients": [
-      "sam-api (added 7 action endpoints)"
+      "sam-api (fixed 7 endpoint path mismatches: /sam/* → correct CDK paths)",
+      "eam-api (fixed /eam/maintenance-plans/due → /eam/maintenance-plans/check-due, /eam/parts → /eam/parts/levels)",
+      "ham-api (fixed /ham/audit-scans → /ham/audits/scan, /ham/disposals → /ham/disposal, etc.)",
+      "notification-api (fixed PATCH→POST /notifications/{id}/read, GET/PATCH prefs → GET/PUT /users/{userId}/notification-preferences)"
+    ],
+    "cdk_routes_added": [
+      "GET /ham/transfers (was POST only)",
+      "GET /ham/loaners (new route)",
+      "GET /ham/disposal (was POST only)",
+      "GET /eam/linear-assets (was POST only)"
     ],
     "new_components_added": [
       "NotificationBell",
@@ -662,6 +671,12 @@
       "LoginPage.tsx (role-based landing redirect)",
       "App.tsx (role-filtered navigation)",
       "routes.tsx (new routes + role arrays)"
+    ],
+    "new_packages_added": [
+      "@ams/ui (active — components: DataTable, Form, MonoText, StatusBadge, DropdownMenu, MetricCard, Card, Tabs, SplitPanel, KPIBanner, ActivityFeed, DetailHeader, LifecycleTimeline; layouts: PageTransition, Header, Sidebar, CommandPalette, AppShell)"
+    ],
+    "new_workspace_dependencies": [
+      "frontend → @ams/ui (workspace:*)"
     ]
   }
 }

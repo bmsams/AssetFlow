@@ -9,6 +9,7 @@
  */
 
 import { apiClient, ApiError } from './api-client';
+import { getCurrentUser } from './auth-service';
 
 // ============================================================================
 // Types
@@ -58,7 +59,7 @@ export async function getNotificationHistory(): Promise<Notification[]> {
  * Mark a notification as read
  */
 export async function markNotificationRead(notificationId: string): Promise<void> {
-  const response = await apiClient.patch<void>(
+  const response = await apiClient.post<void>(
     `/notifications/${notificationId}/read`
   );
 
@@ -76,8 +77,10 @@ export async function markNotificationRead(notificationId: string): Promise<void
  * Get notification preferences for the current user
  */
 export async function getPreferences(): Promise<NotificationPreferences> {
+  const user = getCurrentUser();
+  const userId = user?.sub || 'me';
   const response = await apiClient.get<NotificationPreferences>(
-    '/notifications/preferences'
+    `/users/${userId}/notification-preferences`
   );
 
   if (!response.success || !response.data) {
@@ -98,8 +101,10 @@ export async function getPreferences(): Promise<NotificationPreferences> {
 export async function updatePreferences(
   prefs: Partial<NotificationPreferences>
 ): Promise<NotificationPreferences> {
-  const response = await apiClient.patch<NotificationPreferences>(
-    '/notifications/preferences',
+  const user = getCurrentUser();
+  const userId = user?.sub || 'me';
+  const response = await apiClient.put<NotificationPreferences>(
+    `/users/${userId}/notification-preferences`,
     prefs
   );
 

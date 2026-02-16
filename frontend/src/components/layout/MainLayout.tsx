@@ -1,5 +1,6 @@
 import { useState, useCallback, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import { PageTransition } from '@ams/ui/layouts';
 import { Sidebar, type NavGroup } from './Sidebar';
 import { Header } from './Header';
 import { MobileNav, type MobileNavItem } from './MobileNav';
@@ -73,7 +74,7 @@ export function MainLayout({
         <Header title={title} onMenuClick={handleMenuClick} />
 
         <main id="main-content" className={styles.main}>
-          {children}
+          <PageTransition>{children}</PageTransition>
         </main>
       </div>
 

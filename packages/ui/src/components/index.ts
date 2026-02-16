@@ -14,3 +14,6 @@ export type { FormProps, FormSectionProps, FormFieldProps, FormInputProps, FormS
 
 export { KPIBanner, type KPIBannerProps, type KPIItem } from './kpi-banner/KPIBanner';
 export { ActivityFeed, type ActivityFeedProps, type ActivityItem } from './activity-feed/ActivityFeed';
+
+export { DetailHeader, type DetailHeaderProps } from './detail-header/DetailHeader';
+export { LifecycleTimeline, type LifecycleTimelineProps, type LifecycleStep } from './lifecycle-timeline/LifecycleTimeline';

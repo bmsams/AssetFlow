@@ -574,6 +574,12 @@
     ],
     "cdk_routes": [
       {
+        "path": "/ham/loaners",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
         "path": "/ham/loaners/checkout",
         "methods": [
           "POST"
@@ -680,6 +686,7 @@
       {
         "path": "/ham/transfers",
         "methods": [
+          "GET",
           "POST"
         ]
       }
@@ -888,6 +895,7 @@
       {
         "path": "/ham/disposal",
         "methods": [
+          "GET",
           "POST"
         ]
       }
@@ -2034,6 +2042,7 @@
       {
         "path": "/eam/linear-assets",
         "methods": [
+          "GET",
           "POST"
         ]
       }
@@ -6828,8 +6837,10 @@
     "api_calls": [],
     "routes": [],
     "imported_clients": [
-      "contracts-api",
       "contracts-api"
+    ],
+    "ui_components": [
+      "@ams/ui:DataTable"
     ]
   },
   "frontend/DashboardPage.test": {
@@ -7123,6 +7134,9 @@
     ],
     "imported_clients": [
       "admin-api"
+    ],
+    "ui_components": [
+      "@ams/ui:Form"
     ]
   },
   "frontend/admin/UsersPage": {

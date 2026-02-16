@@ -222,7 +222,7 @@ export async function getOverdueLoans(): Promise<LoanerRecord[]> {
 // ============================================================================
 
 export async function recordAuditScan(data: RecordScanRequest): Promise<AuditScan> {
-  const response = await apiClient.post<AuditScan>('/ham/audit-scans', data);
+  const response = await apiClient.post<AuditScan>('/ham/audits/scan', data);
   if (!response.success || !response.data) {
     throw new ApiError(
       response.error?.code || 'SCAN_FAILED',
@@ -235,7 +235,7 @@ export async function recordAuditScan(data: RecordScanRequest): Promise<AuditSca
 }
 
 export async function getAuditDiscrepancies(): Promise<AuditDiscrepancy[]> {
-  const response = await apiClient.get<AuditDiscrepancy[]>('/ham/audit-scans/discrepancies');
+  const response = await apiClient.get<AuditDiscrepancy[]>('/ham/audits/discrepancies');
   if (!response.success || !response.data) {
     throw new ApiError(
       response.error?.code || 'FETCH_FAILED',
@@ -253,7 +253,7 @@ export async function getAuditDiscrepancies(): Promise<AuditDiscrepancy[]> {
 
 export async function listDisposals(status?: string): Promise<DisposalRequest[]> {
   const query = status ? `?status=${status}` : '';
-  const response = await apiClient.get<DisposalRequest[]>(`/ham/disposals${query}`);
+  const response = await apiClient.get<DisposalRequest[]>(`/ham/disposal${query}`);
   if (!response.success || !response.data) {
     throw new ApiError(
       response.error?.code || 'FETCH_FAILED',
@@ -266,7 +266,7 @@ export async function listDisposals(status?: string): Promise<DisposalRequest[]>
 }
 
 export async function initiateDisposal(data: InitiateDisposalRequest): Promise<DisposalRequest> {
-  const response = await apiClient.post<DisposalRequest>('/ham/disposals', data);
+  const response = await apiClient.post<DisposalRequest>('/ham/disposal', data);
   if (!response.success || !response.data) {
     throw new ApiError(
       response.error?.code || 'CREATE_FAILED',
@@ -279,7 +279,7 @@ export async function initiateDisposal(data: InitiateDisposalRequest): Promise<D
 }
 
 export async function recordDestruction(disposalId: string): Promise<DisposalRequest> {
-  const response = await apiClient.post<DisposalRequest>(`/ham/disposals/${disposalId}/destroy`);
+  const response = await apiClient.post<DisposalRequest>(`/ham/disposal/${disposalId}/destruction`);
   if (!response.success || !response.data) {
     throw new ApiError(
       response.error?.code || 'DESTROY_FAILED',

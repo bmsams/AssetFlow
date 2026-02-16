@@ -12,6 +12,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { getNotificationHistory, markNotificationRead } from '../../services/notification-api';
 import type { Notification } from '../../services/notification-api';
 import { NotificationPanel } from './NotificationPanel';
+import { useAuth } from '../../hooks/useAuth';
 import styles from './NotificationBell.module.css';
 
 const POLL_INTERVAL_MS = 30_000; // 30 seconds
@@ -20,24 +21,27 @@ export function NotificationBell() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const { isAuthenticated } = useAuth();
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const fetchNotifications = useCallback(async () => {
+    if (!isAuthenticated) return;
     try {
       const data = await getNotificationHistory();
       setNotifications(data);
     } catch {
       // Silently fail — bell just shows stale count
     }
-  }, []);
+  }, [isAuthenticated]);
 
-  // Initial fetch + polling for Requirement 9.5
+  // Initial fetch + polling for Requirement 9.5 — only when authenticated
   useEffect(() => {
+    if (!isAuthenticated) return;
     fetchNotifications();
     const interval = setInterval(fetchNotifications, POLL_INTERVAL_MS);
     return () => clearInterval(interval);
-  }, [fetchNotifications]);
+  }, [fetchNotifications, isAuthenticated]);
 
   // Close panel on outside click
   useEffect(() => {

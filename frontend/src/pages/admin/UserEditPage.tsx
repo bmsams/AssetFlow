@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
+import { Form } from '@ams/ui';
 import { adminApi } from '../../services/admin-api';
 import type { Department, UserDetails, UpdateUserRequest } from '../../types/admin';
 import styles from './AdminPage.module.css';
@@ -8,6 +9,8 @@ import styles from './AdminPage.module.css';
  * User Edit Page
  * Allows updating firstName, lastName, departmentId, and managerId.
  * Department selector populated from adminApi (Requirement 9.3).
+ *
+ * Migrated to use Form compound component from @ams/ui.
  */
 export function UserEditPage() {
   const navigate = useNavigate();
@@ -19,13 +22,12 @@ export function UserEditPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [formData, setFormData] = useState({
+  const [initialValues, setInitialValues] = useState({
     firstName: '',
     lastName: '',
     departmentId: '',
     managerId: '',
   });
-  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   // Load departments from adminApi for the Department selector (Requirement 9.3)
   useEffect(() => {
@@ -48,7 +50,7 @@ export function UserEditPage() {
       setIsLoading(true);
       setError(null);
       const user = await adminApi.users.get(userId);
-      setFormData({
+      setInitialValues({
         firstName: user.firstName || '',
         lastName: user.lastName || '',
         departmentId: user.departmentId || '',
@@ -65,25 +67,23 @@ export function UserEditPage() {
     loadUser();
   }, [loadUser]);
 
-  const validateForm = () => {
+  const validateForm = useCallback((values: Record<string, any>): Record<string, string> => {
     const errors: Record<string, string> = {};
-    if (!formData.firstName.trim()) errors.firstName = 'First name is required';
-    if (!formData.lastName.trim()) errors.lastName = 'Last name is required';
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
+    if (!values.firstName?.trim()) errors.firstName = 'First name is required';
+    if (!values.lastName?.trim()) errors.lastName = 'Last name is required';
+    return errors;
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validateForm() || !userId) return;
+  const handleSubmit = useCallback(async (values: Record<string, any>) => {
+    if (!userId) return;
     try {
       setIsSaving(true);
       setError(null);
       const data: UpdateUserRequest = {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        departmentId: formData.departmentId || undefined,
-        managerId: formData.managerId || undefined,
+        firstName: values.firstName,
+        lastName: values.lastName,
+        departmentId: values.departmentId || undefined,
+        managerId: values.managerId || undefined,
       };
       await adminApi.users.update(userId, data);
       navigate('/admin/users');
@@ -92,7 +92,17 @@ export function UserEditPage() {
     } finally {
       setIsSaving(false);
     }
-  };
+  }, [userId, navigate]);
+
+  const departmentOptions = departments.map(d => ({
+    value: d.departmentId,
+    label: d.name,
+  }));
+
+  const managerOptions = users.map(u => ({
+    value: u.userId,
+    label: u.firstName && u.lastName ? `${u.firstName} ${u.lastName}` : u.email,
+  }));
 
   if (isLoading) {
     return (
@@ -114,68 +124,45 @@ export function UserEditPage() {
       </div>
       {error && <div className={styles.errorBanner}><p>{error}</p></div>}
       <div className={styles.formContainer}>
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.formSection}>
-            <div className={styles.formGrid}>
-              <div className={styles.formGroup}>
-                <label className={`${styles.formLabel} ${styles.required}`}>First Name</label>
-                <input
-                  type="text"
-                  value={formData.firstName}
-                  onChange={(e) => setFormData(p => ({ ...p, firstName: e.target.value }))}
-                  className={`${styles.formInput} ${formErrors.firstName ? styles.error : ''}`}
-                />
-                {formErrors.firstName && <span className={styles.formError}>{formErrors.firstName}</span>}
-              </div>
-              <div className={styles.formGroup}>
-                <label className={`${styles.formLabel} ${styles.required}`}>Last Name</label>
-                <input
-                  type="text"
-                  value={formData.lastName}
-                  onChange={(e) => setFormData(p => ({ ...p, lastName: e.target.value }))}
-                  className={`${styles.formInput} ${formErrors.lastName ? styles.error : ''}`}
-                />
-                {formErrors.lastName && <span className={styles.formError}>{formErrors.lastName}</span>}
-              </div>
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel}>Department</label>
-                <select
-                  value={formData.departmentId}
-                  onChange={(e) => setFormData(p => ({ ...p, departmentId: e.target.value }))}
-                  className={styles.formSelect}
-                >
-                  <option value="">None</option>
-                  {departments.map(d => (
-                    <option key={d.departmentId} value={d.departmentId}>{d.name}</option>
-                  ))}
-                </select>
-              </div>
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel}>Manager</label>
-                <select
-                  value={formData.managerId}
-                  onChange={(e) => setFormData(p => ({ ...p, managerId: e.target.value }))}
-                  className={styles.formSelect}
-                >
-                  <option value="">None</option>
-                  {users.map(u => (
-                    <option key={u.userId} value={u.userId}>
-                      {u.firstName && u.lastName ? `${u.firstName} ${u.lastName}` : u.email}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </div>
-          <div className={styles.formActions}>
-            <button type="button" className={styles.secondaryButton} onClick={() => navigate('/admin/users')} disabled={isSaving}>
-              Cancel
-            </button>
-            <button type="submit" className={styles.primaryButton} disabled={isSaving}>
-              {isSaving ? 'Saving...' : 'Save'}
-            </button>
-          </div>
-        </form>
+        <Form
+          initialValues={initialValues}
+          onSubmit={handleSubmit}
+          validate={validateForm}
+          className={styles.form}
+        >
+          <Form.Section title="User Details" columns={2}>
+            <Form.Field name="firstName" label="First Name" required>
+              <Form.Input name="firstName" placeholder="Enter first name" disabled={isSaving} />
+            </Form.Field>
+            <Form.Field name="lastName" label="Last Name" required>
+              <Form.Input name="lastName" placeholder="Enter last name" disabled={isSaving} />
+            </Form.Field>
+            <Form.Field name="departmentId" label="Department">
+              <Form.Select
+                name="departmentId"
+                options={departmentOptions}
+                placeholder="None"
+                disabled={isSaving}
+              />
+            </Form.Field>
+            <Form.Field name="managerId" label="Manager">
+              <Form.Select
+                name="managerId"
+                options={managerOptions}
+                placeholder="None"
+                disabled={isSaving}
+              />
+            </Form.Field>
+          </Form.Section>
+          <Form.Actions>
+            <Form.Submit
+              label={isSaving ? 'Saving...' : 'Save'}
+              cancelLabel="Cancel"
+              onCancel={() => navigate('/admin/users')}
+              disableUntilDirty
+            />
+          </Form.Actions>
+        </Form>
       </div>
     </div>
   );
