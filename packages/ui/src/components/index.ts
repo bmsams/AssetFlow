@@ -11,3 +11,5 @@ export { DataTable } from './data-table';
 export { Form } from './form';
 export { useFormContext } from './form';
 export type { FormProps, FormSectionProps, FormFieldProps, FormInputProps, FormSelectProps, FormComboboxProps, FormDynamicFieldsProps, FormActionsProps, FormSubmitProps, FormContextValue } from './form';
+
+export { KPIBanner, type KPIBannerProps, type KPIItem } from './kpi-banner/KPIBanner';
