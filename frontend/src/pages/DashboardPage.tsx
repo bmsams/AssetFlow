@@ -23,6 +23,7 @@ import type { WidgetConfig } from '../types/widget';
 import { formatCurrency, formatNumber } from '../types/dashboard';
 import { BREADCRUMB_CONFIGS } from '../types/layout';
 import styles from './DashboardPage.module.css';
+import { useTour, type TourStep } from '@ams/ui/tour';
 
 /**
  * Asset Estate Dashboard Page
@@ -36,6 +37,14 @@ import styles from './DashboardPage.module.css';
  * - Drill-down navigation from summary metrics to detailed records
  */
 export function DashboardPage() {
+  // Tour definitions
+  const dashboardSteps: TourStep[] = [
+    { target: '[data-tour="kpi-strip"]', title: 'KPI Overview', content: 'See your key metrics at a glance with real-time data and trends.' },
+    { target: '[data-tour="widget-grid"]', title: 'Dashboard Widgets', content: 'Your customizable dashboard. Drag and drop widgets to rearrange.' },
+    { target: '[data-tour="quick-actions"]', title: 'Quick Actions', content: 'Common tasks like creating assets or purchase orders.' },
+  ];
+  useTour('dashboard', dashboardSteps);
+
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState<AssetEstateSummary | null>(null);
@@ -251,7 +260,7 @@ export function DashboardPage() {
 
   // Custom header actions for dashboard
   const headerActions = (
-    <>
+    <div data-tour="quick-actions">
       <DashboardCustomizer
         isEditing={isEditing}
         onToggleEdit={handleToggleEdit}
@@ -261,7 +270,7 @@ export function DashboardPage() {
         onAddWidget={addWidget}
         existingWidgetIds={existingWidgetIds}
       />
-    </>
+    </div>
   );
 
   // If there's an error, show error message with retry button
@@ -298,9 +307,11 @@ export function DashboardPage() {
       lastUpdated={data ? new Date() : undefined}
       maxWidth="xl"
     >
+      {/* KPI Overview */}
+      <section data-tour="kpi-strip" aria-label="Key performance indicators">
       {/* Customizable Widget Grid */}
       <div 
-        className={`${styles.widgetGrid} ${isEditing ? styles.editMode : ''}`}
+        className={`${styles.widgetGrid} ${isEditing ? styles.editMode : ''}`} data-tour="widget-grid"
         role="region"
         aria-label="Dashboard widgets"
       >
@@ -318,6 +329,7 @@ export function DashboardPage() {
           </WidgetContainer>
         ))}
       </div>
+      </section>
 
       {/* Empty state when no widgets */}
       {visibleWidgets.length === 0 && (

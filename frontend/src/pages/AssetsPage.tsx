@@ -21,6 +21,7 @@ import { assetApi } from '../services/asset-api';
 import type { Asset, AssetType, AssetStatus } from '../types/asset';
 import { BREADCRUMB_CONFIGS } from '../types/layout';
 import styles from './AssetsPage.module.css';
+import { useTour, type TourStep } from '@ams/ui/tour';
 
 const DEFAULT_COLUMNS: ColumnConfig[] = [
   { id: 'assetTag', label: 'Asset Tag', visible: true, sortable: true },
@@ -112,6 +113,15 @@ const filterValuesToAssetFilters = (values: FilterValues): AssetFiltersState => 
  * - Bulk actions support
  */
 export function AssetsPage() {
+  // Tour definitions
+  const assetsSteps: TourStep[] = [
+    { target: '[data-tour="search"]', title: 'Search Assets', content: 'Search by name, asset tag, serial number, or any field.' },
+    { target: '[data-tour="filters"]', title: 'Smart Filters', content: 'Filter by status, category, department, or location.' },
+    { target: '[data-tour="create-asset"]', title: 'Create Asset', content: 'Add a new asset to the system.' },
+    { target: '[data-tour="bulk-actions"]', title: 'Bulk Actions', content: 'Select multiple assets to perform batch operations.' },
+  ];
+  useTour('assets', assetsSteps);
+
   const navigate = useNavigate();
 
   // Data state
@@ -360,7 +370,7 @@ export function AssetsPage() {
             onColumnsChange={handleColumnsChange}
             disabled={isLoading}
           />
-          <button type="button" className={styles.createButton} title="Create a new asset" onClick={() => navigate('/assets/new')}>
+          <button type="button" className={styles.createButton} title="Create a new asset" data-tour="create-asset" onClick={() => navigate('/assets/new')}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <line x1="12" y1="5" x2="12" y2="19" />
               <line x1="5" y1="12" x2="19" y2="12" />
@@ -372,7 +382,8 @@ export function AssetsPage() {
     >
 
       {/* Filters */}
-      <section aria-label="Asset filters">
+      <div data-tour="filters">
+      <section aria-label="Asset filters" data-tour="search">
         <FilterToolbar
           filters={FILTER_CONFIGS}
           filterValues={assetFiltersToFilterValues(filters)}
@@ -381,10 +392,11 @@ export function AssetsPage() {
           onClearFilters={() => setFilters({ search: '', types: [], statuses: [] })}
         />
       </section>
+      </div>
 
       {/* Bulk Actions */}
       {selectedAssets.length > 0 && (
-        <section aria-label="Bulk actions">
+        <section aria-label="Bulk actions" data-tour="bulk-actions">
           <BulkActions
             selectedAssets={selectedAssets}
             onDelete={handleDelete}

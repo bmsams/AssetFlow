@@ -15,6 +15,8 @@ export default defineConfig({
       '@/types': fileURLToPath(new URL('./src/types', import.meta.url)),
       '@/services': fileURLToPath(new URL('./src/services', import.meta.url)),
       '@/styles': fileURLToPath(new URL('./src/styles', import.meta.url)),
+      '@ams/ui/tour': fileURLToPath(new URL('../packages/ui/src/tour/index.ts', import.meta.url)),
+      '@ams/ui': fileURLToPath(new URL('../packages/ui/src/index.ts', import.meta.url)),
     },
   },
   server: {

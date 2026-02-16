@@ -1,12 +1,21 @@
 import { Link } from 'react-router-dom';
 import { AVAILABLE_REPORTS } from '../../types/report';
 import styles from './ReportsPage.module.css';
+import { useTour, type TourStep } from '@ams/ui/tour';
 
 /**
  * Reports Page - Report Selection Dashboard
  * Implements Task 18.1.1: Create ReportsPage.tsx with report selection
  */
 export function ReportsPage() {
+  // Tour definitions
+  const reportsSteps: TourStep[] = [
+    { target: '[data-tour="report-list"]', title: 'Reports', content: 'Choose from pre-built reports or create custom ones.' },
+    { target: '[data-tour="report-filters"]', title: 'Report Filters', content: 'Customize date ranges and report parameters.' },
+    { target: '[data-tour="export"]', title: 'Export', content: 'Export reports to CSV or PDF.' },
+  ];
+  useTour('reports', reportsSteps);
+
   const assetReports = AVAILABLE_REPORTS.filter((r) => r.category === 'asset');
   const financialReports = AVAILABLE_REPORTS.filter((r) => r.category === 'financial');
   const operationalReports = AVAILABLE_REPORTS.filter((r) => r.category === 'operational');
@@ -109,7 +118,7 @@ export function ReportsPage() {
         <span className={styles.breadcrumbCurrent}>Reports</span>
       </nav>
 
-      <div className={styles.pageHeader}>
+      <div className={styles.pageHeader} data-tour="report-filters">
         <h1 className={styles.pageTitle}>Reports</h1>
         <p className={styles.pageDescription}>
           Generate and view asset management reports and analytics
@@ -117,7 +126,7 @@ export function ReportsPage() {
       </div>
 
       {/* Asset Inventory Reports */}
-      <section className={styles.categorySection}>
+      <section className={styles.categorySection} data-tour="report-list">
         <h2 className={styles.categoryTitle}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={styles.categoryIcon}>
             <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
@@ -132,7 +141,7 @@ export function ReportsPage() {
       </section>
 
       {/* Financial Reports */}
-      <section className={styles.categorySection}>
+      <section className={styles.categorySection} data-tour="export">
         <h2 className={styles.categoryTitle}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={styles.categoryIcon}>
             <line x1="12" y1="1" x2="12" y2="23" />

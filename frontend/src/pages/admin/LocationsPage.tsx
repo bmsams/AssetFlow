@@ -16,6 +16,7 @@ import { useToast } from '../../components/ui';
 import type { Building, Floor, Room, Rack } from '../../types/admin';
 import styles from './AdminPage.module.css';
 import locationStyles from './LocationsPage.module.css';
+import { useTour, type TourStep } from '@ams/ui/tour';
 
 /**
  * Unified Locations Management Page
@@ -40,6 +41,13 @@ interface ModalState {
 }
 
 export function LocationsPage() {
+  // Tour definitions
+  const locationsSteps: TourStep[] = [
+    { target: '[data-tour="location-list"]', title: 'Locations', content: "Manage your organization's physical locations." },
+    { target: '[data-tour="add-location"]', title: 'Add Location', content: 'Create a new location for asset tracking.' },
+  ];
+  useTour('admin-locations', locationsSteps);
+
   const { success, error: showError } = useToast();
 
   const [buildings, setBuildings] = useState<Building[]>([]);
@@ -677,6 +685,7 @@ export function LocationsPage() {
       className={styles.primaryButton}
       onClick={() => openModal('building')}
       aria-label="Add new building"
+      data-tour="add-location"
     >
       <AddIcon /> Add Building
     </button>
@@ -751,7 +760,7 @@ export function LocationsPage() {
           }
         />
       ) : (
-        <div className={locationStyles.tree} role="tree" aria-label="Location hierarchy">
+        <div className={locationStyles.tree} role="tree" aria-label="Location hierarchy" data-tour="location-list">
           {buildings.map(building => (
             <div key={building.buildingId} className={locationStyles.treeNode} role="treeitem" aria-expanded={expanded.buildings.has(building.buildingId)}>
               {/* Building Row */}

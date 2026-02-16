@@ -18,6 +18,7 @@ import type {
 import { formatCurrency } from '../types/dashboard';
 import { BREADCRUMB_CONFIGS } from '../types/layout';
 import styles from './ProcurementPage.module.css';
+import { useTour, type TourStep } from '@ams/ui/tour';
 
 /**
  * Procurement Workspace Page
@@ -27,6 +28,14 @@ import styles from './ProcurementPage.module.css';
  * - Implement request approval interface
  */
 export function ProcurementPage() {
+  // Tour definitions
+  const procurementSteps: TourStep[] = [
+    { target: '[data-tour="po-list"]', title: 'Purchase Orders', content: 'View and manage all purchase orders.' },
+    { target: '[data-tour="create-po"]', title: 'Create PO', content: 'Create a new purchase order.' },
+    { target: '[data-tour="po-status"]', title: 'Order Status', content: 'Track order status from draft to received.' },
+  ];
+  useTour('procurement', procurementSteps);
+
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState<ProcurementSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -171,6 +180,16 @@ export function ProcurementPage() {
       breadcrumbs={[...BREADCRUMB_CONFIGS.PROCUREMENT, { label: 'Workspace' }]}
       lastUpdated={!isLoading && data ? new Date() : undefined}
       maxWidth="xl"
+      headerActions={
+        <button type="button" data-tour="create-po" style={{
+          display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+          padding: '0.5rem 1rem', backgroundColor: 'var(--color-primary-500, #3b82f6)',
+          color: 'white', border: 'none', borderRadius: '0.375rem', cursor: 'pointer',
+          fontSize: '0.875rem', fontWeight: 500,
+        }}>
+          Create PO
+        </button>
+      }
     >
       {/* Error Banner */}
       {error && (
@@ -194,7 +213,7 @@ export function ProcurementPage() {
       )}
 
       {/* Summary Stats */}
-      <section className={styles.statsSection} aria-label="Procurement summary statistics">
+      <section className={styles.statsSection} aria-label="Procurement summary statistics" data-tour="po-status">
         <div className={styles.statsGrid}>
           <StatCard
             label="Pending Requests"
@@ -269,7 +288,7 @@ export function ProcurementPage() {
         </section>
 
         {/* Purchase Orders */}
-        <section className={styles.purchaseOrdersSection} aria-label="Purchase orders">
+        <section className={styles.purchaseOrdersSection} aria-label="Purchase orders" data-tour="po-list">
           <PurchaseOrdersList
             purchaseOrders={data?.purchaseOrders ?? []}
             title="Purchase Orders"

@@ -32,7 +32,9 @@
       "@/utils/*": ["src/utils/*"],
       "@/types/*": ["src/types/*"],
       "@/services/*": ["src/services/*"],
-      "@/styles/*": ["src/styles/*"]
+      "@/styles/*": ["src/styles/*"],
+      "@ams/ui": ["../packages/ui/src/index.ts"],
+      "@ams/ui/*": ["../packages/ui/src/*"]
     }
   },
   "include": ["src"],

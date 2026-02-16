@@ -191,7 +191,9 @@ export function AssetDetailPage({
 
   return (
     <div className={styles.assetDetailPage}>
-      <AssetHeader asset={asset} onBack={handleBack} onEdit={handleEdit} isLoading={isLoading} />
+      <div data-tour="asset-header">
+        <AssetHeader asset={asset} onBack={handleBack} onEdit={handleEdit} isLoading={isLoading} />
+      </div>
 
       {VALID_TRANSITIONS[asset.status]?.length > 0 && (
         <div className={styles.transitionBar}>
@@ -213,7 +215,7 @@ export function AssetDetailPage({
         </div>
       )}
 
-      <div className={styles.tabsContainer}>
+      <div className={styles.tabsContainer} data-tour="asset-tabs">
         <div className={styles.tabs} role="tablist" aria-label="Asset sections">
           {tabs.map((tab) => (
             <button

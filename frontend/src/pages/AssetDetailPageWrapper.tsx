@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { AssetDetailPage } from '../components/asset-detail';
 import styles from './Page.module.css';
+import { useTour, type TourStep } from '@ams/ui/tour';
 
 /**
  * AssetDetailPageWrapper - Wrapper component for AssetDetailPage
@@ -12,6 +13,14 @@ import styles from './Page.module.css';
  * - 2.5: Display audit history
  */
 export function AssetDetailPageWrapper() {
+  // Tour definitions
+  const detailSteps: TourStep[] = [
+    { target: '[data-tour="asset-header"]', title: 'Asset Overview', content: 'Key details about this asset including status and category.' },
+    { target: '[data-tour="asset-tabs"]', title: 'Detail Tabs', content: 'Switch between details, history, attachments, and related items.' },
+    { target: '[data-tour="asset-actions"]', title: 'Actions', content: 'Edit, clone, check out, or retire this asset.' },
+  ];
+  useTour('asset-detail', detailSteps);
+
   const { assetId } = useParams<{ assetId: string }>();
   const navigate = useNavigate();
 
@@ -42,7 +51,7 @@ export function AssetDetailPageWrapper() {
 
   return (
     <div className={styles.page}>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 'var(--spacing-4, 1rem)' }}>
+      <div data-tour="asset-actions" style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 'var(--spacing-4, 1rem)' }}>
         <button
           type="button"
           onClick={handleEdit}
