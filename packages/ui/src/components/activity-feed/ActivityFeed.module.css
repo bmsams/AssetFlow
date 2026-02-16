@@ -1,0 +1,100 @@
+.feed {
+  overflow-y: auto;
+  border: 1px solid var(--color-gray-200, #E2E8F0);
+  border-radius: var(--radius-lg, 12px);
+  background: var(--surface-card, #FFFFFF);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-3, 0.75rem);
+  padding: var(--spacing-3, 0.75rem) var(--spacing-4, 1rem);
+  border-bottom: 1px solid var(--color-gray-100, #F1F5F9);
+  transition: background var(--transition-fast, 150ms);
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.item:hover {
+  background: var(--color-gray-50, #F8FAFC);
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.iconWrapper {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+}
+
+.description {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-primary, #1E293B);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2, 0.5rem);
+  margin-top: var(--spacing-1, 0.25rem);
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-muted, #94A3B8);
+}
+
+.userName {
+  font-weight: var(--font-weight-medium, 500);
+}
+
+.avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-accent-100, #b2ebf2);
+  color: var(--color-accent-700, #0e7490);
+  font-size: 10px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.empty {
+  padding: var(--spacing-8, 2rem);
+  text-align: center;
+  color: var(--color-text-muted, #94A3B8);
+  font-size: var(--font-size-sm, 0.875rem);
+}
+
+/* Icon color variants */
+.iconCreated { background: #DCFCE7; color: #16A34A; }
+.iconUpdated { background: #DBEAFE; color: #2563EB; }
+.iconDeleted { background: #FEE2E2; color: #DC2626; }
+.iconAssigned { background: #EDE9FE; color: #7C3AED; }
+.iconTransferred { background: #FFEDD5; color: #EA580C; }
+.iconComment { background: #F1F5F9; color: #64748B; }
+.iconStatusChange { background: #E0F7FA; color: #0891B2; }
+.iconCheckout { background: #FEF3C7; color: #D97706; }
+.iconCheckin { background: #D1FAE5; color: #059669; }

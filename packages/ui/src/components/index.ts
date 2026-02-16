@@ -13,3 +13,4 @@ export { useFormContext } from './form';
 export type { FormProps, FormSectionProps, FormFieldProps, FormInputProps, FormSelectProps, FormComboboxProps, FormDynamicFieldsProps, FormActionsProps, FormSubmitProps, FormContextValue } from './form';
 
 export { KPIBanner, type KPIBannerProps, type KPIItem } from './kpi-banner/KPIBanner';
+export { ActivityFeed, type ActivityFeedProps, type ActivityItem } from './activity-feed/ActivityFeed';
