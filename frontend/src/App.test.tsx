@@ -1,7 +1,25 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { App } from './App';
+
+// Mock useAuth to return an authenticated admin user
+vi.mock('./hooks/useAuth', () => ({
+  useAuth: () => ({
+    user: {
+      userId: 'test-user',
+      email: 'admin@test.com',
+      name: 'Test Admin',
+      roles: ['admin'],
+    },
+    isAuthenticated: true,
+    isLoading: false,
+    login: vi.fn(),
+    logout: vi.fn(),
+    hasRole: () => true,
+    hasAnyRole: () => true,
+  }),
+}));
 
 // Helper to get the main sidebar navigation
 const getSidebarNav = () => screen.getByRole('navigation', { name: /main navigation/i });
@@ -85,7 +103,7 @@ describe('App', () => {
     const sidebar = getSidebarNav();
     await user.click(within(sidebar).getByRole('link', { name: /stockrooms/i }));
 
-    // The page title is "Stockroom Dashboard"
+    // The page title is 'Stockroom Dashboard'
     expect(screen.getByRole('heading', { name: /stockroom dashboard/i })).toBeInTheDocument();
   });
 
@@ -108,7 +126,7 @@ describe('App', () => {
     const sidebar = getSidebarNav();
     await user.click(within(sidebar).getByRole('link', { name: /reports/i }));
 
-    // The page has an h1 with "Reports" as the page title
+    // The page has an h1 with 'Reports' as the page title
     expect(screen.getByRole('heading', { level: 1, name: /reports/i })).toBeInTheDocument();
   });
 

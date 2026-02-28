@@ -1,0 +1,21 @@
+{
+  "name": "migration-runner",
+  "version": "1.0.0",
+  "description": "Lambda function to run database migrations and seed data",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@ams/seed-data": "file:../../packages/seed-data",
+    "@aws-sdk/client-secrets-manager": "^3.400.0",
+    "pg": "^8.11.3"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.119",
+    "@types/node": "^18.17.0",
+    "@types/pg": "^8.10.2",
+    "typescript": "^5.3.3"
+  }
+}

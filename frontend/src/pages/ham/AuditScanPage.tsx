@@ -1,49 +1,31 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { PageLayout } from '../../components/layout/PageLayout';
 import { ErrorMessage } from '../../components/ui/ErrorMessage';
 import { EmptyState } from '../../components/ui/EmptyState';
 import {
   recordAuditScan,
-  getAuditDiscrepancies,
-  type AuditDiscrepancy,
+  type AuditScan,
 } from '../../services/ham-api';
 import styles from '../Page.module.css';
 
 export function AuditScanPage() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [discrepancies, setDiscrepancies] = useState<AuditDiscrepancy[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [assetTag, setAssetTag] = useState('');
   const [locationId, setLocationId] = useState('');
   const [scanResult, setScanResult] = useState<string | null>(null);
-
-  const fetchDiscrepancies = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const result = await getAuditDiscrepancies();
-      setDiscrepancies(result);
-    } catch {
-      setError('Failed to load discrepancies. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchDiscrepancies();
-  }, [fetchDiscrepancies]);
+  const [recentScans, setRecentScans] = useState<AuditScan[]>([]);
 
   const handleScan = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!assetTag.trim() || !locationId.trim()) return;
     try {
       setScanResult(null);
+      setError(null);
       const scan = await recordAuditScan({ assetTag: assetTag.trim(), locationId: locationId.trim() });
       setScanResult(scan.matched ? 'Match confirmed' : 'Mismatch detected');
+      setRecentScans((prev) => [scan, ...prev]);
       setAssetTag('');
       setLocationId('');
-      await fetchDiscrepancies();
     } catch {
       setError('Failed to record scan. Please try again.');
     }
@@ -95,44 +77,37 @@ export function AuditScanPage() {
             message={error}
             type="error"
             variant="inline"
-            recoveryOptions={[{ label: 'Retry', action: fetchDiscrepancies }]}
           />
         )}
 
-        <h2 style={{ fontSize: 'var(--font-size-lg)', marginBottom: 'var(--spacing-3)' }}>Discrepancies</h2>
+        <h2 style={{ fontSize: 'var(--font-size-lg)', marginBottom: 'var(--spacing-3)' }}>Recent Scans</h2>
 
-        {isLoading && (
-          <div aria-live="polite" aria-busy="true">
-            <p>Loading discrepancies...</p>
-          </div>
-        )}
-
-        {!isLoading && !error && discrepancies.length === 0 && (
+        {recentScans.length === 0 && (
           <EmptyState
-            title="No discrepancies"
-            description="All scanned assets match their expected locations."
+            title="No scans recorded"
+            description="Use the form above to scan an asset tag and verify its location."
           />
         )}
 
-        {!isLoading && !error && discrepancies.length > 0 && (
-          <table className={styles.dataTable || ''} role="table" aria-label="Audit discrepancies">
+        {recentScans.length > 0 && (
+          <table className={styles.dataTable || ''} role="table" aria-label="Recent audit scans">
             <thead>
               <tr>
                 <th scope="col">Asset Tag</th>
-                <th scope="col">Expected Location</th>
-                <th scope="col">Actual Location</th>
-                <th scope="col">Type</th>
-                <th scope="col">Resolved</th>
+                <th scope="col">Location</th>
+                <th scope="col">Scanned By</th>
+                <th scope="col">Scanned At</th>
+                <th scope="col">Result</th>
               </tr>
             </thead>
             <tbody>
-              {discrepancies.map((d) => (
-                <tr key={d.discrepancyId}>
-                  <td>{d.assetTag}</td>
-                  <td>{d.expectedLocationName}</td>
-                  <td>{d.actualLocationName ?? '—'}</td>
-                  <td>{d.type}</td>
-                  <td>{d.resolvedAt ? new Date(d.resolvedAt).toLocaleDateString() : 'Unresolved'}</td>
+              {recentScans.map((s) => (
+                <tr key={s.scanId}>
+                  <td>{s.assetTag}</td>
+                  <td>{s.locationName}</td>
+                  <td>{s.scannedBy}</td>
+                  <td>{new Date(s.scannedAt).toLocaleString()}</td>
+                  <td>{s.matched ? 'Matched' : 'Mismatch'}</td>
                 </tr>
               ))}
             </tbody>

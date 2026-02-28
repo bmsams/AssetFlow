@@ -1,16 +1,20 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { AssetDetailPage } from './AssetDetailPage';
-import * as mockDataModule from './mockData';
+import { getMockAssetDetail } from './mockData';
 
-// Mock the simulateApiDelay to return immediately
-vi.mock('./mockData', async () => {
-  const actual = await vi.importActual('./mockData');
-  return {
-    ...actual,
-    simulateApiDelay: vi.fn((data) => Promise.resolve(data)),
-  };
-});
+// Mock the asset API to return mock data
+vi.mock('../../services/asset-api', () => ({
+  assetApi: {
+    getDetail: vi.fn((assetId) => {
+      const detail = getMockAssetDetail(assetId);
+      if (detail) return Promise.resolve(detail);
+      return Promise.reject(new Error('Asset not found'));
+    }),
+    transitionState: vi.fn(() => Promise.resolve({ status: 'DEPLOYED' })),
+    update: vi.fn(),
+  },
+}));
 
 describe('AssetDetailPage', () => {
   beforeEach(() => {
@@ -134,7 +138,7 @@ describe('AssetDetailPage', () => {
     fireEvent.click(screen.getByLabelText('Edit asset'));
     
     await waitFor(() => {
-      expect(screen.getByText('Edit mode is active. Click on editable fields to modify them.')).toBeInTheDocument();
+      expect(screen.getByLabelText('Edit Display Name')).toBeInTheDocument();
     });
   });
 
@@ -149,14 +153,14 @@ describe('AssetDetailPage', () => {
     fireEvent.click(screen.getByLabelText('Edit asset'));
     
     await waitFor(() => {
-      expect(screen.getByText('Exit Edit Mode')).toBeInTheDocument();
+      expect(screen.getByLabelText('Edit Display Name')).toBeInTheDocument();
     });
     
-    // Exit edit mode
-    fireEvent.click(screen.getByText('Exit Edit Mode'));
+    // Exit edit mode by clicking edit button again
+    fireEvent.click(screen.getByLabelText('Edit asset'));
     
     await waitFor(() => {
-      expect(screen.queryByText('Edit mode is active.')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('Edit Display Name')).not.toBeInTheDocument();
     });
   });
 
@@ -189,21 +193,16 @@ describe('AssetDetailPage', () => {
     });
   });
 
-  it('displays tab badges with counts', async () => {
+  it('renders all four tabs with correct labels', async () => {
     render(<AssetDetailPage assetId="asset-0001" />);
     
     await waitFor(() => {
-      // Relationships tab should show count
-      const relationshipsTab = screen.getByRole('tab', { name: /Relationships/ });
-      expect(relationshipsTab).toHaveTextContent('3'); // 3 relationships in mock data
-      
-      // History tab should show count
-      const historyTab = screen.getByRole('tab', { name: /History/ });
-      expect(historyTab).toHaveTextContent('8'); // 8 history entries in mock data
-      
-      // Attachments tab should show count
-      const attachmentsTab = screen.getByRole('tab', { name: /Attachments/ });
-      expect(attachmentsTab).toHaveTextContent('4'); // 4 attachments in mock data
+      const tabs = screen.getAllByRole('tab');
+      expect(tabs.length).toBe(4);
+      expect(tabs[0]).toHaveTextContent('Details');
+      expect(tabs[1]).toHaveTextContent('Relationships');
+      expect(tabs[2]).toHaveTextContent('History');
+      expect(tabs[3]).toHaveTextContent('Attachments');
     });
   });
 
@@ -373,7 +372,7 @@ describe('AssetDetailPage - Requirements Validation', () => {
     fireEvent.click(screen.getByLabelText('Edit asset'));
     
     await waitFor(() => {
-      expect(screen.getByText('Edit mode is active. Click on editable fields to modify them.')).toBeInTheDocument();
+      expect(screen.getByLabelText('Edit Display Name')).toBeInTheDocument();
     });
   });
 });

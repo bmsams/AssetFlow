@@ -23,9 +23,13 @@ export type PurchaseOrderStatus =
   | 'APPROVED'
   | 'REJECTED'
   | 'SENT'
+  | 'ACKNOWLEDGED'
   | 'PARTIALLY_RECEIVED'
   | 'RECEIVED'
   | 'CLOSED'
+  | 'INVOICED'
+  | 'PAID'
+  | 'ON_HOLD'
   | 'CANCELLED';
 
 /**
@@ -155,12 +159,20 @@ export function getPurchaseOrderStatusColor(status: PurchaseOrderStatus): string
       return 'var(--color-error-500)';
     case 'SENT':
       return 'var(--color-info-500)';
+    case 'ACKNOWLEDGED':
+      return 'var(--color-info-500)';
     case 'PARTIALLY_RECEIVED':
       return 'var(--color-warning-500)';
     case 'RECEIVED':
       return 'var(--color-success-500)';
     case 'CLOSED':
       return 'var(--color-success-500)';
+    case 'INVOICED':
+      return 'var(--color-primary-500)';
+    case 'PAID':
+      return 'var(--color-success-500)';
+    case 'ON_HOLD':
+      return 'var(--color-warning-500)';
     case 'CANCELLED':
       return 'var(--color-error-500)';
     default:

@@ -1,0 +1,25 @@
+{
+  "name": "@ams/api-integration",
+  "version": "1.0.0",
+  "description": "Integration tests for AMS services",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo 'No build required for integration tests'",
+    "test": "jest --config=jest.config.js",
+    "test:watch": "jest --config=jest.config.js --watch",
+    "test:integration": "jest --config=jest.config.js --testMatch=\"**/__tests__/**/*.integration.ts\""
+  },
+  "dependencies": {
+    "@ams/types": "1.0.0",
+    "@ams/database": "1.0.0",
+    "@ams/cache": "1.0.0",
+    "@ams/events": "1.0.0",
+    "@ams/utils": "1.0.0",
+    "@ams/admin-service": "1.0.0",
+    "@ams/ham-service": "1.0.0",
+    "@ams/procurement-service": "1.0.0",
+    "@ams/lifecycle-service": "1.0.0",
+    "@ams/report-service": "1.0.0",
+    "@ams/eam-service": "1.0.0"
+  }
+}

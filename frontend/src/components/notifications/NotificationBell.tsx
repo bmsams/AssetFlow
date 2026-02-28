@@ -16,12 +16,16 @@ import { useAuth } from '../../hooks/useAuth';
 import styles from './NotificationBell.module.css';
 
 const POLL_INTERVAL_MS = 30_000; // 30 seconds
+const MAX_POLL_INTERVAL_MS = 300_000; // 5 minutes max backoff
+const MAX_CONSECUTIVE_ERRORS = 5;
 
 export function NotificationBell() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const { isAuthenticated } = useAuth();
+  const consecutiveErrors = useRef(0);
+  const currentInterval = useRef(POLL_INTERVAL_MS);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
@@ -30,17 +34,38 @@ export function NotificationBell() {
     try {
       const data = await getNotificationHistory();
       setNotifications(data);
+      // Reset backoff on success
+      consecutiveErrors.current = 0;
+      currentInterval.current = POLL_INTERVAL_MS;
     } catch {
-      // Silently fail — bell just shows stale count
+      // Exponential backoff: stop polling after too many consecutive failures
+      consecutiveErrors.current += 1;
+      if (consecutiveErrors.current <= MAX_CONSECUTIVE_ERRORS) {
+        currentInterval.current = Math.min(
+          POLL_INTERVAL_MS * Math.pow(2, consecutiveErrors.current),
+          MAX_POLL_INTERVAL_MS
+        );
+      }
     }
   }, [isAuthenticated]);
 
-  // Initial fetch + polling for Requirement 9.5 — only when authenticated
+  // Initial fetch + adaptive polling for Requirement 9.5
   useEffect(() => {
     if (!isAuthenticated) return;
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, POLL_INTERVAL_MS);
-    return () => clearInterval(interval);
+
+    let timeoutId: ReturnType<typeof setTimeout>;
+    function schedulePoll() {
+      // Stop polling entirely after too many consecutive errors
+      if (consecutiveErrors.current > MAX_CONSECUTIVE_ERRORS) return;
+      timeoutId = setTimeout(async () => {
+        await fetchNotifications();
+        schedulePoll();
+      }, currentInterval.current);
+    }
+    schedulePoll();
+
+    return () => clearTimeout(timeoutId);
   }, [fetchNotifications, isAuthenticated]);
 
   // Close panel on outside click

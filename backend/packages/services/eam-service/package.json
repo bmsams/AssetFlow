@@ -1,0 +1,30 @@
+{
+  "name": "@ams/eam-service",
+  "version": "1.0.0",
+  "description": "Enterprise Asset Management Service for Asset Management System",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "esbuild src/handlers/*.ts --bundle --platform=node --target=node18 --outdir=dist/handlers --external:@aws-sdk/*",
+    "clean": "rm -rf dist",
+    "test": "jest",
+    "test:unit": "jest --testPathPattern=unit",
+    "test:property": "jest --testPathPattern=property",
+    "typecheck": "tsc --noEmit"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@ams/types": "1.0.0",
+    "@ams/utils": "1.0.0",
+    "@ams/database": "1.0.0",
+    "@ams/cache": "1.0.0",
+    "@ams/events": "1.0.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.131",
+    "esbuild": "^0.19.11",
+    "typescript": "^5.3.3"
+  }
+}

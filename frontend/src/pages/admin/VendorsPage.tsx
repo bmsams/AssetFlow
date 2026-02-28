@@ -269,7 +269,7 @@ export function VendorsPage() {
                     <td><span className={`${styles.statusBadge} ${v.isActive ? styles.statusActive : styles.statusInactive}`}>{v.isActive ? 'Active' : 'Inactive'}</span></td>
                     <td>
                       <div className={styles.actionButtons}>
-                        <button type="button" className={styles.iconButton} onClick={(e) => {e.stopPropagation(); navigate(`/admin/vendors/${v.vendorId}/edit`);}} title="Edit" aria-label={`Edit ${v.vendorName}`}>
+                        <button type="button" className={styles.iconButton} onClick={(e) => {e.stopPropagation(); navigate(`/admin/vendors/${v.vendorId}`);}} title="Edit" aria-label={`Edit ${v.vendorName}`}>
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                         </button>
                         {v.isActive && <button type="button" className={`${styles.iconButton} ${styles.dangerButton}`} onClick={(e) => handleDeactivate(v, e)} title="Deactivate" aria-label={`Deactivate ${v.vendorName}`}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></button>}

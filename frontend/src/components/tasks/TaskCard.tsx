@@ -74,8 +74,8 @@ export function TaskCard({
   const formatDueDate = (dateString: string): string => {
     const date = new Date(dateString);
     const now = new Date();
-    const diffMs = date.getTime() - now.getTime();
-    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startOfDue = new Date(date.getFullYear(), date.getMonth(), date.getDate()); const diffDays = Math.round((startOfDue.getTime() - startOfToday.getTime()) / (1000 * 60 * 60 * 24));
     
     if (diffDays < 0) {
       return `${Math.abs(diffDays)} day${Math.abs(diffDays) !== 1 ? 's' : ''} overdue`;

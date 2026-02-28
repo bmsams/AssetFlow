@@ -37,6 +37,8 @@ interface AssetFilters {
   type?: AssetType;
   departmentId?: string;
   assignedTo?: string;
+  buildingId?: string;
+  building?: string;
   search?: string;
 }
 
@@ -303,6 +305,8 @@ export async function listAssets(
     status: filters?.status,
     assignedTo: filters?.assignedTo,
     stockroomId: (filters as { stockroomId?: string } | undefined)?.stockroomId,
+    buildingId: filters?.buildingId,
+    building: filters?.building,
     page: pagination?.page ?? 1,
     limit: pagination?.pageSize ?? 20,
     sortBy: pagination?.sortBy,
@@ -399,6 +403,8 @@ export async function searchAssets(
     status: filters?.status,
     assignedTo: filters?.assignedTo,
     stockroomId: (filters as { stockroomId?: string } | undefined)?.stockroomId,
+    buildingId: filters?.buildingId,
+    building: filters?.building,
     page: pagination?.page ?? 1,
     limit: pagination?.pageSize ?? 20,
     sortBy: pagination?.sortBy,

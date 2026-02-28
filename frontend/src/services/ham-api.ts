@@ -40,7 +40,7 @@ export interface LoanerRecord {
   checkoutDate: string;
   expectedReturnDate: string;
   actualReturnDate?: string;
-  status: 'active' | 'overdue' | 'returned';
+  status: 'CHECKED_OUT' | 'RETURNED' | 'RETURNED_LATE' | 'RETURNED_DAMAGED' | 'OVERDUE' | 'LOST' | 'CANCELLED';
   notes?: string;
 }
 
@@ -109,7 +109,7 @@ export interface InitiateDisposalRequest {
 
 export async function listTransfers(status?: string): Promise<TransferOrder[]> {
   const query = status ? `?status=${status}` : '';
-  const response = await apiClient.get<TransferOrder[]>(`/ham/transfers${query}`);
+  const response = await apiClient.get<TransferOrder[] | { items: TransferOrder[] }>(`/ham/transfers${query}`);
   if (!response.success || !response.data) {
     throw new ApiError(
       response.error?.code || 'FETCH_FAILED',
@@ -118,7 +118,8 @@ export async function listTransfers(status?: string): Promise<TransferOrder[]> {
       response.requestId
     );
   }
-  return response.data;
+  const data = response.data;
+  return Array.isArray(data) ? data : data.items ?? [];
 }
 
 export async function createTransfer(data: CreateTransferRequest): Promise<TransferOrder> {
@@ -166,7 +167,7 @@ export async function completeTransfer(transferId: string): Promise<TransferOrde
 
 export async function listLoaners(status?: string): Promise<LoanerRecord[]> {
   const query = status ? `?status=${status}` : '';
-  const response = await apiClient.get<LoanerRecord[]>(`/ham/loaners${query}`);
+  const response = await apiClient.get<LoanerRecord[] | { items: LoanerRecord[] }>(`/ham/loaners${query}`);
   if (!response.success || !response.data) {
     throw new ApiError(
       response.error?.code || 'FETCH_FAILED',
@@ -175,7 +176,8 @@ export async function listLoaners(status?: string): Promise<LoanerRecord[]> {
       response.requestId
     );
   }
-  return response.data;
+  const data = response.data;
+  return Array.isArray(data) ? data : data.items ?? [];
 }
 
 export async function checkoutLoaner(data: CheckoutLoanerRequest): Promise<LoanerRecord> {
@@ -205,7 +207,7 @@ export async function returnLoaner(loanId: string): Promise<LoanerRecord> {
 }
 
 export async function getOverdueLoans(): Promise<LoanerRecord[]> {
-  const response = await apiClient.get<LoanerRecord[]>('/ham/loaners/overdue');
+  const response = await apiClient.get<LoanerRecord[] | { items: LoanerRecord[] }>('/ham/loaners/overdue');
   if (!response.success || !response.data) {
     throw new ApiError(
       response.error?.code || 'FETCH_FAILED',
@@ -214,7 +216,8 @@ export async function getOverdueLoans(): Promise<LoanerRecord[]> {
       response.requestId
     );
   }
-  return response.data;
+  const data = response.data;
+  return Array.isArray(data) ? data : data.items ?? [];
 }
 
 // ============================================================================
@@ -235,7 +238,7 @@ export async function recordAuditScan(data: RecordScanRequest): Promise<AuditSca
 }
 
 export async function getAuditDiscrepancies(): Promise<AuditDiscrepancy[]> {
-  const response = await apiClient.get<AuditDiscrepancy[]>('/ham/audits/discrepancies');
+  const response = await apiClient.get<AuditDiscrepancy[] | { items: AuditDiscrepancy[] }>('/ham/audits/discrepancies');
   if (!response.success || !response.data) {
     throw new ApiError(
       response.error?.code || 'FETCH_FAILED',
@@ -244,7 +247,8 @@ export async function getAuditDiscrepancies(): Promise<AuditDiscrepancy[]> {
       response.requestId
     );
   }
-  return response.data;
+  const data = response.data;
+  return Array.isArray(data) ? data : data.items ?? [];
 }
 
 // ============================================================================
@@ -253,7 +257,7 @@ export async function getAuditDiscrepancies(): Promise<AuditDiscrepancy[]> {
 
 export async function listDisposals(status?: string): Promise<DisposalRequest[]> {
   const query = status ? `?status=${status}` : '';
-  const response = await apiClient.get<DisposalRequest[]>(`/ham/disposal${query}`);
+  const response = await apiClient.get<DisposalRequest[] | { items: DisposalRequest[] }>(`/ham/disposal${query}`);
   if (!response.success || !response.data) {
     throw new ApiError(
       response.error?.code || 'FETCH_FAILED',
@@ -262,7 +266,8 @@ export async function listDisposals(status?: string): Promise<DisposalRequest[]>
       response.requestId
     );
   }
-  return response.data;
+  const data = response.data;
+  return Array.isArray(data) ? data : data.items ?? [];
 }
 
 export async function initiateDisposal(data: InitiateDisposalRequest): Promise<DisposalRequest> {

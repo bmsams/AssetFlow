@@ -67,7 +67,7 @@ export async function getContracts(
   vendorId?: string
 ): Promise<ContractsResponse> {
   const queryString = vendorId ? `?vendorId=${encodeURIComponent(vendorId)}` : '';
-  const response = await apiClient.get<ContractsResponse>(
+  const response = await apiClient.get<Record<string, unknown>>(
     `/lifecycle/contracts${queryString}`
   );
 
@@ -80,7 +80,15 @@ export async function getContracts(
     );
   }
 
-  return response.data;
+  const data = response.data;
+  // Backend returns { items: [...], total, page, limit } — map to frontend shape
+  const rawItems = (data.items ?? data.contracts ?? []) as Record<string, unknown>[];
+  const items: Contract[] = rawItems.map((item) => ({
+    ...item,
+    totalValue: Number(item.totalValue ?? 0),
+  })) as unknown as Contract[];
+  const total = (data.total ?? items.length) as number;
+  return { contracts: items, total };
 }
 
 /**

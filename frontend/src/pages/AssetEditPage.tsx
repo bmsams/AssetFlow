@@ -5,6 +5,7 @@ import { AssetForm } from '../components/asset-form/AssetForm';
 import type { AssetFormData } from '../components/asset-form/validation';
 import { assetApi } from '../services/asset-api';
 import type { AnyAsset } from '../types/asset';
+import { buildAssetAttributes } from './asset-form-payload';
 
 /**
  * AssetEditPage - Wraps AssetForm in edit mode with fetched asset data
@@ -61,9 +62,12 @@ export function AssetEditPage() {
         });
       }
 
+      const attributes = buildAssetAttributes(asset.assetType, data);
+
       await assetApi.update(assetId, {
         displayName: data.displayName,
         description: data.description || undefined,
+        attributes: Object.keys(attributes).length > 0 ? attributes : undefined,
       });
       navigate(`/assets/${assetId}`);
     } catch (err) {

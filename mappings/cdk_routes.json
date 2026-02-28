@@ -859,6 +859,14 @@
     },
     {
       "service": "eam-service",
+      "handler": "list-linear-assets",
+      "path": "/eam/linear-assets",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "eam-service",
       "handler": "create-linear-asset",
       "path": "/eam/linear-assets",
       "methods": [
@@ -1115,6 +1123,14 @@
     },
     {
       "service": "ham-service",
+      "handler": "list-transfers",
+      "path": "/ham/transfers",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "ham-service",
       "handler": "create-transfer",
       "path": "/ham/transfers",
       "methods": [
@@ -1139,6 +1155,14 @@
     },
     {
       "service": "ham-service",
+      "handler": "list-loaners",
+      "path": "/ham/loaners",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "ham-service",
       "handler": "checkout-loaner",
       "path": "/ham/loaners/checkout",
       "methods": [
@@ -1157,6 +1181,14 @@
       "service": "ham-service",
       "handler": "get-overdue-loans",
       "path": "/ham/loaners/overdue",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "service": "ham-service",
+      "handler": "list-disposals",
+      "path": "/ham/disposal",
       "methods": [
         "GET"
       ]
@@ -2117,6 +2149,14 @@
       },
       {
         "service": "eam-service",
+        "handler": "list-linear-assets",
+        "path": "/eam/linear-assets",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "eam-service",
         "handler": "create-linear-asset",
         "path": "/eam/linear-assets",
         "methods": [
@@ -2381,6 +2421,14 @@
     "ham-service": [
       {
         "service": "ham-service",
+        "handler": "list-transfers",
+        "path": "/ham/transfers",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "ham-service",
         "handler": "create-transfer",
         "path": "/ham/transfers",
         "methods": [
@@ -2405,6 +2453,14 @@
       },
       {
         "service": "ham-service",
+        "handler": "list-loaners",
+        "path": "/ham/loaners",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "ham-service",
         "handler": "checkout-loaner",
         "path": "/ham/loaners/checkout",
         "methods": [
@@ -2423,6 +2479,14 @@
         "service": "ham-service",
         "handler": "get-overdue-loans",
         "path": "/ham/loaners/overdue",
+        "methods": [
+          "GET"
+        ]
+      },
+      {
+        "service": "ham-service",
+        "handler": "list-disposals",
+        "path": "/ham/disposal",
         "methods": [
           "GET"
         ]
@@ -2513,5 +2577,5 @@
       }
     ]
   },
-  "total": 151
+  "total": 155
 }

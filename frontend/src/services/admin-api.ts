@@ -850,7 +850,7 @@ interface VendorModelPricesResponse {
 
 export async function listVendorModelPrices(
   vendorId: string,
-  filters?: { isActive?: boolean; modelId?: string }
+  filters?: { isActive?: boolean; modelId?: string; countryCode?: string }
 ): Promise<VendorModelPricesResponse> {
   const queryString = buildQueryString({ ...filters });
   const response = await apiClient.get<VendorModelPricesResponse>(
@@ -893,10 +893,12 @@ export async function upsertVendorModelPrice(
 
 export async function deactivateVendorModelPrice(
   vendorId: string,
-  modelId: string
+  modelId: string,
+  countryCode?: string
 ): Promise<void> {
+  const queryString = buildQueryString({ countryCode });
   const response = await apiClient.delete(
-    `/admin/vendors/${vendorId}/model-prices/${modelId}`
+    `/admin/vendors/${vendorId}/model-prices/${modelId}${queryString}`
   );
 
   if (!response.success) {

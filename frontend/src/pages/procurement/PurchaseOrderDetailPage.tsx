@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   procurementApi,
+  type POCloseGuardResult,
   type PurchaseOrderDetail,
   type POStatusHistory,
 } from '../../services/procurement-api';
@@ -29,16 +30,21 @@ function getAvailableActions(status: PurchaseOrderStatus): string[] {
     case 'APPROVED':
       return ['send', 'cancel'];
     case 'SENT':
-      return ['receive'];
+      return ['receive', 'receiptAccounting', 'invoiceAccounting', 'closeGuard', 'close'];
     case 'PARTIALLY_RECEIVED':
-      return ['receive'];
+      return ['receive', 'receiptAccounting', 'invoiceAccounting', 'closeGuard', 'close'];
     case 'RECEIVED':
+      return ['invoiceAccounting', 'closeGuard', 'close'];
     case 'CLOSED':
     case 'CANCELLED':
     case 'REJECTED':
     default:
       return [];
   }
+}
+
+function canShowCloseWorkflow(status: PurchaseOrderStatus): boolean {
+  return status === 'SENT' || status === 'PARTIALLY_RECEIVED' || status === 'RECEIVED';
 }
 
 /**
@@ -94,7 +100,37 @@ export function PurchaseOrderDetailPage() {
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showApproveModal, setShowApproveModal] = useState(false);
+  const [showReceiptAccountingModal, setShowReceiptAccountingModal] = useState(false);
+  const [showInvoiceAccountingModal, setShowInvoiceAccountingModal] = useState(false);
+  const [showCloseModal, setShowCloseModal] = useState(false);
   const [actionNotes, setActionNotes] = useState('');
+  const [receiptIdInput, setReceiptIdInput] = useState('');
+  const [receiptNumberInput, setReceiptNumberInput] = useState('');
+  const [invoiceIdInput, setInvoiceIdInput] = useState('');
+  const [invoiceNumberInput, setInvoiceNumberInput] = useState('');
+  const [closeNotesInput, setCloseNotesInput] = useState('');
+  const [closeGuard, setCloseGuard] = useState<POCloseGuardResult | null>(null);
+  const [isCloseGuardLoading, setIsCloseGuardLoading] = useState(false);
+
+  const refreshCloseGuard = useCallback(
+    async (targetPoId: string) => {
+      if (!targetPoId) {
+        return;
+      }
+
+      try {
+        setIsCloseGuardLoading(true);
+        const guard = await procurementApi.purchaseOrders.getCloseGuard(targetPoId);
+        setCloseGuard(guard);
+      } catch (err) {
+        setCloseGuard(null);
+        setError(err instanceof Error ? err.message : 'Failed to check close readiness');
+      } finally {
+        setIsCloseGuardLoading(false);
+      }
+    },
+    []
+  );
 
   /**
    * Load purchase order details
@@ -107,12 +143,18 @@ export function PurchaseOrderDetailPage() {
       setError(null);
       const po = await procurementApi.purchaseOrders.get(poId);
       setPurchaseOrder(po);
+
+      if (canShowCloseWorkflow(po.status)) {
+        await refreshCloseGuard(po.poId);
+      } else {
+        setCloseGuard(null);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load purchase order');
     } finally {
       setIsLoading(false);
     }
-  }, [poId]);
+  }, [poId, refreshCloseGuard]);
 
   useEffect(() => {
     loadPurchaseOrder();
@@ -209,6 +251,81 @@ export function PurchaseOrderDetailPage() {
       setActionNotes('');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to cancel purchase order');
+    } finally {
+      setIsActionLoading(false);
+    }
+  };
+
+  const handlePostReceiptAccounting = async () => {
+    if (!poId || !receiptIdInput.trim()) {
+      setError('Receipt ID is required');
+      return;
+    }
+
+    try {
+      setIsActionLoading(true);
+      setError(null);
+      await procurementApi.purchaseOrders.postReceiptAccounting(poId, {
+        receiptId: receiptIdInput.trim(),
+        receiptNumber: receiptNumberInput.trim() || undefined,
+      });
+      setShowReceiptAccountingModal(false);
+      setReceiptIdInput('');
+      setReceiptNumberInput('');
+      await loadPurchaseOrder();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to post receipt accounting');
+    } finally {
+      setIsActionLoading(false);
+    }
+  };
+
+  const handlePostInvoiceAccounting = async () => {
+    if (!poId || !invoiceIdInput.trim()) {
+      setError('Invoice ID is required');
+      return;
+    }
+
+    try {
+      setIsActionLoading(true);
+      setError(null);
+      await procurementApi.purchaseOrders.postInvoiceAccounting(poId, {
+        invoiceId: invoiceIdInput.trim(),
+        invoiceNumber: invoiceNumberInput.trim() || undefined,
+      });
+      setShowInvoiceAccountingModal(false);
+      setInvoiceIdInput('');
+      setInvoiceNumberInput('');
+      await loadPurchaseOrder();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to post invoice accounting');
+    } finally {
+      setIsActionLoading(false);
+    }
+  };
+
+  const handleRefreshCloseGuard = async () => {
+    if (!poId) return;
+    await refreshCloseGuard(poId);
+  };
+
+  const handleClosePO = async () => {
+    if (!poId) return;
+
+    try {
+      setIsActionLoading(true);
+      setError(null);
+      const updatedPO = await procurementApi.purchaseOrders.close(
+        poId,
+        closeNotesInput.trim() || undefined
+      );
+      setPurchaseOrder(updatedPO);
+      setShowCloseModal(false);
+      setCloseNotesInput('');
+      setCloseGuard(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to close purchase order');
+      await handleRefreshCloseGuard();
     } finally {
       setIsActionLoading(false);
     }
@@ -448,6 +565,47 @@ export function PurchaseOrderDetailPage() {
             Cancel Order
           </Button>
         )}
+
+        {actions.includes('receiptAccounting') && (
+          <Button
+            variant="secondary"
+            onClick={() => setShowReceiptAccountingModal(true)}
+            disabled={isActionLoading}
+          >
+            Post Receipt Accounting
+          </Button>
+        )}
+
+        {actions.includes('invoiceAccounting') && (
+          <Button
+            variant="secondary"
+            onClick={() => setShowInvoiceAccountingModal(true)}
+            disabled={isActionLoading}
+          >
+            Post Invoice Accounting
+          </Button>
+        )}
+
+        {actions.includes('closeGuard') && (
+          <Button
+            variant="outline"
+            onClick={handleRefreshCloseGuard}
+            disabled={isActionLoading || isCloseGuardLoading}
+            isLoading={isCloseGuardLoading}
+          >
+            Check Close Readiness
+          </Button>
+        )}
+
+        {actions.includes('close') && (
+          <Button
+            variant="primary"
+            onClick={() => setShowCloseModal(true)}
+            disabled={isActionLoading || isCloseGuardLoading || (closeGuard !== null && !closeGuard.canClose)}
+          >
+            Close PO
+          </Button>
+        )}
       </div>
     );
   };
@@ -540,6 +698,22 @@ export function PurchaseOrderDetailPage() {
               Created on {formatDate(purchaseOrder!.orderDate)}
             </span>
           </div>
+
+          {canShowCloseWorkflow(purchaseOrder!.status) && closeGuard && (
+            <div className={styles.closeGuardPanel}>
+              <div className={styles.closeGuardHeader}>
+                <strong>Close Readiness:</strong>{' '}
+                <span>{closeGuard.canClose ? 'Ready to close' : 'Not ready to close'}</span>
+              </div>
+              {!closeGuard.canClose && closeGuard.reasons.length > 0 && (
+                <ul className={styles.closeGuardList}>
+                  {closeGuard.reasons.map((reason) => (
+                    <li key={reason}>{reason}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
 
           {/* Order Details Card */}
           <div className={styles.detailCard}>
@@ -760,6 +934,149 @@ export function PurchaseOrderDetailPage() {
                 isLoading={isActionLoading}
               >
                 Cancel Order
+              </Button>
+            </div>
+          </Modal>
+
+          <Modal
+            isOpen={showReceiptAccountingModal}
+            onClose={() => {
+              setShowReceiptAccountingModal(false);
+              setReceiptIdInput('');
+              setReceiptNumberInput('');
+            }}
+            title="Post Receipt Accounting"
+          >
+            <p className={styles.modalDescription}>
+              Post receipt accrual entries for {purchaseOrder!.poNumber}.
+            </p>
+            <input
+              type="text"
+              value={receiptIdInput}
+              onChange={(e) => setReceiptIdInput(e.target.value)}
+              placeholder="Receipt ID (UUID)"
+              className={styles.formInput}
+              style={{ marginBottom: 'var(--spacing-3)' }}
+            />
+            <input
+              type="text"
+              value={receiptNumberInput}
+              onChange={(e) => setReceiptNumberInput(e.target.value)}
+              placeholder="Receipt Number (optional)"
+              className={styles.formInput}
+              style={{ marginBottom: 'var(--spacing-4)' }}
+            />
+            <div className={styles.modalActions}>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setShowReceiptAccountingModal(false);
+                  setReceiptIdInput('');
+                  setReceiptNumberInput('');
+                }}
+                disabled={isActionLoading}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                onClick={handlePostReceiptAccounting}
+                disabled={isActionLoading || !receiptIdInput.trim()}
+                isLoading={isActionLoading}
+              >
+                Post Receipt Accounting
+              </Button>
+            </div>
+          </Modal>
+
+          <Modal
+            isOpen={showInvoiceAccountingModal}
+            onClose={() => {
+              setShowInvoiceAccountingModal(false);
+              setInvoiceIdInput('');
+              setInvoiceNumberInput('');
+            }}
+            title="Post Invoice Accounting"
+          >
+            <p className={styles.modalDescription}>
+              Post invoice liability entries for {purchaseOrder!.poNumber}.
+            </p>
+            <input
+              type="text"
+              value={invoiceIdInput}
+              onChange={(e) => setInvoiceIdInput(e.target.value)}
+              placeholder="Invoice ID (UUID)"
+              className={styles.formInput}
+              style={{ marginBottom: 'var(--spacing-3)' }}
+            />
+            <input
+              type="text"
+              value={invoiceNumberInput}
+              onChange={(e) => setInvoiceNumberInput(e.target.value)}
+              placeholder="Invoice Number (optional)"
+              className={styles.formInput}
+              style={{ marginBottom: 'var(--spacing-4)' }}
+            />
+            <div className={styles.modalActions}>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setShowInvoiceAccountingModal(false);
+                  setInvoiceIdInput('');
+                  setInvoiceNumberInput('');
+                }}
+                disabled={isActionLoading}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                onClick={handlePostInvoiceAccounting}
+                disabled={isActionLoading || !invoiceIdInput.trim()}
+                isLoading={isActionLoading}
+              >
+                Post Invoice Accounting
+              </Button>
+            </div>
+          </Modal>
+
+          <Modal
+            isOpen={showCloseModal}
+            onClose={() => {
+              setShowCloseModal(false);
+              setCloseNotesInput('');
+            }}
+            title="Close Purchase Order"
+          >
+            <p className={styles.modalDescription}>
+              Close {purchaseOrder!.poNumber} after accounting checks are complete.
+            </p>
+            <textarea
+              value={closeNotesInput}
+              onChange={(e) => setCloseNotesInput(e.target.value)}
+              placeholder="Close notes (optional)..."
+              className={styles.formTextarea}
+              style={{ marginBottom: 'var(--spacing-4)' }}
+              rows={3}
+            />
+            <div className={styles.modalActions}>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setShowCloseModal(false);
+                  setCloseNotesInput('');
+                }}
+                disabled={isActionLoading}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                onClick={handleClosePO}
+                disabled={isActionLoading || isCloseGuardLoading || (closeGuard !== null && !closeGuard.canClose)}
+                isLoading={isActionLoading}
+              >
+                Close PO
               </Button>
             </div>
           </Modal>

@@ -20,12 +20,6 @@
       "has_fks": false
     },
     {
-      "table": "po_lines",
-      "referenced_by_view": false,
-      "column_count": 14,
-      "has_fks": true
-    },
-    {
       "table": "role_permissions",
       "referenced_by_view": true,
       "column_count": 3,
@@ -103,6 +97,11 @@
       "table": "buildings",
       "column": "updated_by",
       "references": "users.user_id"
+    },
+    {
+      "table": "catalog_items",
+      "column": "subcategory_id",
+      "references": "catalog_categories.category_id"
     },
     {
       "table": "contracts",
@@ -325,6 +324,11 @@
       "references": "users.user_id"
     },
     {
+      "table": "shadow_it_detections",
+      "column": "known_application_id",
+      "references": "known_applications.application_id"
+    },
+    {
       "table": "software_assets",
       "column": "created_by",
       "references": "users.user_id"
@@ -420,6 +424,11 @@
       "references": "users.user_id"
     },
     {
+      "table": "vendor_asn_assets",
+      "column": "asn_line_id",
+      "references": "vendor_asn_lines.line_id"
+    },
+    {
       "table": "vendor_model_prices",
       "column": "created_by",
       "references": "users.user_id"
@@ -501,12 +510,15 @@
     "facilities",
     "lease_payments",
     "permissions",
-    "po_lines",
     "role_permissions",
     "stockroom_rules"
   ],
   "views_referencing_missing_tables": [],
   "frontend_pages_without_api": [
+    {
+      "page": "AccessDeniedPage",
+      "file": "pages/AccessDeniedPage.tsx"
+    },
     {
       "page": "AssetsPage.test",
       "file": "pages/AssetsPage.test.tsx"
@@ -548,10 +560,6 @@
       "file": "pages/StockroomPage.test.tsx"
     },
     {
-      "page": "AccessDeniedPage",
-      "file": "pages/AccessDeniedPage.tsx"
-    },
-    {
       "page": "admin/index",
       "file": "pages/admin/index.ts"
     },
@@ -568,7 +576,6 @@
       "file": "pages/reports/ReportsPage.tsx"
     }
   ],
-
   "api_clients_without_pages": [
     {
       "client": "api-client.test",
@@ -622,61 +629,5 @@
     }
   ],
   "unmatched_cdk_handlers": [],
-  "missing_handler_files": [],
-  "incremental_changes": {
-    "new_pages_added": [
-      "ham/TransfersPage",
-      "ham/LoanerManagementPage",
-      "ham/AuditScanPage",
-      "ham/DisposalPage",
-      "eam/WorkOrdersPage",
-      "eam/MaintenancePlansPage",
-      "eam/LinearAssetsPage",
-      "eam/PartsInventoryPage",
-      "AccessDeniedPage",
-      "NotificationPreferencesPage"
-    ],
-    "new_api_clients_added": [
-      "ham-api",
-      "eam-api",
-      "notification-api"
-    ],
-    "updated_api_clients": [
-      "sam-api (fixed 7 endpoint path mismatches: /sam/* → correct CDK paths)",
-      "eam-api (fixed /eam/maintenance-plans/due → /eam/maintenance-plans/check-due, /eam/parts → /eam/parts/levels)",
-      "ham-api (fixed /ham/audit-scans → /ham/audits/scan, /ham/disposals → /ham/disposal, etc.)",
-      "notification-api (fixed PATCH→POST /notifications/{id}/read, GET/PATCH prefs → GET/PUT /users/{userId}/notification-preferences)"
-    ],
-    "cdk_routes_added": [
-      "GET /ham/transfers (was POST only)",
-      "GET /ham/loaners (new route)",
-      "GET /ham/disposal (was POST only)",
-      "GET /eam/linear-assets (was POST only)"
-    ],
-    "new_components_added": [
-      "NotificationBell",
-      "NotificationPanel"
-    ],
-    "new_utilities_added": [
-      "utils/role-mapping.ts",
-      "utils/landing-page.ts",
-      "utils/navigation.ts",
-      "types/roles.ts"
-    ],
-    "updated_components": [
-      "Header.tsx (added NotificationBell)",
-      "ProtectedRoute.tsx (shows AccessDeniedPage)",
-      "Sidebar.tsx (NavItem roles field)",
-      "useAuth.ts (real Cognito role extraction)",
-      "LoginPage.tsx (role-based landing redirect)",
-      "App.tsx (role-filtered navigation)",
-      "routes.tsx (new routes + role arrays)"
-    ],
-    "new_packages_added": [
-      "@ams/ui (active — components: DataTable, Form, MonoText, StatusBadge, DropdownMenu, MetricCard, Card, Tabs, SplitPanel, KPIBanner, ActivityFeed, DetailHeader, LifecycleTimeline; layouts: PageTransition, Header, Sidebar, CommandPalette, AppShell)"
-    ],
-    "new_workspace_dependencies": [
-      "frontend → @ams/ui (workspace:*)"
-    ]
-  }
+  "missing_handler_files": []
 }

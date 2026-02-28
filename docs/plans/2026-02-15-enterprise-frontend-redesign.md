@@ -2,7 +2,7 @@
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** Transform the AMS frontend from a clean internal tool into a premium enterprise SaaS platform that exceeds ServiceNow, Jira, and Cloudscape in visual quality, component configurability, and user onboarding. **All new UI components are built as a self-contained, reusable library package (`@ams/ui`) that the application imports.**
+**Goal:** Transform the AMS frontend from a clean internal tool into a premium enterprise SaaS platform that exceeds Jira and Cloudscape in visual quality, component configurability, and user onboarding. **All new UI components are built as a self-contained, reusable library package (`@ams/ui`) that the application imports.**
 
 **Architecture:** Build a modular UI library as a workspace package (`packages/ui/`) alongside the existing app (`frontend/`). The library exports compound components, layout primitives, the tour system, and design tokens as a portable module. The app consumes it via workspace dependency. Zero external runtime dependencies beyond React. All components use compound/composition patterns with render props and slots.
 

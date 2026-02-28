@@ -234,7 +234,7 @@ CREATE TABLE software_installations (
         'BIGFIX',              -- HCL BigFix
         'SNOW',                -- Snow Software
         'FLEXERA',             -- Flexera
-        'SERVICENOW',          -- ServiceNow Discovery
+        'ITSM',                -- External ITSM discovery
         'MANUAL',              -- Manual entry
         'AGENT',               -- Custom agent
         'OTHER'                -- Other discovery source

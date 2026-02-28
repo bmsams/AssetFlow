@@ -126,6 +126,13 @@ export interface AssetFormData {
   operatingSystem?: string;
   ipAddress?: string;
   macAddress?: string;
+  stockroomId?: string;
+  buildingId?: string;
+  building?: string;
+  floor?: string;
+  room?: string;
+  rack?: string;
+  rackUnit?: number | string;
 
   // Software fields
   publisher?: string;
@@ -139,6 +146,7 @@ export interface AssetFormData {
   assetClass?: string;
   criticalityLevel?: string;
   facilityId?: string;
+  zone?: string;
   operatingHours?: number | string;
   meterReading?: number | string;
 
@@ -167,6 +175,13 @@ export const getInitialFormData = (assetType?: AssetType): AssetFormData => ({
   operatingSystem: '',
   ipAddress: '',
   macAddress: '',
+  stockroomId: '',
+  buildingId: '',
+  building: '',
+  floor: '',
+  room: '',
+  rack: '',
+  rackUnit: '',
   publisher: '',
   productName: '',
   version: '',
@@ -176,6 +191,7 @@ export const getInitialFormData = (assetType?: AssetType): AssetFormData => ({
   assetClass: '',
   criticalityLevel: '',
   facilityId: '',
+  zone: '',
   operatingHours: '',
   meterReading: '',
   customAttributes: [],

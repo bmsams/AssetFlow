@@ -50,6 +50,7 @@ export function VendorForm() {
     modelId: '',
     unitPrice: '',
     currency: 'USD',
+    countryCode: 'GLOBAL',
     vendorSku: '',
   });
 
@@ -134,6 +135,7 @@ export function VendorForm() {
     const modelId = priceForm.modelId;
     const unitPrice = Number.parseFloat(priceForm.unitPrice);
     const currency = (priceForm.currency || 'USD').trim().toUpperCase();
+    const countryCode = (priceForm.countryCode || 'GLOBAL').trim().toUpperCase();
 
     if (!modelId) {
       setPriceFormError('Model is required');
@@ -150,16 +152,22 @@ export function VendorForm() {
       return;
     }
 
+    if (!/^[A-Z0-9_-]{2,10}$/.test(countryCode)) {
+      setPriceFormError('Country code must be 2-10 characters using A-Z, 0-9, _ or -');
+      return;
+    }
+
     try {
       setIsSavingPrice(true);
       await adminApi.vendorModelPrices.upsert(vendorId, modelId, {
         unitPrice,
         currency,
+        countryCode,
         vendorSku: priceForm.vendorSku.trim() || undefined,
         isActive: true,
       });
       await refreshPricing();
-      setPriceForm({ modelId: '', unitPrice: '', currency: 'USD', vendorSku: '' });
+      setPriceForm({ modelId: '', unitPrice: '', currency: 'USD', countryCode: 'GLOBAL', vendorSku: '' });
     } catch (err) {
       setPriceFormError(err instanceof Error ? err.message : 'Failed to save price');
     } finally {
@@ -173,7 +181,7 @@ export function VendorForm() {
 
     try {
       setIsSavingPrice(true);
-      await adminApi.vendorModelPrices.deactivate(vendorId, price.modelId);
+      await adminApi.vendorModelPrices.deactivate(vendorId, price.modelId, price.countryCode);
       await refreshPricing();
     } catch (err) {
       setPricingError(err instanceof Error ? err.message : 'Failed to deactivate price');
@@ -290,6 +298,19 @@ export function VendorForm() {
                 </div>
 
                 <div className={styles.formGroup}>
+                  <label htmlFor="vendor-country-code" className={styles.formLabel}>Country Code</label>
+                  <input
+                    id="vendor-country-code"
+                    type="text"
+                    value={priceForm.countryCode}
+                    onChange={(e) => setPriceForm(p => ({ ...p, countryCode: e.target.value }))}
+                    className={styles.formInput}
+                    disabled={isSavingPrice}
+                    placeholder="GLOBAL or ISO code"
+                  />
+                </div>
+
+                <div className={styles.formGroup}>
                   <label htmlFor="vendor-sku" className={styles.formLabel}>Vendor SKU</label>
                   <input
                     id="vendor-sku"
@@ -322,6 +343,7 @@ export function VendorForm() {
                       <th style={{ width: '120px' }}>SKU</th>
                       <th style={{ width: '140px' }}>Unit Price</th>
                       <th style={{ width: '90px' }}>Currency</th>
+                      <th style={{ width: '110px' }}>Country</th>
                       <th>Vendor SKU</th>
                       <th style={{ width: '90px' }}>Status</th>
                       <th style={{ width: '110px' }}>Actions</th>
@@ -329,16 +351,17 @@ export function VendorForm() {
                   </thead>
                   <tbody>
                     {isPricingLoading ? (
-                      <tr><td colSpan={7}><div className={`${styles.skeleton} ${styles.skeletonLg}`} /></td></tr>
+                      <tr><td colSpan={8}><div className={`${styles.skeleton} ${styles.skeletonLg}`} /></td></tr>
                     ) : modelPrices.length === 0 ? (
-                      <tr><td colSpan={7} style={{ color: 'var(--color-text-secondary)' }}>No model pricing configured for this vendor.</td></tr>
+                      <tr><td colSpan={8} style={{ color: 'var(--color-text-secondary)' }}>No model pricing configured for this vendor.</td></tr>
                     ) : (
                       modelPrices.map((p) => (
-                        <tr key={`${p.vendorId}-${p.modelId}`}>
+                        <tr key={`${p.vendorId}-${p.modelId}-${p.countryCode}`}>
                           <td>{p.manufacturerName} {p.modelName}</td>
                           <td className={styles.codeCell}>{p.sku || '-'}</td>
                           <td style={{ textAlign: 'right' }}>{p.unitPrice.toFixed(2)}</td>
                           <td>{p.currency}</td>
+                          <td>{p.countryCode}</td>
                           <td>{p.vendorSku || '-'}</td>
                           <td><span className={`${styles.statusBadge} ${p.isActive ? styles.statusActive : styles.statusInactive}`}>{p.isActive ? 'Active' : 'Inactive'}</span></td>
                           <td>

@@ -14,16 +14,22 @@ import { formatCurrency } from '../../utils/formatters';
 import { PRODUCT_TYPE_OPTIONS } from '../../constants/procurement';
 import styles from '../admin/AdminPage.module.css';
 
+type LineItemDraft = CreatePOLineRequest & {
+  vendorName?: string;
+};
+
 /**
  * Empty line item template
  */
-const createEmptyLine = (): CreatePOLineRequest => ({
+const createEmptyLine = (defaultVendorId = '', defaultCostCenterId = ''): LineItemDraft => ({
   productType: 'HARDWARE_MODEL',
   productDescription: '',
   sku: '',
   quantity: 1,
   unitPrice: 0,
   notes: '',
+  vendorId: defaultVendorId,
+  costCenterId: defaultCostCenterId,
 });
 
 /**
@@ -71,7 +77,7 @@ export function PurchaseOrderForm() {
   });
 
   // Line items
-  const [lineItems, setLineItems] = useState<CreatePOLineRequest[]>([createEmptyLine()]);
+  const [lineItems, setLineItems] = useState<LineItemDraft[]>([createEmptyLine()]);
 
   // Form validation errors
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
@@ -137,6 +143,9 @@ export function PurchaseOrderForm() {
             quantity: line.quantity,
             unitPrice: line.unitPrice,
             notes: line.notes || '',
+            vendorId: line.vendorId || '',
+            vendorName: line.vendorName || '',
+            costCenterId: line.costCenterId || '',
           }))
         );
       }
@@ -169,7 +178,10 @@ export function PurchaseOrderForm() {
       }
 
       try {
-        const resp = await adminApi.vendorModelPrices.list(vendorId, { isActive: true });
+        const resp = await adminApi.vendorModelPrices.list(vendorId, {
+          isActive: true,
+          countryCode: 'GLOBAL',
+        });
         if (!isMounted) return;
         const map: Record<string, VendorModelPrice> = {};
         for (const p of resp.items) map[p.modelId] = p;
@@ -190,7 +202,7 @@ export function PurchaseOrderForm() {
   /**
    * Calculate line total
    */
-  const calculateLineTotal = (line: CreatePOLineRequest): number => {
+  const calculateLineTotal = (line: LineItemDraft): number => {
     return line.quantity * line.unitPrice;
   };
 
@@ -208,10 +220,7 @@ export function PurchaseOrderForm() {
     const errors: Record<string, string> = {};
     const lineErrs: Record<number, Record<string, string>> = {};
 
-    // Validate main form fields
-    if (!formData.vendorId) {
-      errors.vendorId = 'Vendor is required';
-    }
+    // Validate main form fields — vendor is optional at header level (acts as default for lines)
 
     if (!formData.costCenterId) {
       errors.costCenterId = 'Cost center is required';
@@ -239,6 +248,14 @@ export function PurchaseOrderForm() {
 
       if (line.unitPrice < 0) {
         lineError.unitPrice = 'Unit price cannot be negative';
+      }
+
+      if (!line.vendorId && !formData.vendorId) {
+        lineError.vendorId = 'Select a line vendor or a default header vendor';
+      }
+
+      if (!line.costCenterId && !formData.costCenterId) {
+        lineError.costCenterId = 'Select a line cost center or a header cost center';
       }
 
       if (Object.keys(lineError).length > 0) {
@@ -269,15 +286,19 @@ export function PurchaseOrderForm() {
         costCenterId: formData.costCenterId,
         expectedDeliveryDate: formData.expectedDeliveryDate || undefined,
         notes: formData.notes || undefined,
-        lines: lineItems.map((line) => ({
-          productType: line.productType,
-          productId: line.productId || undefined,
-          productDescription: line.productDescription,
-          sku: line.sku || undefined,
-          quantity: line.quantity,
-          unitPrice: line.unitPrice,
-          notes: line.notes || undefined,
-        })),
+        lines: lineItems.map((line) => {
+          return {
+            productType: line.productType,
+            productId: line.productId || undefined,
+            productDescription: line.productDescription,
+            sku: line.sku || undefined,
+            quantity: line.quantity,
+            unitPrice: line.unitPrice,
+            notes: line.notes || undefined,
+            vendorId: line.vendorId || undefined,
+            costCenterId: line.costCenterId || undefined,
+          };
+        }),
       };
 
       if (isEditing && poId) {
@@ -310,6 +331,24 @@ export function PurchaseOrderForm() {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
+    // When header vendor changes, pre-populate lines with empty vendorId
+    if (name === 'vendorId') {
+      setLineItems((prev) =>
+        prev.map((line) =>
+          !line.vendorId ? { ...line, vendorId: value } : line
+        )
+      );
+    }
+
+    // When header cost center changes, pre-populate lines with empty costCenterId
+    if (name === 'costCenterId') {
+      setLineItems((prev) =>
+        prev.map((line) =>
+          !line.costCenterId ? { ...line, costCenterId: value } : line
+        )
+      );
+    }
+
     // Clear error for this field
     if (formErrors[name]) {
       setFormErrors((prev) => ({ ...prev, [name]: '' }));
@@ -321,7 +360,7 @@ export function PurchaseOrderForm() {
    */
   const handleLineChange = (
     index: number,
-    field: keyof CreatePOLineRequest,
+    field: keyof LineItemDraft,
     value: string | number
   ) => {
     setLineItems((prev) => {
@@ -367,7 +406,7 @@ export function PurchaseOrderForm() {
    * Add a new line item
    */
   const handleAddLine = () => {
-    setLineItems((prev) => [...prev, createEmptyLine()]);
+    setLineItems((prev) => [...prev, createEmptyLine(formData.vendorId, formData.costCenterId)]);
   };
 
   /**
@@ -444,15 +483,15 @@ export function PurchaseOrderForm() {
         </div>
       )}
 
-      <div className={styles.formContainer} style={{ maxWidth: '1000px' }}>
+      <div className={styles.formContainer} style={{ maxWidth: '1200px' }}>
         <form onSubmit={handleSubmit} className={styles.form}>
           {/* Basic Information Section */}
           <div className={styles.formSection}>
             <h2 className={styles.formSectionTitle}>Basic Information</h2>
             <div className={styles.formGrid}>
               <div className={styles.formGroup}>
-                <label htmlFor="vendorId" className={`${styles.formLabel} ${styles.required}`}>
-                  Vendor
+                <label htmlFor="vendorId" className={styles.formLabel}>
+                  Default Vendor
                 </label>
                 <select
                   id="vendorId"
@@ -572,6 +611,8 @@ export function PurchaseOrderForm() {
                     <th style={{ width: '120px' }}>Type</th>
                     <th>Description</th>
                     <th style={{ width: '100px' }}>SKU</th>
+                    <th style={{ width: '150px' }}>Vendor</th>
+                    <th style={{ width: '150px' }}>Cost Center</th>
                     <th style={{ width: '80px' }}>Qty</th>
                     <th style={{ width: '120px' }}>Unit Price</th>
                     <th style={{ width: '120px' }}>Line Total</th>
@@ -585,7 +626,7 @@ export function PurchaseOrderForm() {
                         <select
                           value={line.productType}
                           onChange={(e) =>
-                            handleLineChange(index, 'productType', e.target.value as CreatePOLineRequest['productType'])
+                            handleLineChange(index, 'productType', e.target.value as LineItemDraft['productType'])
                           }
                           className={styles.formSelect}
                           style={{ padding: 'var(--spacing-1) var(--spacing-2)', fontSize: 'var(--font-size-xs)' }}
@@ -661,6 +702,55 @@ export function PurchaseOrderForm() {
                           aria-label={`Line ${index + 1} SKU`}
                         />
                       </td>
+                      {/* Line-level Vendor */}
+                      <td>
+                        <select
+                          value={line.vendorId || ''}
+                          onChange={(e) => handleLineChange(index, 'vendorId', e.target.value)}
+                          className={`${styles.formSelect} ${lineErrors[index]?.vendorId ? styles.error : ''}`}
+                          style={{ padding: 'var(--spacing-1) var(--spacing-2)', fontSize: 'var(--font-size-xs)' }}
+                          aria-label={`Line ${index + 1} vendor`}
+                          disabled={vendorsLoading}
+                        >
+                          <option value="">
+                            {formData.vendorId ? '(use header default)' : 'Select vendor...'}
+                          </option>
+                          {vendorOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                        {lineErrors[index]?.vendorId && (
+                          <span className={styles.formError} style={{ fontSize: 'var(--font-size-xs)' }}>
+                            {lineErrors[index].vendorId}
+                          </span>
+                        )}
+                      </td>
+                      {/* Line-level Cost Center */}
+                      <td>
+                        <select
+                          value={line.costCenterId || ''}
+                          onChange={(e) => handleLineChange(index, 'costCenterId', e.target.value)}
+                          className={`${styles.formSelect} ${lineErrors[index]?.costCenterId ? styles.error : ''}`}
+                          style={{ padding: 'var(--spacing-1) var(--spacing-2)', fontSize: 'var(--font-size-xs)' }}
+                          aria-label={`Line ${index + 1} cost center`}
+                        >
+                          <option value="">
+                            {formData.costCenterId ? '(use header default)' : 'Select cost center...'}
+                          </option>
+                          {costCenters.map((cc) => (
+                            <option key={cc.costCenterId} value={cc.costCenterId}>
+                              {cc.code} - {cc.name}
+                            </option>
+                          ))}
+                        </select>
+                        {lineErrors[index]?.costCenterId && (
+                          <span className={styles.formError} style={{ fontSize: 'var(--font-size-xs)' }}>
+                            {lineErrors[index].costCenterId}
+                          </span>
+                        )}
+                      </td>
                       <td>
                         <input
                           type="number"
@@ -721,7 +811,7 @@ export function PurchaseOrderForm() {
                 </tbody>
                 <tfoot>
                   <tr>
-                    <td colSpan={5} style={{ textAlign: 'right', fontWeight: 'var(--font-weight-semibold)' }}>
+                    <td colSpan={7} style={{ textAlign: 'right', fontWeight: 'var(--font-weight-semibold)' }}>
                       Subtotal:
                     </td>
                     <td style={{ textAlign: 'right', fontWeight: 'var(--font-weight-bold)', fontSize: 'var(--font-size-base)' }}>

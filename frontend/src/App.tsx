@@ -26,24 +26,46 @@ function AppRoutes() {
     const path = location.pathname;
     let pageTitle = 'Asset Management System';
 
-    if (path === '/') pageTitle = 'Dashboard - AMS';
-    else if (path === '/assets') pageTitle = 'All Assets - AMS';
-    else if (path === '/assets/hardware') pageTitle = 'Hardware Assets - AMS';
-    else if (path === '/assets/software') pageTitle = 'Software Assets - AMS';
-    else if (path === '/assets/enterprise') pageTitle = 'Enterprise Assets - AMS';
-    else if (path.startsWith('/assets/')) pageTitle = 'Asset Details - AMS';
-    else if (path === '/procurement') pageTitle = 'Procurement - AMS';
-    else if (path.startsWith('/procurement/purchase-orders')) pageTitle = 'Purchase Orders - AMS';
-    else if (path.startsWith('/procurement/receiving')) pageTitle = 'Receiving - AMS';
-    else if (path === '/stockrooms') pageTitle = 'Stockrooms - AMS';
-    else if (path === '/licenses') pageTitle = 'License Workbench - AMS';
-    else if (path === '/contracts') pageTitle = 'Contracts - AMS';
-    else if (path === '/reports') pageTitle = 'Reports - AMS';
-    else if (path.startsWith('/reports/')) pageTitle = 'Report - AMS';
-    else if (path.startsWith('/admin/')) pageTitle = 'Administration - AMS';
-    else if (path === '/settings') pageTitle = 'Settings - AMS';
-    else if (path === '/login') pageTitle = 'Login - AMS';
-    else pageTitle = 'Page Not Found - AMS';
+    const titleMap: Record<string, string> = {
+      '/': 'Dashboard - AMS',
+      '/assets': 'All Assets - AMS',
+      '/assets/hardware': 'Hardware Assets - AMS',
+      '/assets/software': 'Software Assets - AMS',
+      '/assets/enterprise': 'Enterprise Assets - AMS',
+      '/procurement': 'Procurement - AMS',
+      '/stockrooms': 'Stockrooms - AMS',
+      '/licenses': 'License Workbench - AMS',
+      '/contracts': 'Contracts - AMS',
+      '/reports': 'Reports - AMS',
+      '/settings': 'Settings - AMS',
+      '/login': 'Login - AMS',
+      '/service-catalog': 'Service Catalog - AMS',
+      '/notifications': 'Notifications - AMS',
+      '/ham/transfers': 'Transfers - AMS',
+      '/ham/loaners': 'Loaners - AMS',
+      '/ham/audit-scans': 'Audit Scans - AMS',
+      '/ham/disposal': 'Disposal - AMS',
+      '/eam/work-orders': 'Work Orders - AMS',
+      '/eam/maintenance-plans': 'Maintenance Plans - AMS',
+      '/eam/linear-assets': 'Linear Assets - AMS',
+      '/eam/parts-inventory': 'Parts Inventory - AMS',
+    };
+
+    const prefixMap: [string, string][] = [
+      ['/procurement/purchase-orders', 'Purchase Orders - AMS'],
+      ['/procurement/requisitions', 'Requisitions - AMS'],
+      ['/procurement/receiving', 'Receiving - AMS'],
+      ['/reports/', 'Report - AMS'],
+      ['/admin/', 'Administration - AMS'],
+      ['/assets/', 'Asset Details - AMS'],
+    ];
+
+    if (titleMap[path]) {
+      pageTitle = titleMap[path];
+    } else {
+      const match = prefixMap.find(([prefix]) => path.startsWith(prefix));
+      pageTitle = match ? match[1] : 'Asset Management System';
+    }
 
     document.title = pageTitle;
   }, [location.pathname]);

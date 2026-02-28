@@ -2,7 +2,7 @@
 
 **Date:** 2026-02-15
 **Status:** Approved
-**Goal:** Transform the AMS frontend from "clean internal tool" to a premium enterprise SaaS platform that exceeds ServiceNow/Jira/Cloudscape in visual quality, component configurability, and user onboarding.
+**Goal:** Transform the AMS frontend from "clean internal tool" to a premium enterprise SaaS platform that exceeds Jira/Cloudscape in visual quality, component configurability, and user onboarding.
 
 **Approach:** Keep the existing zero-dependency architecture (React 18 + TypeScript + CSS Modules, only 3 production deps). Redesign the visual layer, build a compound component system, and add a built-in guided tour system.
 
@@ -277,7 +277,7 @@ Use `Form` compound component with sectioned layout, collapsible sections, casca
 
 ## 7. Competitive Comparison
 
-| Aspect | ServiceNow | Cloudscape | Our Design |
+| Aspect | Legacy ITSM | Cloudscape | Our Design |
 |--------|-----------|-----------|-----------|
 | Command palette | No | No | Full Ctrl+K |
 | Sidebar | Fixed modules | Fixed | Collapsible rail + favorites + badges |

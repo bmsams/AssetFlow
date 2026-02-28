@@ -1,17 +1,33 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, type FormEvent } from 'react';
 import { PageLayout } from '../../components/layout/PageLayout';
 import { ErrorMessage } from '../../components/ui/ErrorMessage';
 import { EmptyState } from '../../components/ui/EmptyState';
 import {
   listWorkOrders,
+  createWorkOrder,
   assignWorkOrder,
   completeWorkOrder,
   type WorkOrder,
 } from '../../services/eam-api';
+import { adminApi } from '../../services/admin-api';
+import { assetApi } from '../../services/asset-api';
+import type { Building } from '../../types/admin';
+import type { Asset } from '../../types/asset';
 import styles from '../Page.module.css';
 
 type StatusFilter = 'all' | 'open' | 'assigned' | 'in_progress' | 'completed' | 'cancelled';
 type PriorityFilter = 'all' | 'low' | 'medium' | 'high' | 'critical';
+type WorkTypeOption =
+  | 'corrective'
+  | 'preventive'
+  | 'emergency'
+  | 'inspection'
+  | 'calibration'
+  | 'installation'
+  | 'modification'
+  | 'decommission'
+  | 'project'
+  | 'other';
 
 export function WorkOrdersPage() {
   const [isLoading, setIsLoading] = useState(true);
@@ -19,25 +35,144 @@ export function WorkOrdersPage() {
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [priorityFilter, setPriorityFilter] = useState<PriorityFilter>('all');
+  const [buildingFilter, setBuildingFilter] = useState<string>('all');
+  const [buildings, setBuildings] = useState<Building[]>([]);
+  const [buildingAssets, setBuildingAssets] = useState<Asset[]>([]);
+  const [isLoadingAssets, setIsLoadingAssets] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [newWorkOrder, setNewWorkOrder] = useState<{
+    assetId: string;
+    title: string;
+    description: string;
+    priority: 'low' | 'medium' | 'high' | 'critical';
+    workType: WorkTypeOption;
+    estimatedHours: string;
+  }>({
+    assetId: '',
+    title: '',
+    description: '',
+    priority: 'medium',
+    workType: 'corrective',
+    estimatedHours: '',
+  });
+
+  const loadBuildings = useCallback(async () => {
+    try {
+      const response = await adminApi.buildings.list({ isActive: true }, { pageSize: 200, sortBy: 'name', sortOrder: 'asc' });
+      setBuildings(response.items);
+    } catch {
+      // Keep work-order page usable even if building master data is temporarily unavailable.
+      setBuildings([]);
+    }
+  }, []);
 
   const fetchWorkOrders = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
-      const status = statusFilter === 'all' ? undefined : statusFilter;
-      const priority = priorityFilter === 'all' ? undefined : priorityFilter;
-      const result = await listWorkOrders(status, priority);
+      const result = await listWorkOrders({
+        status: statusFilter === 'all' ? undefined : statusFilter,
+        priority: priorityFilter === 'all' ? undefined : priorityFilter,
+        buildingId: buildingFilter === 'all' ? undefined : buildingFilter,
+      });
       setWorkOrders(result);
     } catch {
       setError('Failed to load work orders. Please try again.');
     } finally {
       setIsLoading(false);
     }
-  }, [statusFilter, priorityFilter]);
+  }, [statusFilter, priorityFilter, buildingFilter]);
+
+  const loadBuildingAssets = useCallback(async () => {
+    if (buildingFilter === 'all') {
+      setBuildingAssets([]);
+      setNewWorkOrder((prev) => ({ ...prev, assetId: '' }));
+      return;
+    }
+
+    try {
+      setIsLoadingAssets(true);
+      const response = await assetApi.list(
+        { type: 'HARDWARE', buildingId: buildingFilter },
+        { page: 1, pageSize: 200, sortBy: 'displayName', sortOrder: 'asc' }
+      );
+      const assets = response.items;
+      setBuildingAssets(assets);
+
+      setNewWorkOrder((prev) => {
+        const assetStillValid = assets.some((asset) => asset.assetId === prev.assetId);
+        return {
+          ...prev,
+          assetId: assetStillValid ? prev.assetId : assets[0]?.assetId ?? '',
+        };
+      });
+    } catch {
+      setBuildingAssets([]);
+      setNewWorkOrder((prev) => ({ ...prev, assetId: '' }));
+    } finally {
+      setIsLoadingAssets(false);
+    }
+  }, [buildingFilter]);
+
+  useEffect(() => {
+    void loadBuildings();
+  }, [loadBuildings]);
 
   useEffect(() => {
     fetchWorkOrders();
   }, [fetchWorkOrders]);
+
+  useEffect(() => {
+    void loadBuildingAssets();
+  }, [loadBuildingAssets]);
+
+  const handleCreateWorkOrder = async (event: FormEvent) => {
+    event.preventDefault();
+
+    if (buildingFilter === 'all') {
+      setError('Select a building before creating a work order.');
+      return;
+    }
+    if (!newWorkOrder.assetId) {
+      setError('Select an asset for the new work order.');
+      return;
+    }
+    if (!newWorkOrder.title.trim()) {
+      setError('Work order title is required.');
+      return;
+    }
+
+    try {
+      setIsCreating(true);
+      setError(null);
+
+      const estimatedHours = newWorkOrder.estimatedHours.trim().length > 0
+        ? Number(newWorkOrder.estimatedHours)
+        : undefined;
+
+      await createWorkOrder({
+        assetId: newWorkOrder.assetId,
+        buildingId: buildingFilter === 'all' ? undefined : buildingFilter,
+        workType: newWorkOrder.workType,
+        title: newWorkOrder.title.trim(),
+        description: newWorkOrder.description.trim(),
+        priority: newWorkOrder.priority,
+        estimatedHours: Number.isFinite(estimatedHours ?? Number.NaN) ? estimatedHours : undefined,
+      });
+
+      setNewWorkOrder((prev) => ({
+        ...prev,
+        title: '',
+        description: '',
+        estimatedHours: '',
+      }));
+      await fetchWorkOrders();
+    } catch {
+      setError('Failed to create work order. Please verify required fields and try again.');
+    } finally {
+      setIsCreating(false);
+    }
+  };
 
   const handleAssign = async (workOrderId: string) => {
     const assignee = window.prompt('Enter user ID to assign:');
@@ -77,6 +212,117 @@ export function WorkOrdersPage() {
       maxWidth="xl"
     >
       <div className={styles.pageContent}>
+        <form
+          onSubmit={handleCreateWorkOrder}
+          style={{
+            marginBottom: 'var(--spacing-4)',
+            padding: 'var(--spacing-4)',
+            border: '1px solid var(--color-border, #e5e7eb)',
+            borderRadius: 'var(--radius-md, 8px)',
+            display: 'grid',
+            gap: 'var(--spacing-3)',
+          }}
+        >
+          <strong>Create Work Order</strong>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 'var(--spacing-3)' }}>
+            <label>
+              Asset (Building scoped)
+              <select
+                value={newWorkOrder.assetId}
+                onChange={(e) => setNewWorkOrder((prev) => ({ ...prev, assetId: e.target.value }))}
+                disabled={buildingFilter === 'all' || isLoadingAssets || isCreating}
+                style={{ width: '100%' }}
+              >
+                <option value="">
+                  {buildingFilter === 'all'
+                    ? 'Select building first'
+                    : isLoadingAssets
+                      ? 'Loading assets...'
+                      : 'Select asset'}
+                </option>
+                {buildingAssets.map((asset) => (
+                  <option key={asset.assetId} value={asset.assetId}>
+                    {asset.assetTag} - {asset.displayName}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Work Type
+              <select
+                value={newWorkOrder.workType}
+                onChange={(e) => setNewWorkOrder((prev) => ({ ...prev, workType: e.target.value as WorkTypeOption }))}
+                disabled={isCreating}
+                style={{ width: '100%' }}
+              >
+                <option value="corrective">Corrective</option>
+                <option value="preventive">Preventive</option>
+                <option value="emergency">Emergency</option>
+                <option value="inspection">Inspection</option>
+                <option value="calibration">Calibration</option>
+                <option value="installation">Installation</option>
+                <option value="modification">Modification</option>
+                <option value="decommission">Decommission</option>
+                <option value="project">Project</option>
+                <option value="other">Other</option>
+              </select>
+            </label>
+            <label>
+              Priority
+              <select
+                value={newWorkOrder.priority}
+                onChange={(e) => setNewWorkOrder((prev) => ({ ...prev, priority: e.target.value as WorkOrder['priority'] }))}
+                disabled={isCreating}
+                style={{ width: '100%' }}
+              >
+                <option value="critical">Critical</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+              </select>
+            </label>
+            <label>
+              Est. Hours
+              <input
+                type="number"
+                min={0}
+                step={0.5}
+                value={newWorkOrder.estimatedHours}
+                onChange={(e) => setNewWorkOrder((prev) => ({ ...prev, estimatedHours: e.target.value }))}
+                disabled={isCreating}
+                style={{ width: '100%' }}
+              />
+            </label>
+          </div>
+          <label>
+            Title
+            <input
+              type="text"
+              value={newWorkOrder.title}
+              onChange={(e) => setNewWorkOrder((prev) => ({ ...prev, title: e.target.value }))}
+              disabled={isCreating}
+              style={{ width: '100%' }}
+              placeholder="Short work order title"
+            />
+          </label>
+          <label>
+            Description
+            <textarea
+              value={newWorkOrder.description}
+              onChange={(e) => setNewWorkOrder((prev) => ({ ...prev, description: e.target.value }))}
+              disabled={isCreating}
+              style={{ width: '100%' }}
+              rows={3}
+              placeholder="Describe the issue or required work"
+            />
+          </label>
+          <div>
+            <button type="submit" disabled={isCreating || buildingFilter === 'all' || !newWorkOrder.assetId || !newWorkOrder.title.trim()}>
+              {isCreating ? 'Creating...' : 'Create Work Order'}
+            </button>
+          </div>
+        </form>
+
         <div style={{ marginBottom: 'var(--spacing-4)', display: 'flex', gap: 'var(--spacing-4)' }}>
           <div>
             <label htmlFor="status-filter" style={{ marginRight: 'var(--spacing-2)' }}>
@@ -109,6 +355,23 @@ export function WorkOrdersPage() {
               <option value="high">High</option>
               <option value="medium">Medium</option>
               <option value="low">Low</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor="building-filter" style={{ marginRight: 'var(--spacing-2)' }}>
+              Building:
+            </label>
+            <select
+              id="building-filter"
+              value={buildingFilter}
+              onChange={(e) => setBuildingFilter(e.target.value)}
+            >
+              <option value="all">All</option>
+              {buildings.map((building) => (
+                <option key={building.buildingId} value={building.buildingId}>
+                  {building.buildingCode} - {building.name}
+                </option>
+              ))}
             </select>
           </div>
         </div>

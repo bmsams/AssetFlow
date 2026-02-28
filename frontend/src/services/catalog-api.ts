@@ -37,6 +37,60 @@ export interface CatalogItemsResponse {
   total: number;
 }
 
+/** Backend catalog item shape (from service-catalog-repository) */
+interface BackendCatalogItem {
+  catalogItemId: string;
+  itemCode: string;
+  name: string;
+  description: string | null;
+  shortDescription: string | null;
+  itemType: string;
+  categoryId: string | null;
+  categoryName: string | null;
+  manufacturer: string | null;
+  model: string | null;
+  unitPrice: number | null;
+  imageUrl: string | null;
+  thumbnailUrl: string | null;
+  specifications: Record<string, string> | null;
+  features: string[] | null;
+  status: string;
+  isRequestable: boolean;
+  leadTimeDays: number | null;
+  quantityAvailable: number | null;
+  tags: string[] | null;
+  sortOrder: number;
+}
+
+/** Map backend item to frontend CatalogItem shape */
+function mapBackendItem(item: BackendCatalogItem): CatalogItem & Record<string, unknown> {
+  // Map quantityAvailable to availability status
+  let availability = 'IN_STOCK';
+  const qty = item.quantityAvailable;
+  if (qty !== null && qty !== undefined) {
+    if (qty <= 0) availability = 'OUT_OF_STOCK';
+    else if (qty <= 5) availability = 'LOW_STOCK';
+  }
+
+  return {
+    itemId: item.catalogItemId,
+    name: item.name,
+    description: item.description ?? item.shortDescription ?? '',
+    category: item.categoryName ?? item.itemType ?? 'ACCESSORIES',
+    manufacturer: item.manufacturer ?? '',
+    model: item.model ?? '',
+    imageUrl: item.imageUrl ?? item.thumbnailUrl ?? undefined,
+    price: Number(item.unitPrice) || 0,
+    availability,
+    stockQuantity: Number(item.quantityAvailable) || 999,
+    leadTimeDays: Number(item.leadTimeDays) || 0,
+    specifications: item.specifications ?? {},
+    tags: item.tags ?? [],
+    isPopular: false,
+    isFeatured: false,
+  };
+}
+
 // ============================================================================
 // API Functions
 // ============================================================================
@@ -53,7 +107,7 @@ export async function getCatalogItems(
   if (params?.limit) queryParts.push(`limit=${params.limit}`);
 
   const queryString = queryParts.length > 0 ? `?${queryParts.join('&')}` : '';
-  const response = await apiClient.get<CatalogItemsResponse>(
+  const response = await apiClient.get<{ items: BackendCatalogItem[]; total: number }>(
     `/lifecycle/catalog/items${queryString}`
   );
 
@@ -66,7 +120,10 @@ export async function getCatalogItems(
     );
   }
 
-  return response.data;
+  return {
+    items: (response.data.items ?? []).map(mapBackendItem),
+    total: response.data.total ?? 0,
+  };
 }
 
 /**
@@ -81,7 +138,7 @@ export async function searchCatalog(
   if (params?.page) queryParts.push(`page=${params.page}`);
   if (params?.limit) queryParts.push(`limit=${params.limit}`);
 
-  const response = await apiClient.get<CatalogItemsResponse>(
+  const response = await apiClient.get<{ items: BackendCatalogItem[]; total: number }>(
     `/lifecycle/catalog/search?${queryParts.join('&')}`
   );
 
@@ -94,7 +151,10 @@ export async function searchCatalog(
     );
   }
 
-  return response.data;
+  return {
+    items: (response.data.items ?? []).map(mapBackendItem),
+    total: response.data.total ?? 0,
+  };
 }
 
 export const catalogApi = {

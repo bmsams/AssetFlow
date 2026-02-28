@@ -28,6 +28,22 @@ export interface EditablePOLine {
   notes?: string;
   /** Quantity received (only for existing lines) */
   quantityReceived?: number;
+  /** Line-level vendor ID */
+  vendorId?: string;
+  /** Line-level vendor name */
+  vendorName?: string;
+  /** Effective vendor ID (resolved: line > header) */
+  effectiveVendorId?: string;
+  /** Effective vendor name (resolved: line > header) */
+  effectiveVendorName?: string;
+  /** Line-level cost center ID */
+  costCenterId?: string;
+  /** Line-level cost center code */
+  costCenterCode?: string;
+  /** Effective cost center ID (resolved: line > header) */
+  effectiveCostCenterId?: string;
+  /** Effective cost center code (resolved: line > header) */
+  effectiveCostCenterCode?: string;
 }
 
 /**
@@ -238,6 +254,8 @@ export function POLineEditor({
               <th style={{ width: '120px' }}>Type</th>
               <th>Description</th>
               <th style={{ width: '100px' }}>SKU</th>
+              <th style={{ width: '140px' }}>Vendor</th>
+              <th style={{ width: '140px' }}>Cost Center</th>
               <th style={{ width: '80px' }}>Qty</th>
               <th style={{ width: '120px' }}>Unit Price</th>
               <th style={{ width: '120px' }}>Line Total</th>
@@ -330,6 +348,42 @@ export function POLineEditor({
                       }}
                       placeholder="SKU"
                     />
+                  )}
+                </td>
+
+                {/* Vendor */}
+                <td>
+                  {readOnly ? (
+                    <span style={{ fontSize: 'var(--font-size-xs)' }}>
+                      {line.effectiveVendorName || '-'}
+                      {!line.vendorId && line.effectiveVendorId && (
+                        <span style={{ color: 'var(--color-text-secondary)', fontStyle: 'italic', display: 'block', fontSize: 'var(--font-size-xs)' }}>
+                          (from header)
+                        </span>
+                      )}
+                    </span>
+                  ) : (
+                    <span style={{ fontSize: 'var(--font-size-xs)' }}>
+                      {line.vendorName || line.effectiveVendorName || '-'}
+                    </span>
+                  )}
+                </td>
+
+                {/* Cost Center */}
+                <td>
+                  {readOnly ? (
+                    <span style={{ fontSize: 'var(--font-size-xs)' }}>
+                      {line.effectiveCostCenterCode || '-'}
+                      {!line.costCenterId && line.effectiveCostCenterId && (
+                        <span style={{ color: 'var(--color-text-secondary)', fontStyle: 'italic', display: 'block', fontSize: 'var(--font-size-xs)' }}>
+                          (from header)
+                        </span>
+                      )}
+                    </span>
+                  ) : (
+                    <span style={{ fontSize: 'var(--font-size-xs)' }}>
+                      {line.costCenterCode || line.effectiveCostCenterCode || '-'}
+                    </span>
                   )}
                 </td>
 
@@ -452,7 +506,7 @@ export function POLineEditor({
             {lines.length === 0 && (
               <tr>
                 <td
-                  colSpan={showQuantityReceived ? 9 : readOnly ? 6 : 7}
+                  colSpan={showQuantityReceived ? 11 : readOnly ? 8 : 9}
                   style={{
                     textAlign: 'center',
                     padding: 'var(--spacing-8)',
@@ -470,7 +524,7 @@ export function POLineEditor({
             <tfoot>
               <tr>
                 <td
-                  colSpan={showQuantityReceived ? (readOnly ? 6 : 7) : readOnly ? 5 : 6}
+                  colSpan={showQuantityReceived ? (readOnly ? 8 : 9) : readOnly ? 7 : 8}
                   style={{
                     textAlign: 'right',
                     fontWeight: 'var(--font-weight-semibold)',
@@ -528,6 +582,14 @@ export function poLineToEditable(line: POLine): EditablePOLine {
     unitPrice: line.unitPrice,
     notes: line.notes,
     quantityReceived: line.quantityReceived,
+    vendorId: line.vendorId,
+    vendorName: line.vendorName,
+    effectiveVendorId: line.effectiveVendorId,
+    effectiveVendorName: line.effectiveVendorName,
+    costCenterId: line.costCenterId,
+    costCenterCode: line.costCenterCode,
+    effectiveCostCenterId: line.effectiveCostCenterId,
+    effectiveCostCenterCode: line.effectiveCostCenterCode,
   };
 }
 
@@ -543,6 +605,8 @@ export function editableToCreateRequest(line: EditablePOLine): CreatePOLineReque
     quantity: line.quantity,
     unitPrice: line.unitPrice,
     notes: line.notes || undefined,
+    vendorId: line.vendorId || undefined,
+    costCenterId: line.costCenterId || undefined,
   };
 }
 

@@ -49,7 +49,7 @@ describe('Header', () => {
   it('renders theme toggle button', () => {
     renderHeader();
 
-    // ThemeToggle has aria-label containing "Current theme"
+    // ThemeToggle has aria-label containing 'Current theme'
     expect(screen.getByRole('button', { name: /current theme/i })).toBeInTheDocument();
   });
 
@@ -65,14 +65,14 @@ describe('Header', () => {
     // Initial state is system (resolves to light)
     expect(themeButton).toHaveAttribute('data-resolved-theme', 'light');
 
-    // Click to cycle: system -> light
-    await user.click(themeButton);
-    expect(themeButton).toHaveAttribute('data-theme-value', 'light');
-
-    // Click again to cycle: light -> dark
+    // Click to toggle: system (resolved light) -> dark
     await user.click(themeButton);
     expect(themeButton).toHaveAttribute('data-theme-value', 'dark');
     expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
+
+    // Click again to toggle: dark -> light
+    await user.click(themeButton);
+    expect(themeButton).toHaveAttribute('data-theme-value', 'light');
   });
 
   it('has header landmark role', () => {

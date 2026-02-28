@@ -1,0 +1,28 @@
+{
+  "name": "@ams/events",
+  "version": "1.0.0",
+  "description": "Event publishing and handling utilities for Asset Management System",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --platform=node --target=node18 --outfile=dist/index.js --external:@ams/* --external:@aws-sdk/* --external:uuid",
+    "clean": "rm -rf dist",
+    "test": "jest",
+    "typecheck": "tsc --noEmit"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@ams/types": "1.0.0",
+    "@ams/utils": "1.0.0",
+    "@aws-sdk/client-sns": "^3.478.0",
+    "@aws-sdk/client-sqs": "^3.478.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/uuid": "^9.0.0",
+    "aws-sdk-client-mock": "^3.0.0",
+    "typescript": "^5.3.3"
+  }
+}

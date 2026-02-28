@@ -1,0 +1,81 @@
+.form {
+  display: grid;
+  gap: 1rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.field label {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.input,
+.select,
+.textarea {
+  padding: 0.5rem 0.625rem;
+  border: 1px solid var(--color-border-default);
+  border-radius: 0.375rem;
+  background: var(--color-background-primary);
+  color: var(--color-text-primary);
+}
+
+.inputError {
+  border-color: var(--color-error-500);
+}
+
+.textarea {
+  min-height: 5rem;
+  resize: vertical;
+}
+
+.lineHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+}
+
+.lineCard {
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.lineGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.625rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.625rem;
+  justify-content: flex-end;
+}
+
+.error {
+  color: var(--color-error-700);
+}
+
+.fieldError {
+  color: var(--color-error-700);
+  font-size: 0.75rem;
+}
+
+.helperText {
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+}

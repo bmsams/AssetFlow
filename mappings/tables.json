@@ -87,6 +87,88 @@
       "procurement-service"
     ]
   },
+  "approval_routing_rules": {
+    "columns": [
+      "rule_id",
+      "rule_name",
+      "rule_type",
+      "priority",
+      "is_active",
+      "conditions",
+      "approver_ids",
+      "approver_roles",
+      "require_all_approvers",
+      "approval_levels",
+      "escalation_days",
+      "description",
+      "created_at",
+      "updated_at",
+      "created_by"
+    ],
+    "column_count": 15,
+    "primary_key": [
+      "rule_id"
+    ],
+    "foreign_keys": [],
+    "triggers": [],
+    "index_count": 2,
+    "indexes": [
+      "approval_routing_rules_pkey",
+      "idx_approval_routing_rules_active"
+    ],
+    "owning_services": [
+      "lifecycle-service"
+    ]
+  },
+  "approval_steps": {
+    "columns": [
+      "step_id",
+      "workflow_id",
+      "step_level",
+      "approver_id",
+      "approver_name",
+      "approver_email",
+      "approver_role",
+      "status",
+      "decision",
+      "decision_date",
+      "decision_reason",
+      "delegated_to",
+      "delegated_date",
+      "delegation_reason",
+      "due_date",
+      "reminder_sent_date",
+      "escalated_date",
+      "escalated_to",
+      "notes",
+      "created_at",
+      "updated_at",
+      "created_by"
+    ],
+    "column_count": 22,
+    "primary_key": [
+      "step_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "workflow_id",
+        "references": "approval_workflows.workflow_id",
+        "on_delete": "CASCADE",
+        "on_update": "NO ACTION"
+      }
+    ],
+    "triggers": [],
+    "index_count": 4,
+    "indexes": [
+      "approval_steps_pkey",
+      "idx_approval_steps_approver_id",
+      "idx_approval_steps_status",
+      "idx_approval_steps_workflow_id"
+    ],
+    "owning_services": [
+      "lifecycle-service"
+    ]
+  },
   "approval_thresholds": {
     "columns": [
       "threshold_id",
@@ -119,6 +201,47 @@
     ],
     "owning_services": [
       "procurement-service"
+    ]
+  },
+  "approval_workflows": {
+    "columns": [
+      "workflow_id",
+      "request_id",
+      "request_type",
+      "status",
+      "current_level",
+      "max_level",
+      "current_approver_id",
+      "initiated_by",
+      "initiated_date",
+      "completed_date",
+      "completed_by",
+      "final_decision",
+      "decision_reason",
+      "estimated_cost",
+      "requester_department",
+      "item_type",
+      "priority",
+      "notes",
+      "created_at",
+      "updated_at",
+      "created_by"
+    ],
+    "column_count": 21,
+    "primary_key": [
+      "workflow_id"
+    ],
+    "foreign_keys": [],
+    "triggers": [],
+    "index_count": 4,
+    "indexes": [
+      "approval_workflows_pkey",
+      "idx_approval_workflows_initiated_by",
+      "idx_approval_workflows_request_id",
+      "idx_approval_workflows_status"
+    ],
+    "owning_services": [
+      "lifecycle-service"
     ]
   },
   "asset_relationships": {
@@ -225,17 +348,17 @@
       {
         "name": "trigger_audit_assets",
         "timing": "AFTER",
+        "event": "UPDATE"
+      },
+      {
+        "name": "trigger_audit_assets",
+        "timing": "AFTER",
         "event": "INSERT"
       },
       {
         "name": "trigger_audit_assets",
         "timing": "AFTER",
         "event": "DELETE"
-      },
-      {
-        "name": "trigger_audit_assets",
-        "timing": "AFTER",
-        "event": "UPDATE"
       }
     ],
     "index_count": 9,
@@ -403,7 +526,7 @@
       {
         "name": "trigger_audit_audit_records",
         "timing": "AFTER",
-        "event": "INSERT"
+        "event": "DELETE"
       },
       {
         "name": "trigger_audit_audit_records",
@@ -413,7 +536,7 @@
       {
         "name": "trigger_audit_audit_records",
         "timing": "AFTER",
-        "event": "DELETE"
+        "event": "INSERT"
       }
     ],
     "index_count": 11,
@@ -551,12 +674,12 @@
       {
         "name": "trigger_bin_locations_audit",
         "timing": "AFTER",
-        "event": "INSERT"
+        "event": "UPDATE"
       },
       {
         "name": "trigger_bin_locations_audit",
         "timing": "AFTER",
-        "event": "UPDATE"
+        "event": "INSERT"
       },
       {
         "name": "trigger_bin_locations_updated_at",
@@ -623,17 +746,17 @@
       {
         "name": "trigger_buildings_audit",
         "timing": "AFTER",
-        "event": "INSERT"
-      },
-      {
-        "name": "trigger_buildings_audit",
-        "timing": "AFTER",
         "event": "DELETE"
       },
       {
         "name": "trigger_buildings_audit",
         "timing": "AFTER",
         "event": "UPDATE"
+      },
+      {
+        "name": "trigger_buildings_audit",
+        "timing": "AFTER",
+        "event": "INSERT"
       },
       {
         "name": "trigger_buildings_updated_at",
@@ -655,6 +778,230 @@
     "owning_services": [
       "ham-service",
       "admin-service"
+    ]
+  },
+  "catalog_categories": {
+    "columns": [
+      "category_id",
+      "name",
+      "description",
+      "parent_category_id",
+      "icon_url",
+      "sort_order",
+      "is_active",
+      "created_at",
+      "updated_at",
+      "created_by"
+    ],
+    "column_count": 10,
+    "primary_key": [
+      "category_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "parent_category_id",
+        "references": "catalog_categories.category_id",
+        "on_delete": "NO ACTION",
+        "on_update": "NO ACTION"
+      }
+    ],
+    "triggers": [],
+    "index_count": 3,
+    "indexes": [
+      "catalog_categories_pkey",
+      "idx_catalog_categories_active",
+      "idx_catalog_categories_parent"
+    ],
+    "owning_services": [
+      "lifecycle-service"
+    ]
+  },
+  "catalog_entitlement_rules": {
+    "columns": [
+      "rule_id",
+      "catalog_item_id",
+      "category_id",
+      "rule_type",
+      "rule_value",
+      "action",
+      "priority",
+      "is_active",
+      "description",
+      "created_at",
+      "updated_at",
+      "created_by"
+    ],
+    "column_count": 12,
+    "primary_key": [
+      "rule_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "catalog_item_id",
+        "references": "catalog_items.catalog_item_id",
+        "on_delete": "CASCADE",
+        "on_update": "NO ACTION"
+      },
+      {
+        "column": "category_id",
+        "references": "catalog_categories.category_id",
+        "on_delete": "CASCADE",
+        "on_update": "NO ACTION"
+      }
+    ],
+    "triggers": [],
+    "index_count": 4,
+    "indexes": [
+      "catalog_entitlement_rules_pkey",
+      "idx_catalog_entitlement_rules_active",
+      "idx_catalog_entitlement_rules_category",
+      "idx_catalog_entitlement_rules_item"
+    ],
+    "owning_services": [
+      "lifecycle-service"
+    ]
+  },
+  "catalog_items": {
+    "columns": [
+      "catalog_item_id",
+      "item_code",
+      "name",
+      "description",
+      "short_description",
+      "item_type",
+      "category_id",
+      "subcategory_id",
+      "manufacturer",
+      "model",
+      "sku",
+      "unit_price",
+      "currency",
+      "image_url",
+      "thumbnail_url",
+      "specifications",
+      "features",
+      "status",
+      "is_requestable",
+      "requires_approval",
+      "approval_threshold",
+      "lead_time_days",
+      "max_quantity_per_request",
+      "vendor_id",
+      "stockroom_id",
+      "tags",
+      "sort_order",
+      "created_at",
+      "updated_at",
+      "created_by"
+    ],
+    "column_count": 30,
+    "primary_key": [
+      "catalog_item_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "category_id",
+        "references": "catalog_categories.category_id",
+        "on_delete": "NO ACTION",
+        "on_update": "NO ACTION"
+      },
+      {
+        "column": "subcategory_id",
+        "references": "catalog_categories.category_id",
+        "on_delete": "NO ACTION",
+        "on_update": "NO ACTION"
+      }
+    ],
+    "triggers": [],
+    "index_count": 6,
+    "indexes": [
+      "catalog_items_item_code_key",
+      "catalog_items_pkey",
+      "idx_catalog_items_category_id",
+      "idx_catalog_items_item_type",
+      "idx_catalog_items_status",
+      "idx_catalog_items_vendor_id"
+    ],
+    "owning_services": [
+      "lifecycle-service"
+    ]
+  },
+  "contract_assets": {
+    "columns": [
+      "link_id",
+      "contract_id",
+      "asset_id",
+      "link_type",
+      "start_date",
+      "end_date",
+      "notes",
+      "created_at",
+      "created_by"
+    ],
+    "column_count": 9,
+    "primary_key": [
+      "link_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "asset_id",
+        "references": "assets.asset_id",
+        "on_delete": "CASCADE",
+        "on_update": "NO ACTION"
+      },
+      {
+        "column": "contract_id",
+        "references": "contracts.contract_id",
+        "on_delete": "CASCADE",
+        "on_update": "NO ACTION"
+      }
+    ],
+    "triggers": [],
+    "index_count": 4,
+    "indexes": [
+      "contract_assets_contract_id_asset_id_key",
+      "contract_assets_pkey",
+      "idx_contract_assets_asset",
+      "idx_contract_assets_contract"
+    ],
+    "owning_services": [
+      "lifecycle-service"
+    ]
+  },
+  "contract_entitlements": {
+    "columns": [
+      "link_id",
+      "contract_id",
+      "entitlement_id",
+      "link_type",
+      "start_date",
+      "end_date",
+      "notes",
+      "created_at",
+      "created_by"
+    ],
+    "column_count": 9,
+    "primary_key": [
+      "link_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "contract_id",
+        "references": "contracts.contract_id",
+        "on_delete": "CASCADE",
+        "on_update": "NO ACTION"
+      }
+    ],
+    "triggers": [],
+    "index_count": 4,
+    "indexes": [
+      "contract_entitlements_contract_id_entitlement_id_key",
+      "contract_entitlements_pkey",
+      "idx_contract_entitlements_contract",
+      "idx_contract_entitlements_entitlement"
+    ],
+    "owning_services": [
+      "lifecycle-service"
     ]
   },
   "contracts": {
@@ -739,7 +1086,7 @@
       {
         "name": "trigger_audit_contracts",
         "timing": "AFTER",
-        "event": "UPDATE"
+        "event": "DELETE"
       },
       {
         "name": "trigger_audit_contracts",
@@ -749,7 +1096,7 @@
       {
         "name": "trigger_audit_contracts",
         "timing": "AFTER",
-        "event": "DELETE"
+        "event": "UPDATE"
       },
       {
         "name": "trigger_contracts_updated_at",
@@ -907,6 +1254,94 @@
       "report-service"
     ]
   },
+  "deployment_records": {
+    "columns": [
+      "deployment_id",
+      "asset_id",
+      "assigned_to_user_id",
+      "deployed_by",
+      "deployed_by_name",
+      "deployment_date",
+      "status",
+      "location",
+      "department",
+      "cost_center",
+      "notes",
+      "created_at",
+      "updated_at",
+      "created_by"
+    ],
+    "column_count": 14,
+    "primary_key": [
+      "deployment_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "asset_id",
+        "references": "assets.asset_id",
+        "on_delete": "NO ACTION",
+        "on_update": "NO ACTION"
+      }
+    ],
+    "triggers": [],
+    "index_count": 4,
+    "indexes": [
+      "deployment_records_pkey",
+      "idx_deployment_records_asset_id",
+      "idx_deployment_records_status",
+      "idx_deployment_records_user_id"
+    ],
+    "owning_services": [
+      "lifecycle-service"
+    ]
+  },
+  "deployment_relationships": {
+    "columns": [
+      "relationship_id",
+      "deployment_id",
+      "source_asset_id",
+      "target_asset_id",
+      "relation_type",
+      "metadata",
+      "created_at",
+      "created_by"
+    ],
+    "column_count": 8,
+    "primary_key": [
+      "relationship_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "deployment_id",
+        "references": "deployment_records.deployment_id",
+        "on_delete": "CASCADE",
+        "on_update": "NO ACTION"
+      },
+      {
+        "column": "source_asset_id",
+        "references": "assets.asset_id",
+        "on_delete": "NO ACTION",
+        "on_update": "NO ACTION"
+      },
+      {
+        "column": "target_asset_id",
+        "references": "assets.asset_id",
+        "on_delete": "NO ACTION",
+        "on_update": "NO ACTION"
+      }
+    ],
+    "triggers": [],
+    "index_count": 4,
+    "indexes": [
+      "deployment_relationships_pkey",
+      "idx_deployment_relationships_deployment",
+      "idx_deployment_relationships_source",
+      "idx_deployment_relationships_target"
+    ],
+    "owning_services": [
+      "lifecycle-service"
+    ]
+  },
   "depreciation_schedules": {
     "columns": [
       "schedule_id",
@@ -982,6 +1417,97 @@
     ],
     "owning_services": [
       "report-service"
+    ]
+  },
+  "destruction_certificates": {
+    "columns": [
+      "certificate_id",
+      "certificate_number",
+      "asset_id",
+      "workflow_id",
+      "vendor_id",
+      "vendor_name",
+      "destruction_date",
+      "destruction_method",
+      "serial_number",
+      "asset_tag",
+      "document_url",
+      "verified_by",
+      "verified_at",
+      "notes",
+      "created_at",
+      "created_by"
+    ],
+    "column_count": 16,
+    "primary_key": [
+      "certificate_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "asset_id",
+        "references": "assets.asset_id",
+        "on_delete": "NO ACTION",
+        "on_update": "NO ACTION"
+      },
+      {
+        "column": "workflow_id",
+        "references": "disposal_workflows.workflow_id",
+        "on_delete": "NO ACTION",
+        "on_update": "NO ACTION"
+      }
+    ],
+    "triggers": [],
+    "index_count": 4,
+    "indexes": [
+      "destruction_certificates_certificate_number_key",
+      "destruction_certificates_pkey",
+      "idx_destruction_certificates_asset_id",
+      "idx_destruction_certificates_workflow_id"
+    ],
+    "owning_services": [
+      "ham-service",
+      "lifecycle-service"
+    ]
+  },
+  "discovery_correlations": {
+    "columns": [
+      "correlation_id",
+      "asset_id",
+      "discovery_source",
+      "discovery_record_id",
+      "serial_number",
+      "mac_address",
+      "hostname",
+      "ip_address",
+      "last_discovered_at",
+      "correlated_at",
+      "correlated_by",
+      "confidence",
+      "created_at",
+      "updated_at",
+      "created_by"
+    ],
+    "column_count": 15,
+    "primary_key": [
+      "correlation_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "asset_id",
+        "references": "assets.asset_id",
+        "on_delete": "NO ACTION",
+        "on_update": "NO ACTION"
+      }
+    ],
+    "triggers": [],
+    "index_count": 3,
+    "indexes": [
+      "discovery_correlations_pkey",
+      "idx_discovery_correlations_asset_id",
+      "idx_discovery_correlations_source_record"
+    ],
+    "owning_services": [
+      "lifecycle-service"
     ]
   },
   "discovery_records": {
@@ -1093,6 +1619,98 @@
       "integration-service"
     ]
   },
+  "disposal_tasks": {
+    "columns": [
+      "task_id",
+      "workflow_id",
+      "task_type",
+      "task_name",
+      "description",
+      "status",
+      "assigned_to",
+      "due_date",
+      "completed_at",
+      "completed_by",
+      "completion_notes",
+      "sequence",
+      "is_required",
+      "created_at",
+      "updated_at",
+      "created_by"
+    ],
+    "column_count": 16,
+    "primary_key": [
+      "task_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "workflow_id",
+        "references": "disposal_workflows.workflow_id",
+        "on_delete": "CASCADE",
+        "on_update": "NO ACTION"
+      }
+    ],
+    "triggers": [],
+    "index_count": 3,
+    "indexes": [
+      "disposal_tasks_pkey",
+      "idx_disposal_tasks_status",
+      "idx_disposal_tasks_workflow_id"
+    ],
+    "owning_services": [
+      "ham-service"
+    ]
+  },
+  "disposal_workflows": {
+    "columns": [
+      "workflow_id",
+      "workflow_number",
+      "asset_id",
+      "status",
+      "disposal_method",
+      "initiated_by",
+      "initiated_at",
+      "data_wipe_required",
+      "data_wipe_completed_at",
+      "data_wipe_verified_by",
+      "environmental_check_required",
+      "environmental_check_completed_at",
+      "environmental_check_verified_by",
+      "pickup_scheduled_at",
+      "pickup_vendor_id",
+      "completed_at",
+      "completed_by",
+      "destruction_certificate_id",
+      "notes",
+      "created_at",
+      "updated_at",
+      "created_by"
+    ],
+    "column_count": 22,
+    "primary_key": [
+      "workflow_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "asset_id",
+        "references": "assets.asset_id",
+        "on_delete": "NO ACTION",
+        "on_update": "NO ACTION"
+      }
+    ],
+    "triggers": [],
+    "index_count": 5,
+    "indexes": [
+      "disposal_workflows_pkey",
+      "disposal_workflows_workflow_number_key",
+      "idx_disposal_workflows_asset_id",
+      "idx_disposal_workflows_initiated_by",
+      "idx_disposal_workflows_status"
+    ],
+    "owning_services": [
+      "ham-service"
+    ]
+  },
   "enterprise_assets": {
     "columns": [
       "asset_id",
@@ -1154,12 +1772,12 @@
       {
         "name": "trigger_audit_enterprise_assets",
         "timing": "AFTER",
-        "event": "INSERT"
+        "event": "UPDATE"
       },
       {
         "name": "trigger_audit_enterprise_assets",
         "timing": "AFTER",
-        "event": "UPDATE"
+        "event": "INSERT"
       },
       {
         "name": "trigger_audit_enterprise_assets",
@@ -1262,7 +1880,7 @@
       {
         "name": "trigger_audit_entitlements",
         "timing": "AFTER",
-        "event": "DELETE"
+        "event": "UPDATE"
       },
       {
         "name": "trigger_audit_entitlements",
@@ -1272,7 +1890,7 @@
       {
         "name": "trigger_audit_entitlements",
         "timing": "AFTER",
-        "event": "UPDATE"
+        "event": "DELETE"
       },
       {
         "name": "trigger_entitlements_updated_at",
@@ -1295,6 +1913,154 @@
     ],
     "owning_services": [
       "sam-service"
+    ]
+  },
+  "erp_connection_configs": {
+    "columns": [
+      "connection_id",
+      "erp_system",
+      "connection_name",
+      "base_url",
+      "auth_type",
+      "is_active",
+      "sync_direction",
+      "sync_interval_minutes",
+      "last_sync_at",
+      "created_at",
+      "updated_at",
+      "created_by"
+    ],
+    "column_count": 12,
+    "primary_key": [
+      "connection_id"
+    ],
+    "foreign_keys": [],
+    "triggers": [],
+    "index_count": 2,
+    "indexes": [
+      "erp_connection_configs_pkey",
+      "idx_erp_connection_configs_erp_system"
+    ],
+    "owning_services": [
+      "integration-service"
+    ]
+  },
+  "erp_cost_centers": {
+    "columns": [
+      "erp_cost_center_id",
+      "erp_system",
+      "cost_center_code",
+      "name",
+      "description",
+      "status",
+      "parent_cost_center_id",
+      "manager_id",
+      "manager_name",
+      "company_code",
+      "department_id",
+      "department_name",
+      "budget_amount",
+      "spent_amount",
+      "currency",
+      "fiscal_year",
+      "valid_from",
+      "valid_to",
+      "local_cost_center_id",
+      "created_at",
+      "updated_at",
+      "created_by"
+    ],
+    "column_count": 22,
+    "primary_key": [
+      "erp_system",
+      "erp_cost_center_id"
+    ],
+    "foreign_keys": [],
+    "triggers": [],
+    "index_count": 3,
+    "indexes": [
+      "erp_cost_centers_pkey",
+      "idx_erp_cost_centers_code",
+      "idx_erp_cost_centers_status"
+    ],
+    "owning_services": [
+      "integration-service"
+    ]
+  },
+  "erp_purchase_orders": {
+    "columns": [
+      "erp_purchase_order_id",
+      "erp_system",
+      "po_number",
+      "vendor_id",
+      "vendor_name",
+      "status",
+      "order_date",
+      "expected_delivery_date",
+      "total_amount",
+      "currency",
+      "requester_id",
+      "requester_name",
+      "approver_id",
+      "approver_name",
+      "cost_center_id",
+      "cost_center_name",
+      "company_code",
+      "plant_code",
+      "lines_json",
+      "notes",
+      "local_po_id",
+      "created_at",
+      "updated_at",
+      "created_by"
+    ],
+    "column_count": 24,
+    "primary_key": [
+      "erp_purchase_order_id",
+      "erp_system"
+    ],
+    "foreign_keys": [],
+    "triggers": [],
+    "index_count": 3,
+    "indexes": [
+      "erp_purchase_orders_pkey",
+      "idx_erp_purchase_orders_po_number",
+      "idx_erp_purchase_orders_status"
+    ],
+    "owning_services": [
+      "integration-service"
+    ]
+  },
+  "erp_sync_audit_logs": {
+    "columns": [
+      "audit_log_id",
+      "erp_system",
+      "operation",
+      "direction",
+      "status",
+      "total_records",
+      "success_count",
+      "failure_count",
+      "started_at",
+      "completed_at",
+      "error_message",
+      "created_by"
+    ],
+    "column_count": 12,
+    "primary_key": [
+      "audit_log_id"
+    ],
+    "foreign_keys": [],
+    "triggers": [],
+    "index_count": 4,
+    "indexes": [
+      "erp_sync_audit_logs_pkey",
+      "idx_erp_sync_audit_logs_erp_system",
+      "idx_erp_sync_audit_logs_operation",
+      "idx_erp_sync_audit_logs_started_at"
+    ],
+    "owning_services": [
+      "integration-service"
     ]
   },
   "facilities": {
@@ -1402,12 +2168,12 @@
       {
         "name": "trigger_floors_audit",
         "timing": "AFTER",
-        "event": "INSERT"
+        "event": "UPDATE"
       },
       {
         "name": "trigger_floors_audit",
         "timing": "AFTER",
-        "event": "UPDATE"
+        "event": "INSERT"
       },
       {
         "name": "trigger_floors_audit",
@@ -1553,17 +2319,17 @@
       {
         "name": "trigger_audit_hardware_assets",
         "timing": "AFTER",
+        "event": "UPDATE"
+      },
+      {
+        "name": "trigger_audit_hardware_assets",
+        "timing": "AFTER",
         "event": "INSERT"
       },
       {
         "name": "trigger_audit_hardware_assets",
         "timing": "AFTER",
         "event": "DELETE"
-      },
-      {
-        "name": "trigger_audit_hardware_assets",
-        "timing": "AFTER",
-        "event": "UPDATE"
       },
       {
         "name": "trigger_hw_update_parent",
@@ -1663,6 +2429,84 @@
       "lifecycle-service"
     ]
   },
+  "inventory_reservations": {
+    "columns": [
+      "reservation_id",
+      "inventory_id",
+      "stockroom_id",
+      "product_id",
+      "product_type",
+      "request_id",
+      "request_line_id",
+      "quantity_reserved",
+      "reserved_by",
+      "reserved_at",
+      "expires_at",
+      "status",
+      "notes",
+      "created_at",
+      "updated_at",
+      "created_by"
+    ],
+    "column_count": 16,
+    "primary_key": [
+      "reservation_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "inventory_id",
+        "references": "stockroom_inventory.inventory_id",
+        "on_delete": "NO ACTION",
+        "on_update": "NO ACTION"
+      }
+    ],
+    "triggers": [],
+    "index_count": 4,
+    "indexes": [
+      "idx_inventory_reservations_inventory",
+      "idx_inventory_reservations_request",
+      "idx_inventory_reservations_status",
+      "inventory_reservations_pkey"
+    ],
+    "owning_services": [
+      "lifecycle-service"
+    ]
+  },
+  "known_applications": {
+    "columns": [
+      "application_id",
+      "application_name",
+      "domain",
+      "domain_patterns",
+      "category",
+      "vendor",
+      "is_approved",
+      "is_blocked",
+      "risk_level",
+      "description",
+      "data_classification",
+      "compliance_notes",
+      "created_at",
+      "updated_at",
+      "created_by"
+    ],
+    "column_count": 15,
+    "primary_key": [
+      "application_id"
+    ],
+    "foreign_keys": [],
+    "triggers": [],
+    "index_count": 4,
+    "indexes": [
+      "idx_known_applications_approved",
+      "idx_known_applications_blocked",
+      "idx_known_applications_domain",
+      "known_applications_pkey"
+    ],
+    "owning_services": [
+      "sam-service"
+    ]
+  },
   "lease_payments": {
     "columns": [
       "payment_id",
@@ -1732,17 +2576,17 @@
       {
         "name": "trigger_audit_lease_payments",
         "timing": "AFTER",
+        "event": "UPDATE"
+      },
+      {
+        "name": "trigger_audit_lease_payments",
+        "timing": "AFTER",
         "event": "DELETE"
       },
       {
         "name": "trigger_audit_lease_payments",
         "timing": "AFTER",
         "event": "INSERT"
-      },
-      {
-        "name": "trigger_audit_lease_payments",
-        "timing": "AFTER",
-        "event": "UPDATE"
       },
       {
         "name": "trigger_lp_updated_at",
@@ -1765,6 +2609,53 @@
       "unique_contract_payment"
     ],
     "owning_services": []
+  },
+  "license_ownership_evidence": {
+    "columns": [
+      "evidence_id",
+      "entitlement_id",
+      "evidence_type",
+      "document_number",
+      "document_date",
+      "vendor_id",
+      "description",
+      "quantity",
+      "unit_cost",
+      "total_cost",
+      "document_url",
+      "created_at",
+      "updated_at",
+      "created_by"
+    ],
+    "column_count": 14,
+    "primary_key": [
+      "evidence_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "entitlement_id",
+        "references": "entitlements.entitlement_id",
+        "on_delete": "CASCADE",
+        "on_update": "NO ACTION"
+      },
+      {
+        "column": "vendor_id",
+        "references": "vendors.vendor_id",
+        "on_delete": "NO ACTION",
+        "on_update": "NO ACTION"
+      }
+    ],
+    "triggers": [],
+    "index_count": 4,
+    "indexes": [
+      "idx_license_ownership_evidence_entitlement",
+      "idx_license_ownership_evidence_type",
+      "idx_license_ownership_evidence_vendor",
+      "license_ownership_evidence_pkey"
+    ],
+    "owning_services": [
+      "sam-service"
+    ]
   },
   "linear_asset_segments": {
     "columns": [
@@ -1811,7 +2702,7 @@
       {
         "name": "trigger_update_segment_count",
         "timing": "AFTER",
-        "event": "UPDATE"
+        "event": "DELETE"
       },
       {
         "name": "trigger_update_segment_count",
@@ -1821,7 +2712,7 @@
       {
         "name": "trigger_update_segment_count",
         "timing": "AFTER",
-        "event": "DELETE"
+        "event": "UPDATE"
       }
     ],
     "index_count": 7,
@@ -1991,17 +2882,17 @@
       {
         "name": "trigger_audit_loaner_checkouts",
         "timing": "AFTER",
+        "event": "INSERT"
+      },
+      {
+        "name": "trigger_audit_loaner_checkouts",
+        "timing": "AFTER",
         "event": "DELETE"
       },
       {
         "name": "trigger_audit_loaner_checkouts",
         "timing": "AFTER",
         "event": "UPDATE"
-      },
-      {
-        "name": "trigger_audit_loaner_checkouts",
-        "timing": "AFTER",
-        "event": "INSERT"
       },
       {
         "name": "trigger_lc_updated_at",
@@ -2156,22 +3047,22 @@
       {
         "name": "trigger_manufacturers_audit",
         "timing": "AFTER",
-        "event": "INSERT"
+        "event": "UPDATE"
       },
       {
         "name": "trigger_manufacturers_audit",
         "timing": "AFTER",
-        "event": "UPDATE"
-      },
-      {
-        "name": "trigger_manufacturers_set_defaults",
-        "timing": "BEFORE",
         "event": "INSERT"
       },
       {
         "name": "trigger_manufacturers_set_defaults",
         "timing": "BEFORE",
         "event": "UPDATE"
+      },
+      {
+        "name": "trigger_manufacturers_set_defaults",
+        "timing": "BEFORE",
+        "event": "INSERT"
       }
     ],
     "index_count": 5,
@@ -2267,51 +3158,72 @@
     ],
     "owning_services": []
   },
-  "po_lines": {
+  "publisher_license_rules": {
     "columns": [
-      "line_id",
-      "po_id",
-      "line_number",
-      "product_type",
-      "product_id",
-      "product_description",
-      "sku",
-      "quantity",
-      "unit_price",
-      "line_total",
-      "quantity_received",
+      "rule_id",
+      "pack_id",
+      "product_pattern",
+      "license_metric",
+      "calculation_method",
+      "multiplier",
+      "min_licenses",
+      "max_licenses",
       "notes",
+      "is_active",
       "created_at",
-      "updated_at"
+      "updated_at",
+      "created_by"
     ],
-    "column_count": 14,
+    "column_count": 13,
     "primary_key": [
-      "line_id"
+      "rule_id"
     ],
     "foreign_keys": [
       {
-        "column": "po_id",
-        "references": "purchase_orders.po_id",
+        "column": "pack_id",
+        "references": "publisher_packs.pack_id",
         "on_delete": "CASCADE",
         "on_update": "NO ACTION"
       }
     ],
-    "triggers": [
-      {
-        "name": "trigger_po_lines_updated_at",
-        "timing": "BEFORE",
-        "event": "UPDATE"
-      }
-    ],
-    "index_count": 5,
+    "triggers": [],
+    "index_count": 3,
     "indexes": [
-      "idx_po_lines_po_id",
-      "idx_po_lines_product_id",
-      "idx_po_lines_product_type",
-      "po_lines_pkey",
-      "po_lines_po_id_line_number_key"
+      "idx_publisher_license_rules_active",
+      "idx_publisher_license_rules_pack",
+      "publisher_license_rules_pkey"
     ],
-    "owning_services": []
+    "owning_services": [
+      "sam-service"
+    ]
+  },
+  "publisher_packs": {
+    "columns": [
+      "pack_id",
+      "publisher",
+      "pack_name",
+      "pack_version",
+      "description",
+      "is_active",
+      "created_at",
+      "updated_at",
+      "created_by"
+    ],
+    "column_count": 9,
+    "primary_key": [
+      "pack_id"
+    ],
+    "foreign_keys": [],
+    "triggers": [],
+    "index_count": 3,
+    "indexes": [
+      "idx_publisher_packs_active",
+      "idx_publisher_packs_publisher",
+      "publisher_packs_pkey"
+    ],
+    "owning_services": [
+      "sam-service"
+    ]
   },
   "purchase_order_lines": {
     "columns": [
@@ -2341,13 +3253,22 @@
       "status",
       "notes",
       "created_at",
-      "updated_at"
+      "updated_at",
+      "cost_center_id",
+      "vendor_id",
+      "vendor_name"
     ],
-    "column_count": 27,
+    "column_count": 30,
     "primary_key": [
       "line_id"
     ],
     "foreign_keys": [
+      {
+        "column": "cost_center_id",
+        "references": "cost_centers.cost_center_id",
+        "on_delete": "NO ACTION",
+        "on_update": "NO ACTION"
+      },
       {
         "column": "po_id",
         "references": "purchase_orders.po_id",
@@ -2362,14 +3283,16 @@
         "event": "UPDATE"
       }
     ],
-    "index_count": 8,
+    "index_count": 9,
     "indexes": [
+      "idx_pol_cost_center",
       "idx_pol_expected_delivery",
       "idx_pol_pending",
       "idx_pol_po",
       "idx_pol_product",
       "idx_pol_product_type",
       "idx_pol_status",
+      "idx_pol_vendor",
       "purchase_order_lines_pkey",
       "unique_po_line"
     ],
@@ -2486,17 +3409,17 @@
       {
         "name": "trigger_audit_purchase_orders",
         "timing": "AFTER",
-        "event": "UPDATE"
-      },
-      {
-        "name": "trigger_audit_purchase_orders",
-        "timing": "AFTER",
         "event": "DELETE"
       },
       {
         "name": "trigger_audit_purchase_orders",
         "timing": "AFTER",
         "event": "INSERT"
+      },
+      {
+        "name": "trigger_audit_purchase_orders",
+        "timing": "AFTER",
+        "event": "UPDATE"
       },
       {
         "name": "trigger_po_updated_at",
@@ -2582,17 +3505,17 @@
       {
         "name": "trigger_racks_audit",
         "timing": "AFTER",
-        "event": "UPDATE"
-      },
-      {
-        "name": "trigger_racks_audit",
-        "timing": "AFTER",
         "event": "INSERT"
       },
       {
         "name": "trigger_racks_audit",
         "timing": "AFTER",
         "event": "DELETE"
+      },
+      {
+        "name": "trigger_racks_audit",
+        "timing": "AFTER",
+        "event": "UPDATE"
       },
       {
         "name": "trigger_racks_updated_at",
@@ -2846,17 +3769,17 @@
       {
         "name": "trigger_audit_reclamation_candidates",
         "timing": "AFTER",
+        "event": "UPDATE"
+      },
+      {
+        "name": "trigger_audit_reclamation_candidates",
+        "timing": "AFTER",
         "event": "INSERT"
       },
       {
         "name": "trigger_audit_reclamation_candidates",
         "timing": "AFTER",
         "event": "DELETE"
-      },
-      {
-        "name": "trigger_audit_reclamation_candidates",
-        "timing": "AFTER",
-        "event": "UPDATE"
       },
       {
         "name": "trigger_reclaim_cand_updated_at",
@@ -3006,6 +3929,244 @@
       "report-service"
     ]
   },
+  "renewal_notifications": {
+    "columns": [
+      "notification_id",
+      "subscription_id",
+      "days_before_renewal",
+      "notification_type",
+      "status",
+      "sent_at",
+      "acknowledged_by",
+      "acknowledged_at",
+      "created_at",
+      "updated_at",
+      "created_by"
+    ],
+    "column_count": 11,
+    "primary_key": [
+      "notification_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "subscription_id",
+        "references": "saas_subscriptions.subscription_id",
+        "on_delete": "CASCADE",
+        "on_update": "NO ACTION"
+      }
+    ],
+    "triggers": [],
+    "index_count": 4,
+    "indexes": [
+      "idx_renewal_notifications_status",
+      "idx_renewal_notifications_sub_type",
+      "idx_renewal_notifications_subscription",
+      "renewal_notifications_pkey"
+    ],
+    "owning_services": [
+      "sam-service"
+    ]
+  },
+  "request_lines": {
+    "columns": [
+      "line_id",
+      "request_id",
+      "line_number",
+      "catalog_item_id",
+      "product_id",
+      "product_type",
+      "product_name",
+      "product_description",
+      "quantity",
+      "fulfilled_quantity",
+      "unit_price",
+      "total_price",
+      "status",
+      "justification",
+      "specifications",
+      "asset_ids_assigned",
+      "purchase_order_id",
+      "purchase_order_line_id",
+      "notes",
+      "created_at",
+      "updated_at",
+      "created_by"
+    ],
+    "column_count": 22,
+    "primary_key": [
+      "line_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "request_id",
+        "references": "requests.request_id",
+        "on_delete": "CASCADE",
+        "on_update": "NO ACTION"
+      }
+    ],
+    "triggers": [],
+    "index_count": 3,
+    "indexes": [
+      "idx_request_lines_request_id",
+      "idx_request_lines_status",
+      "request_lines_pkey"
+    ],
+    "owning_services": [
+      "lifecycle-service"
+    ]
+  },
+  "requests": {
+    "columns": [
+      "request_id",
+      "request_number",
+      "requester_id",
+      "requester_name",
+      "requester_email",
+      "requester_department",
+      "status",
+      "priority",
+      "request_type",
+      "justification",
+      "business_need",
+      "delivery_location",
+      "delivery_address",
+      "delivery_instructions",
+      "requested_delivery_date",
+      "cost_center_id",
+      "project_code",
+      "approval_workflow_id",
+      "current_approver_id",
+      "approval_level",
+      "submitted_date",
+      "approved_date",
+      "approved_by",
+      "rejected_date",
+      "rejected_by",
+      "rejection_reason",
+      "fulfilled_date",
+      "cancelled_date",
+      "cancellation_reason",
+      "total_line_count",
+      "total_quantity",
+      "fulfilled_quantity",
+      "estimated_cost",
+      "actual_cost",
+      "notes",
+      "created_at",
+      "updated_at",
+      "created_by",
+      "updated_by"
+    ],
+    "column_count": 39,
+    "primary_key": [
+      "request_id"
+    ],
+    "foreign_keys": [],
+    "triggers": [],
+    "index_count": 6,
+    "indexes": [
+      "idx_requests_current_approver",
+      "idx_requests_request_number",
+      "idx_requests_requester_id",
+      "idx_requests_status",
+      "requests_pkey",
+      "requests_request_number_key"
+    ],
+    "owning_services": [
+      "lifecycle-service"
+    ]
+  },
+  "retirement_tasks": {
+    "columns": [
+      "task_id",
+      "workflow_id",
+      "task_type",
+      "task_name",
+      "description",
+      "status",
+      "assigned_to",
+      "due_date",
+      "completed_at",
+      "completed_by",
+      "completion_notes",
+      "sequence",
+      "is_required",
+      "created_at",
+      "updated_at",
+      "created_by"
+    ],
+    "column_count": 16,
+    "primary_key": [
+      "task_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "workflow_id",
+        "references": "retirement_workflows.workflow_id",
+        "on_delete": "CASCADE",
+        "on_update": "NO ACTION"
+      }
+    ],
+    "triggers": [],
+    "index_count": 3,
+    "indexes": [
+      "idx_retirement_tasks_status",
+      "idx_retirement_tasks_workflow_id",
+      "retirement_tasks_pkey"
+    ],
+    "owning_services": [
+      "lifecycle-service"
+    ]
+  },
+  "retirement_workflows": {
+    "columns": [
+      "workflow_id",
+      "workflow_number",
+      "asset_id",
+      "asset_tag",
+      "asset_name",
+      "status",
+      "retirement_reason",
+      "disposal_method",
+      "initiated_by",
+      "initiated_at",
+      "approved_by",
+      "approved_at",
+      "data_wipe_required",
+      "data_wipe_completed_at",
+      "data_wipe_verified_by",
+      "disposal_completed_at",
+      "disposal_completed_by",
+      "destruction_certificate_id",
+      "notes",
+      "created_at",
+      "updated_at",
+      "created_by"
+    ],
+    "column_count": 22,
+    "primary_key": [
+      "workflow_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "asset_id",
+        "references": "assets.asset_id",
+        "on_delete": "NO ACTION",
+        "on_update": "NO ACTION"
+      }
+    ],
+    "triggers": [],
+    "index_count": 4,
+    "indexes": [
+      "idx_retirement_workflows_asset_id",
+      "idx_retirement_workflows_status",
+      "retirement_workflows_pkey",
+      "retirement_workflows_workflow_number_key"
+    ],
+    "owning_services": [
+      "lifecycle-service"
+    ]
+  },
   "role_permissions": {
     "columns": [
       "role_id",
@@ -3113,7 +4274,7 @@
       {
         "name": "trigger_rooms_audit",
         "timing": "AFTER",
-        "event": "INSERT"
+        "event": "DELETE"
       },
       {
         "name": "trigger_rooms_audit",
@@ -3123,7 +4284,7 @@
       {
         "name": "trigger_rooms_audit",
         "timing": "AFTER",
-        "event": "DELETE"
+        "event": "INSERT"
       },
       {
         "name": "trigger_rooms_updated_at",
@@ -3233,6 +4394,44 @@
       "sam-service"
     ]
   },
+  "saas_usage_records": {
+    "columns": [
+      "usage_id",
+      "subscription_id",
+      "user_id",
+      "user_email",
+      "last_active_date",
+      "login_count_30day",
+      "feature_usage",
+      "is_active",
+      "created_at",
+      "updated_at",
+      "created_by"
+    ],
+    "column_count": 11,
+    "primary_key": [
+      "usage_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "subscription_id",
+        "references": "saas_subscriptions.subscription_id",
+        "on_delete": "CASCADE",
+        "on_update": "NO ACTION"
+      }
+    ],
+    "triggers": [],
+    "index_count": 4,
+    "indexes": [
+      "idx_saas_usage_records_active",
+      "idx_saas_usage_records_sub_user",
+      "idx_saas_usage_records_subscription",
+      "saas_usage_records_pkey"
+    ],
+    "owning_services": [
+      "sam-service"
+    ]
+  },
   "schema_migrations": {
     "columns": [
       "version",
@@ -3253,6 +4452,100 @@
       "schema_migrations_pkey"
     ],
     "owning_services": []
+  },
+  "shadow_it_alerts": {
+    "columns": [
+      "alert_id",
+      "detection_id",
+      "application_name",
+      "application_domain",
+      "user_id",
+      "user_email",
+      "risk_level",
+      "access_count",
+      "bytes_transferred",
+      "first_access_at",
+      "last_access_at",
+      "status",
+      "acknowledged_by",
+      "acknowledged_at",
+      "resolved_by",
+      "resolved_at",
+      "notes",
+      "created_at",
+      "updated_at",
+      "created_by"
+    ],
+    "column_count": 20,
+    "primary_key": [
+      "alert_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "detection_id",
+        "references": "shadow_it_detections.detection_id",
+        "on_delete": "CASCADE",
+        "on_update": "NO ACTION"
+      }
+    ],
+    "triggers": [],
+    "index_count": 5,
+    "indexes": [
+      "idx_shadow_it_alerts_created",
+      "idx_shadow_it_alerts_detection",
+      "idx_shadow_it_alerts_status",
+      "idx_shadow_it_alerts_user",
+      "shadow_it_alerts_pkey"
+    ],
+    "owning_services": [
+      "sam-service"
+    ]
+  },
+  "shadow_it_detections": {
+    "columns": [
+      "detection_id",
+      "application_name",
+      "application_domain",
+      "category",
+      "risk_level",
+      "users_affected",
+      "first_detected_at",
+      "last_seen_at",
+      "total_bytes_transferred",
+      "access_count",
+      "status",
+      "reviewed_by",
+      "reviewed_at",
+      "review_notes",
+      "known_application_id",
+      "created_at",
+      "updated_at",
+      "created_by"
+    ],
+    "column_count": 18,
+    "primary_key": [
+      "detection_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "known_application_id",
+        "references": "known_applications.application_id",
+        "on_delete": "NO ACTION",
+        "on_update": "NO ACTION"
+      }
+    ],
+    "triggers": [],
+    "index_count": 5,
+    "indexes": [
+      "idx_shadow_it_detections_domain",
+      "idx_shadow_it_detections_last_seen",
+      "idx_shadow_it_detections_risk",
+      "idx_shadow_it_detections_status",
+      "shadow_it_detections_pkey"
+    ],
+    "owning_services": [
+      "sam-service"
+    ]
   },
   "software_assets": {
     "columns": [
@@ -3376,12 +4669,12 @@
       {
         "name": "trigger_audit_software_installations",
         "timing": "AFTER",
-        "event": "INSERT"
+        "event": "DELETE"
       },
       {
         "name": "trigger_audit_software_installations",
         "timing": "AFTER",
-        "event": "DELETE"
+        "event": "INSERT"
       },
       {
         "name": "trigger_sw_installations_updated_at",
@@ -3454,7 +4747,7 @@
       {
         "name": "trigger_audit_software_products",
         "timing": "AFTER",
-        "event": "INSERT"
+        "event": "UPDATE"
       },
       {
         "name": "trigger_audit_software_products",
@@ -3464,7 +4757,7 @@
       {
         "name": "trigger_audit_software_products",
         "timing": "AFTER",
-        "event": "UPDATE"
+        "event": "INSERT"
       },
       {
         "name": "trigger_sw_products_updated_at",
@@ -3765,13 +5058,20 @@
       "cost_center_id",
       "notes",
       "created_by",
-      "updated_by"
+      "updated_by",
+      "building_id"
     ],
-    "column_count": 30,
+    "column_count": 31,
     "primary_key": [
       "stockroom_id"
     ],
     "foreign_keys": [
+      {
+        "column": "building_id",
+        "references": "buildings.building_id",
+        "on_delete": "NO ACTION",
+        "on_update": "NO ACTION"
+      },
       {
         "column": "cost_center_id",
         "references": "cost_centers.cost_center_id",
@@ -3810,9 +5110,10 @@
         "event": "UPDATE"
       }
     ],
-    "index_count": 8,
+    "index_count": 9,
     "indexes": [
       "idx_stockrooms_active",
+      "idx_stockrooms_building",
       "idx_stockrooms_code",
       "idx_stockrooms_location",
       "idx_stockrooms_manager",
@@ -4032,8 +5333,8 @@
     ],
     "column_count": 4,
     "primary_key": [
-      "role_id",
-      "user_id"
+      "user_id",
+      "role_id"
     ],
     "foreign_keys": [
       {
@@ -4123,6 +5424,213 @@
       "admin-service",
       "procurement-service",
       "report-service"
+    ]
+  },
+  "vendor_asn_assets": {
+    "columns": [
+      "asn_asset_id",
+      "asset_id",
+      "asn_id",
+      "asn_line_id",
+      "serial_number",
+      "vendor_type",
+      "expected_delivery_date",
+      "status",
+      "created_at",
+      "updated_at",
+      "created_by"
+    ],
+    "column_count": 11,
+    "primary_key": [
+      "asn_asset_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "asn_id",
+        "references": "vendor_asns.asn_id",
+        "on_delete": "NO ACTION",
+        "on_update": "NO ACTION"
+      },
+      {
+        "column": "asn_line_id",
+        "references": "vendor_asn_lines.line_id",
+        "on_delete": "NO ACTION",
+        "on_update": "NO ACTION"
+      },
+      {
+        "column": "asset_id",
+        "references": "assets.asset_id",
+        "on_delete": "NO ACTION",
+        "on_update": "NO ACTION"
+      }
+    ],
+    "triggers": [],
+    "index_count": 4,
+    "indexes": [
+      "idx_vendor_asn_assets_asn_id",
+      "idx_vendor_asn_assets_asset_id",
+      "idx_vendor_asn_assets_serial_number",
+      "vendor_asn_assets_pkey"
+    ],
+    "owning_services": [
+      "integration-service"
+    ]
+  },
+  "vendor_asn_lines": {
+    "columns": [
+      "line_id",
+      "asn_id",
+      "line_number",
+      "vendor_part_number",
+      "manufacturer_part_number",
+      "description",
+      "quantity",
+      "serial_numbers",
+      "manufacturer",
+      "model",
+      "unit_price",
+      "status",
+      "created_asset_ids",
+      "linked_asset_ids",
+      "error_message",
+      "created_at",
+      "updated_at",
+      "created_by"
+    ],
+    "column_count": 18,
+    "primary_key": [
+      "line_id"
+    ],
+    "foreign_keys": [
+      {
+        "column": "asn_id",
+        "references": "vendor_asns.asn_id",
+        "on_delete": "CASCADE",
+        "on_update": "NO ACTION"
+      }
+    ],
+    "triggers": [],
+    "index_count": 3,
+    "indexes": [
+      "idx_vendor_asn_lines_asn_id",
+      "idx_vendor_asn_lines_status",
+      "vendor_asn_lines_pkey"
+    ],
+    "owning_services": [
+      "integration-service"
+    ]
+  },
+  "vendor_asns": {
+    "columns": [
+      "asn_id",
+      "vendor_type",
+      "vendor_name",
+      "vendor_asn_number",
+      "purchase_order_number",
+      "purchase_order_id",
+      "ship_date",
+      "expected_delivery_date",
+      "carrier_name",
+      "tracking_number",
+      "ship_from_address",
+      "ship_to_address",
+      "status",
+      "total_items",
+      "processed_items",
+      "failed_items",
+      "raw_data",
+      "processed_at",
+      "error_message",
+      "created_at",
+      "updated_at",
+      "created_by"
+    ],
+    "column_count": 22,
+    "primary_key": [
+      "asn_id"
+    ],
+    "foreign_keys": [],
+    "triggers": [],
+    "index_count": 4,
+    "indexes": [
+      "idx_vendor_asns_status",
+      "idx_vendor_asns_vendor_asn_number",
+      "idx_vendor_asns_vendor_type",
+      "vendor_asns_pkey"
+    ],
+    "owning_services": [
+      "integration-service"
+    ]
+  },
+  "vendor_catalog_items": {
+    "columns": [
+      "catalog_item_id",
+      "vendor_type",
+      "vendor_part_number",
+      "manufacturer_part_number",
+      "manufacturer",
+      "model",
+      "description",
+      "category",
+      "subcategory",
+      "unit_price",
+      "currency",
+      "availability",
+      "lead_time_days",
+      "minimum_order_quantity",
+      "specifications",
+      "image_url",
+      "product_url",
+      "last_updated_at",
+      "created_at",
+      "created_by"
+    ],
+    "column_count": 20,
+    "primary_key": [
+      "catalog_item_id"
+    ],
+    "foreign_keys": [],
+    "triggers": [],
+    "index_count": 4,
+    "indexes": [
+      "idx_vendor_catalog_items_category",
+      "idx_vendor_catalog_items_manufacturer",
+      "idx_vendor_catalog_items_vendor_part",
+      "vendor_catalog_items_pkey"
+    ],
+    "owning_services": [
+      "integration-service"
+    ]
+  },
+  "vendor_integration_configs": {
+    "columns": [
+      "config_id",
+      "vendor_type",
+      "vendor_name",
+      "is_active",
+      "auto_process_asn",
+      "auto_create_assets",
+      "default_stockroom_id",
+      "webhook_url",
+      "api_endpoint",
+      "last_sync_at",
+      "created_at",
+      "updated_at",
+      "created_by"
+    ],
+    "column_count": 13,
+    "primary_key": [
+      "config_id"
+    ],
+    "foreign_keys": [],
+    "triggers": [],
+    "index_count": 2,
+    "indexes": [
+      "idx_vendor_integration_configs_vendor_type",
+      "vendor_integration_configs_pkey"
+    ],
+    "owning_services": [
+      "integration-service"
     ]
   },
   "vendor_model_prices": {
@@ -4300,12 +5808,12 @@
       {
         "name": "trigger_update_parts_reserved",
         "timing": "AFTER",
-        "event": "UPDATE"
+        "event": "DELETE"
       },
       {
         "name": "trigger_update_parts_reserved",
         "timing": "AFTER",
-        "event": "DELETE"
+        "event": "UPDATE"
       },
       {
         "name": "trigger_update_parts_reserved",
@@ -4437,12 +5945,12 @@
       {
         "name": "trigger_audit_work_orders",
         "timing": "AFTER",
-        "event": "INSERT"
+        "event": "DELETE"
       },
       {
         "name": "trigger_audit_work_orders",
         "timing": "AFTER",
-        "event": "DELETE"
+        "event": "INSERT"
       },
       {
         "name": "trigger_audit_work_orders",
@@ -4484,9 +5992,9 @@
   "VIEW:v_active_contracts": {
     "type": "view",
     "referenced_tables": [
+      "users",
       "contracts",
-      "vendors",
-      "users"
+      "vendors"
     ],
     "definition_preview": " SELECT c.contract_id,\n    c.contract_number,\n    c.contract_name,\n    c.contract_type,\n    c.status,\n    c.start_date,\n    c.end_date,\n    c.total_value,\n    c.annual_value,\n    c.renewal_type,\n    c"
   },
@@ -4494,9 +6002,9 @@
     "type": "view",
     "referenced_tables": [
       "stockrooms",
+      "users",
       "transfer_orders",
-      "rooms",
-      "users"
+      "rooms"
     ],
     "definition_preview": " SELECT t.transfer_id,\n    t.transfer_number,\n    t.status,\n    t.priority,\n    fs.name AS from_stockroom_name,\n    ts.name AS to_stockroom_name,\n    u_req.email AS requested_by_email,\n    t.requested"
   },
@@ -4511,8 +6019,8 @@
   "VIEW:v_asset_relationships": {
     "type": "view",
     "referenced_tables": [
-      "asset_relationships",
-      "assets"
+      "assets",
+      "asset_relationships"
     ],
     "definition_preview": " SELECT r.relationship_id,\n    r.source_asset_id,\n    sa.asset_tag AS source_asset_tag,\n    sa.display_name AS source_display_name,\n    sa.asset_type AS source_asset_type,\n    r.target_asset_id,\n    t"
   },
@@ -4526,20 +6034,20 @@
   "VIEW:v_audit_discrepancies": {
     "type": "view",
     "referenced_tables": [
-      "stockrooms",
       "audit_scans",
-      "rooms",
+      "stockrooms",
+      "users",
       "audit_records",
-      "users"
+      "rooms"
     ],
     "definition_preview": " SELECT ar.audit_id,\n    ar.audit_number,\n    ar.audit_type,\n    s.name AS stockroom_name,\n    ascan.scan_id,\n    ascan.asset_tag,\n    ascan.serial_number,\n    ascan.discrepancy_type,\n    ascan.expect"
   },
   "VIEW:v_calibration_due": {
     "type": "view",
     "referenced_tables": [
-      "enterprise_assets",
       "assets",
-      "facilities"
+      "facilities",
+      "enterprise_assets"
     ],
     "definition_preview": " SELECT a.asset_id,\n    a.asset_tag,\n    a.display_name,\n    a.status,\n    ea.serial_number,\n    ea.manufacturer,\n    ea.model,\n    ea.asset_class,\n    ea.criticality_level,\n    ea.last_calibration_da"
   },
@@ -4554,9 +6062,9 @@
   "VIEW:v_contracts_expiring": {
     "type": "view",
     "referenced_tables": [
+      "users",
       "contracts",
-      "vendors",
-      "users"
+      "vendors"
     ],
     "definition_preview": " SELECT c.contract_id,\n    c.contract_number,\n    c.contract_name,\n    c.contract_type,\n    c.end_date,\n    (c.end_date - CURRENT_DATE) AS days_until_expiration,\n    c.total_value,\n    c.renewal_type,"
   },
@@ -4572,9 +6080,9 @@
   "VIEW:v_discovery_asset_mapping": {
     "type": "view",
     "referenced_tables": [
+      "assets",
       "discovery_records",
-      "hardware_assets",
-      "assets"
+      "hardware_assets"
     ],
     "definition_preview": " SELECT dr.discovery_record_id,\n    dr.source_type,\n    dr.source_name,\n    dr.source_id,\n    dr.serial_number AS discovery_serial,\n    dr.mac_address AS discovery_mac,\n    dr.hostname AS discovery_ho"
   },
@@ -4595,36 +6103,36 @@
   "VIEW:v_enterprise_assets": {
     "type": "view",
     "referenced_tables": [
-      "enterprise_assets",
       "assets",
-      "facilities"
+      "facilities",
+      "enterprise_assets"
     ],
     "definition_preview": " SELECT a.asset_id,\n    a.asset_tag,\n    a.display_name,\n    a.status,\n    a.substatus,\n    ea.serial_number,\n    ea.manufacturer,\n    ea.model,\n    ea.asset_class,\n    ea.criticality_level,\n    f.nam"
   },
   "VIEW:v_enterprise_summary_by_facility": {
     "type": "view",
     "referenced_tables": [
-      "enterprise_assets",
       "assets",
-      "facilities"
+      "facilities",
+      "enterprise_assets"
     ],
     "definition_preview": " SELECT f.facility_id,\n    f.name AS facility_name,\n    f.facility_code,\n    ea.asset_class,\n    a.status,\n    count(*) AS asset_count,\n    count(\n        CASE\n            WHEN ((ea.criticality_level)"
   },
   "VIEW:v_entitlements": {
     "type": "view",
     "referenced_tables": [
-      "software_products",
       "entitlements",
-      "contracts"
+      "contracts",
+      "software_products"
     ],
     "definition_preview": " SELECT e.entitlement_id,\n    e.software_product_id,\n    sp.publisher,\n    sp.product_name,\n    sp.version,\n    sp.edition,\n    e.license_type,\n    e.quantity_purchased,\n    e.quantity_available,\n    "
   },
   "VIEW:v_entitlements_expiring": {
     "type": "view",
     "referenced_tables": [
-      "software_products",
       "entitlements",
       "contracts",
+      "software_products",
       "vendors"
     ],
     "definition_preview": " SELECT e.entitlement_id,\n    sp.publisher,\n    sp.product_name,\n    sp.version,\n    sp.edition,\n    e.license_type,\n    e.quantity_purchased,\n    e.quantity_available,\n    e.end_date,\n    e.renewal_d"
@@ -4632,43 +6140,43 @@
   "VIEW:v_hardware_assets": {
     "type": "view",
     "referenced_tables": [
-      "stockrooms",
-      "cost_centers",
       "models",
-      "manufacturers",
-      "rooms",
-      "hardware_assets",
       "assets",
+      "cost_centers",
+      "stockrooms",
+      "hardware_assets",
       "users",
-      "departments"
+      "departments",
+      "manufacturers",
+      "rooms"
     ],
     "definition_preview": " SELECT a.asset_id,\n    a.asset_tag,\n    a.display_name,\n    a.status,\n    a.substatus,\n    ha.serial_number,\n    m.name AS manufacturer_name,\n    mo.model_name,\n    ha.model_category,\n    ha.building"
   },
   "VIEW:v_hardware_summary_by_category": {
     "type": "view",
     "referenced_tables": [
-      "hardware_assets",
-      "assets"
+      "assets",
+      "hardware_assets"
     ],
     "definition_preview": " SELECT ha.model_category,\n    a.status,\n    count(*) AS asset_count,\n    sum(ha.purchase_price) AS total_value,\n    avg(ha.purchase_price) AS avg_value\n   FROM (assets a\n     JOIN hardware_assets ha "
   },
   "VIEW:v_lease_expiring": {
     "type": "view",
     "referenced_tables": [
-      "contracts",
       "models",
-      "manufacturers",
-      "hardware_assets",
       "assets",
-      "users"
+      "hardware_assets",
+      "users",
+      "contracts",
+      "manufacturers"
     ],
     "definition_preview": " SELECT a.asset_id,\n    a.asset_tag,\n    a.display_name,\n    ha.serial_number,\n    m.name AS manufacturer_name,\n    mo.model_name,\n    ha.lease_start_date,\n    ha.lease_end_date,\n    ha.monthly_lease_"
   },
   "VIEW:v_lease_payment_schedule": {
     "type": "view",
     "referenced_tables": [
-      "lease_payments",
       "contracts",
+      "lease_payments",
       "vendors"
     ],
     "definition_preview": " SELECT c.contract_id,\n    c.contract_number,\n    c.contract_name,\n    v.vendor_name,\n    count(lp.payment_id) AS total_payments,\n    count(lp.payment_id) FILTER (WHERE ((lp.status)::text = 'PAID'::te"
@@ -4676,8 +6184,8 @@
   "VIEW:v_license_compliance": {
     "type": "view",
     "referenced_tables": [
-      "software_products",
       "entitlements",
+      "software_products",
       "software_installations",
       "reconciliation_results"
     ],
@@ -4686,40 +6194,40 @@
   "VIEW:v_linear_assets": {
     "type": "view",
     "referenced_tables": [
-      "enterprise_assets",
-      "linear_assets",
       "assets",
-      "facilities"
+      "facilities",
+      "enterprise_assets",
+      "linear_assets"
     ],
     "definition_preview": " SELECT a.asset_id,\n    a.asset_tag,\n    a.display_name,\n    a.status,\n    ea.manufacturer,\n    ea.model,\n    ea.asset_class,\n    la.linear_asset_id,\n    la.start_location,\n    la.end_location,\n    la"
   },
   "VIEW:v_maintenance_due": {
     "type": "view",
     "referenced_tables": [
-      "maintenance_plans",
-      "enterprise_assets",
       "assets",
       "facilities",
-      "users"
+      "enterprise_assets",
+      "users",
+      "maintenance_plans"
     ],
     "definition_preview": " SELECT mp.plan_id,\n    mp.plan_name,\n    mp.maintenance_type,\n    mp.next_due_date,\n    (mp.next_due_date - CURRENT_DATE) AS days_until_due,\n    mp.priority,\n    mp.frequency_days,\n    mp.frequency_h"
   },
   "VIEW:v_open_work_orders": {
     "type": "view",
     "referenced_tables": [
-      "enterprise_assets",
       "assets",
       "facilities",
-      "users",
-      "work_orders"
+      "enterprise_assets",
+      "work_orders",
+      "users"
     ],
     "definition_preview": " SELECT wo.work_order_id,\n    wo.work_order_number,\n    wo.title,\n    wo.work_type,\n    wo.priority,\n    wo.status,\n    wo.scheduled_date,\n    wo.due_date,\n        CASE\n            WHEN (wo.due_date <"
   },
   "VIEW:v_overdue_lease_payments": {
     "type": "view",
     "referenced_tables": [
-      "lease_payments",
       "contracts",
+      "lease_payments",
       "vendors"
     ],
     "definition_preview": " SELECT lp.payment_id,\n    lp.contract_id,\n    c.contract_number,\n    c.contract_name,\n    v.vendor_name,\n    lp.payment_number,\n    lp.due_date,\n    (CURRENT_DATE - lp.due_date) AS days_overdue,\n    "
@@ -4727,8 +6235,8 @@
   "VIEW:v_overdue_loaners": {
     "type": "view",
     "referenced_tables": [
-      "loaner_checkouts",
       "assets",
+      "loaner_checkouts",
       "users",
       "departments"
     ],
@@ -4746,22 +6254,22 @@
     "type": "view",
     "referenced_tables": [
       "cost_centers",
-      "vendors",
       "purchase_orders",
       "users",
-      "departments"
+      "departments",
+      "vendors"
     ],
     "definition_preview": " SELECT po.po_id,\n    po.po_number,\n    po.description,\n    po.total_amount,\n    po.submitted_date,\n    (CURRENT_DATE - (po.submitted_date)::date) AS days_pending,\n    v.vendor_name,\n    u_req.email A"
   },
   "VIEW:v_pending_receiving": {
     "type": "view",
     "referenced_tables": [
-      "stockrooms",
-      "vendors",
-      "purchase_orders",
-      "rooms",
       "receiving_records",
-      "users"
+      "stockrooms",
+      "purchase_orders",
+      "users",
+      "rooms",
+      "vendors"
     ],
     "definition_preview": " SELECT rr.receiving_id,\n    rr.receiving_number,\n    rr.status,\n    po.po_number,\n    v.vendor_name,\n    s.name AS stockroom_name,\n    u.email AS received_by_email,\n    rr.received_date,\n    rr.total"
   },
@@ -4769,25 +6277,25 @@
     "type": "view",
     "referenced_tables": [
       "cost_centers",
-      "purchase_order_lines",
-      "vendors",
       "purchase_orders",
       "users",
-      "departments"
+      "departments",
+      "purchase_order_lines",
+      "vendors"
     ],
     "definition_preview": " SELECT po.po_id,\n    po.po_number,\n    po.status,\n    po.order_date,\n    po.expected_delivery_date,\n    po.total_amount,\n    v.vendor_name,\n    u_req.email AS requester_email,\n    (((u_req.first_name"
   },
   "VIEW:v_reclamation_candidates": {
     "type": "view",
     "referenced_tables": [
-      "software_products",
-      "reclamation_rules",
-      "reclamation_candidates",
-      "software_installations",
-      "hardware_assets",
       "assets",
+      "reclamation_rules",
+      "hardware_assets",
       "users",
-      "departments"
+      "departments",
+      "reclamation_candidates",
+      "software_products",
+      "software_installations"
     ],
     "definition_preview": " SELECT rc.candidate_id,\n    rc.installation_id,\n    rc.days_since_last_use,\n    rc.status AS reclamation_status,\n    rc.identified_at,\n    rc.user_notified_at,\n    rc.approved_at,\n    rc.license_reco"
   },
@@ -4801,8 +6309,8 @@
   "VIEW:v_saas_utilization": {
     "type": "view",
     "referenced_tables": [
-      "software_products",
       "users",
+      "software_products",
       "saas_subscriptions"
     ],
     "definition_preview": " SELECT ss.subscription_id,\n    ss.software_product_id,\n    sp.publisher,\n    sp.product_name,\n    ss.subscription_name,\n    ss.subscription_tier,\n    ss.total_licenses,\n    ss.assigned_licenses,\n    "
@@ -4810,20 +6318,20 @@
   "VIEW:v_software_installations": {
     "type": "view",
     "referenced_tables": [
-      "software_products",
-      "software_installations",
-      "hardware_assets",
       "assets",
+      "hardware_assets",
       "users",
-      "departments"
+      "departments",
+      "software_products",
+      "software_installations"
     ],
     "definition_preview": " SELECT si.installation_id,\n    si.software_product_id,\n    sp.publisher,\n    sp.product_name,\n    sp.version AS product_version,\n    sp.edition,\n    si.hardware_asset_id,\n    a.asset_tag,\n    a.displ"
   },
   "VIEW:v_software_products": {
     "type": "view",
     "referenced_tables": [
-      "software_products",
       "entitlements",
+      "software_products",
       "software_installations"
     ],
     "definition_preview": " SELECT sp.product_id,\n    sp.publisher,\n    sp.product_name,\n    sp.version,\n    sp.edition,\n    sp.product_category,\n    sp.is_saas,\n    sp.is_active,\n    COALESCE(e.total_entitlements, (0)::bigint)"
@@ -4832,29 +6340,29 @@
     "type": "view",
     "referenced_tables": [
       "stockrooms",
+      "users",
       "rooms",
-      "stockroom_inventory",
-      "users"
+      "stockroom_inventory"
     ],
     "definition_preview": " SELECT s.stockroom_id,\n    s.stockroom_code,\n    s.name AS stockroom_name,\n    s.stockroom_type,\n    s.location,\n    s.is_active,\n    u.email AS manager_email,\n    (((u.first_name)::text || ' '::text"
   },
   "VIEW:v_unauthorized_software": {
     "type": "view",
     "referenced_tables": [
-      "software_products",
-      "software_installations",
-      "hardware_assets",
       "assets",
+      "hardware_assets",
       "users",
-      "departments"
+      "departments",
+      "software_products",
+      "software_installations"
     ],
     "definition_preview": " SELECT si.installation_id,\n    sp.publisher,\n    sp.product_name,\n    sp.version,\n    si.version_detected,\n    a.asset_tag,\n    a.display_name AS asset_name,\n    u.email AS user_email,\n    (((u.first"
   },
   "VIEW:v_upcoming_lease_payments": {
     "type": "view",
     "referenced_tables": [
-      "lease_payments",
       "contracts",
+      "lease_payments",
       "vendors"
     ],
     "definition_preview": " SELECT lp.payment_id,\n    lp.contract_id,\n    c.contract_number,\n    c.contract_name,\n    v.vendor_name,\n    lp.payment_number,\n    lp.due_date,\n    (lp.due_date - CURRENT_DATE) AS days_until_due,\n  "
@@ -4862,11 +6370,11 @@
   "VIEW:v_user_permissions": {
     "type": "view",
     "referenced_tables": [
-      "permissions",
-      "user_roles",
       "roles",
+      "permissions",
+      "users",
       "role_permissions",
-      "users"
+      "user_roles"
     ],
     "definition_preview": " SELECT u.user_id,\n    u.email,\n    r.role_name,\n    p.permission_name,\n    p.resource_type,\n    p.action\n   FROM ((((users u\n     JOIN user_roles ur ON ((u.user_id = ur.user_id)))\n     JOIN roles r O"
   },
@@ -4874,11 +6382,11 @@
     "type": "view",
     "referenced_tables": [
       "models",
-      "manufacturers",
-      "hardware_assets",
       "assets",
+      "hardware_assets",
       "users",
-      "departments"
+      "departments",
+      "manufacturers"
     ],
     "definition_preview": " SELECT a.asset_id,\n    a.asset_tag,\n    a.display_name,\n    ha.serial_number,\n    m.name AS manufacturer_name,\n    mo.model_name,\n    ha.warranty_expiration,\n    (ha.warranty_expiration - CURRENT_DAT"
   },
@@ -4892,8 +6400,8 @@
   "VIEW:v_work_order_parts_summary": {
     "type": "view",
     "referenced_tables": [
-      "work_order_parts",
-      "work_orders"
+      "work_orders",
+      "work_order_parts"
     ],
     "definition_preview": " SELECT wo.work_order_id,\n    wo.work_order_number,\n    wo.title AS work_order_title,\n    wo.status AS work_order_status,\n    count(wop.id) AS total_parts,\n    sum(wop.quantity_required) AS total_quan"
   }

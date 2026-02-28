@@ -54,7 +54,9 @@ describe('Sidebar', () => {
   it('renders user info when provided', () => {
     wrap(<Sidebar appName="AMS" navGroups={navGroups} user={{ name: 'John', role: 'Admin' }} />);
     expect(screen.getByText('John')).toBeInTheDocument();
-    expect(screen.getByText('Admin')).toBeInTheDocument();
+    // 'Admin' appears as both a group title and user role
+    const adminTexts = screen.getAllByText('Admin');
+    expect(adminTexts.length).toBeGreaterThanOrEqual(2);
   });
 
   it('renders custom logo', () => {
@@ -65,7 +67,13 @@ describe('Sidebar', () => {
   it('collapses groups on group title click', async () => {
     const user = userEvent.setup();
     wrap(<Sidebar appName="AMS" navGroups={navGroups} />);
-    await user.click(screen.getByText('Admin'));
-    expect(screen.queryByText('Users')).not.toBeVisible();
+    // Click the group header to collapse it - use getAllByText since 'Admin' appears as both group title and user role
+    const adminElements = screen.getAllByText('Admin');
+    // The group title is the first one in the document
+    await user.click(adminElements[0]);
+    // After collapse, the items list should have the hidden class (jsdom doesn't evaluate CSS, so check class)
+    const usersLink = screen.getByText('Users');
+    const itemsList = usersLink.closest('ul');
+    expect(itemsList?.className).toContain('hidden');
   });
 });

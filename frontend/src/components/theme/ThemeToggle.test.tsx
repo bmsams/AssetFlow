@@ -34,14 +34,14 @@ describe('ThemeToggle', () => {
     });
 
     it('renders with small size when specified', () => {
-      renderWithTheme(<ThemeToggle size="sm" />);
+      renderWithTheme(<ThemeToggle size='sm' />);
 
       const button = screen.getByRole('button');
       expect(button.className).toMatch(/sm/);
     });
 
     it('renders with large size when specified', () => {
-      renderWithTheme(<ThemeToggle size="lg" />);
+      renderWithTheme(<ThemeToggle size='lg' />);
 
       const button = screen.getByRole('button');
       expect(button.className).toMatch(/lg/);
@@ -61,7 +61,7 @@ describe('ThemeToggle', () => {
     });
 
     it('applies custom className', () => {
-      renderWithTheme(<ThemeToggle className="custom-class" />);
+      renderWithTheme(<ThemeToggle className='custom-class' />);
 
       const button = screen.getByRole('button');
       expect(button).toHaveClass('custom-class');
@@ -69,21 +69,21 @@ describe('ThemeToggle', () => {
   });
 
   describe('theme cycling', () => {
-    it('cycles from system to light on first click', async () => {
+    it('toggles from system to dark on first click', async () => {
       const user = userEvent.setup();
       renderWithTheme(<ThemeToggle showLabel />);
 
       // Initial state is system
       expect(screen.getByText(/System/i)).toBeInTheDocument();
 
-      // Click to cycle: system -> light (but wait, our logic is light -> dark -> system)
-      // Since initial is system, clicking goes to light
+      // Click to toggle: system (resolved light) -> dark
+      // Since resolved is light, toggle goes to dark
       await user.click(screen.getByRole('button'));
 
-      expect(screen.getByText('Light')).toBeInTheDocument();
+      expect(screen.getByText('Dark')).toBeInTheDocument();
     });
 
-    it('cycles from light to dark', async () => {
+    it('toggles from light to dark', async () => {
       localStorage.setItem('ams-theme', 'light');
       const user = userEvent.setup();
       renderWithTheme(<ThemeToggle showLabel />);
@@ -95,7 +95,7 @@ describe('ThemeToggle', () => {
       expect(screen.getByText('Dark')).toBeInTheDocument();
     });
 
-    it('cycles from dark to system', async () => {
+    it('toggles from dark to light', async () => {
       localStorage.setItem('ams-theme', 'dark');
       const user = userEvent.setup();
       renderWithTheme(<ThemeToggle showLabel />);
@@ -104,10 +104,10 @@ describe('ThemeToggle', () => {
 
       await user.click(screen.getByRole('button'));
 
-      expect(screen.getByText(/System/i)).toBeInTheDocument();
+      expect(screen.getByText('Light')).toBeInTheDocument();
     });
 
-    it('completes full cycle: light -> dark -> system -> light', async () => {
+    it('toggles back and forth: light -> dark -> light', async () => {
       localStorage.setItem('ams-theme', 'light');
       const user = userEvent.setup();
       renderWithTheme(<ThemeToggle showLabel />);
@@ -119,11 +119,7 @@ describe('ThemeToggle', () => {
       await user.click(screen.getByRole('button'));
       expect(screen.getByText('Dark')).toBeInTheDocument();
 
-      // Click 2: dark -> system
-      await user.click(screen.getByRole('button'));
-      expect(screen.getByText(/System/i)).toBeInTheDocument();
-
-      // Click 3: system -> light
+      // Click 2: dark -> light
       await user.click(screen.getByRole('button'));
       expect(screen.getByText('Light')).toBeInTheDocument();
     });
@@ -156,7 +152,7 @@ describe('ThemeToggle', () => {
       expect(screen.getByText('Dark')).toBeInTheDocument();
     });
 
-    it('cycles backward with ArrowLeft key', async () => {
+    it('toggles with ArrowLeft key', async () => {
       localStorage.setItem('ams-theme', 'light');
       const user = userEvent.setup();
       renderWithTheme(<ThemeToggle showLabel />);
@@ -166,7 +162,7 @@ describe('ThemeToggle', () => {
 
       await user.keyboard('{ArrowLeft}');
 
-      expect(screen.getByText(/System/i)).toBeInTheDocument();
+      expect(screen.getByText('Dark')).toBeInTheDocument();
     });
 
     it('cycles backward with ArrowUp key', async () => {
@@ -214,10 +210,10 @@ describe('ThemeToggle', () => {
       const user = userEvent.setup();
       renderWithTheme(<ThemeToggle />);
 
-      // Click to change from system to light
+      // Click to change from system (resolved light) to dark
       await user.click(screen.getByRole('button'));
 
-      expect(localStorage.getItem('ams-theme')).toBe('light');
+      expect(localStorage.getItem('ams-theme')).toBe('dark');
     });
 
     it('loads persisted theme on mount', () => {

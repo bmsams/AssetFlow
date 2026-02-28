@@ -90,6 +90,14 @@ export interface POLine {
   lineTotal: number;
   quantityReceived: number;
   notes?: string;
+  vendorId?: string;
+  vendorName?: string;
+  effectiveVendorId?: string;
+  effectiveVendorName?: string;
+  costCenterId?: string;
+  costCenterCode?: string;
+  effectiveCostCenterId?: string;
+  effectiveCostCenterCode?: string;
 }
 
 /**
@@ -111,6 +119,7 @@ export interface POStatusHistory {
 export interface CreatePurchaseOrderRequest {
   vendorId: string;
   costCenterId: string;
+  currency?: string;
   expectedDeliveryDate?: string;
   notes?: string;
   lines: CreatePOLineRequest[];
@@ -127,6 +136,8 @@ export interface CreatePOLineRequest {
   quantity: number;
   unitPrice: number;
   notes?: string;
+  vendorId?: string;
+  costCenterId?: string;
 }
 
 /**
@@ -136,6 +147,29 @@ export interface UpdatePOLineRequest {
   quantity?: number;
   unitPrice?: number;
   notes?: string;
+  vendorId?: string | null;
+  costCenterId?: string | null;
+}
+
+export interface AccountingTransitionResult {
+  insertedEncumbrances: number;
+  createdSubledgerEntries: number;
+  createdSubledgerLines: number;
+}
+
+export interface POCloseGuardResult {
+  canClose: boolean;
+  reasons: string[];
+}
+
+export interface PostReceiptAccountingRequest {
+  receiptId: string;
+  receiptNumber?: string;
+}
+
+export interface PostInvoiceAccountingRequest {
+  invoiceId: string;
+  invoiceNumber?: string;
 }
 
 /**
@@ -157,6 +191,122 @@ export interface CostCenterSummary {
   availableAmount: number;
 }
 
+export type RequisitionStatus =
+  | 'DRAFT'
+  | 'PENDING_APPROVAL'
+  | 'APPROVED'
+  | 'REJECTED'
+  | 'PARTIALLY_CONVERTED'
+  | 'CONVERTED'
+  | 'CANCELLED';
+
+export type RequisitionProductType = 'HARDWARE_MODEL' | 'SOFTWARE_PRODUCT' | 'SERVICE' | 'OTHER';
+
+export interface RequisitionLine {
+  reqLineId: string;
+  requisitionId: string;
+  lineNumber: number;
+  status: 'DRAFT' | 'APPROVED' | 'REJECTED' | 'CONVERTED';
+  productType: RequisitionProductType;
+  productId?: string;
+  productDescription: string;
+  sku?: string;
+  quantity: number;
+  unitPrice: number;
+  lineTotal: number;
+  currency: string;
+  vendorId?: string;
+  vendorName?: string;
+  vendorModelPriceId?: string;
+  costCenterId?: string;
+  costCenterCode?: string;
+  sourceType: string;
+  sourceSnapshot: Record<string, unknown>;
+  convertedPoId?: string;
+  convertedPoLineId?: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface RequisitionSummary {
+  requisitionId: string;
+  requisitionNumber: string;
+  status: RequisitionStatus;
+  requestedBy?: string;
+  requestedDate: string;
+  needByDate?: string;
+  legalEntity?: string;
+  currency: string;
+  costCenterId?: string;
+  shipToBuildingId?: string;
+  shipToAddress?: string;
+  notes?: string;
+  approvedBy?: string;
+  approvedDate?: string;
+  rejectedBy?: string;
+  rejectedDate?: string;
+  rejectionReason?: string;
+  convertedDate?: string;
+  createdAt: string;
+  updatedAt: string;
+  createdBy?: string;
+  updatedBy?: string;
+}
+
+export interface RequisitionDetail extends RequisitionSummary {
+  lines: RequisitionLine[];
+}
+
+export interface RequisitionPOLink {
+  requisitionPoLinkId: string;
+  requisitionId: string;
+  reqLineId: string;
+  poId: string;
+  poLineId: string;
+  vendorId: string;
+  linkedAt: string;
+}
+
+export interface RequisitionConversionResult {
+  requisition: RequisitionDetail;
+  purchaseOrders: PurchaseOrderDetail[];
+  links: RequisitionPOLink[];
+}
+
+export interface RequisitionListFilters {
+  status?: RequisitionStatus;
+  requestedBy?: string;
+  fromDate?: string;
+  toDate?: string;
+  search?: string;
+}
+
+export interface CreateRequisitionLineRequest {
+  productType: RequisitionProductType;
+  productId?: string;
+  productDescription: string;
+  sku?: string;
+  quantity: number;
+  unitPrice?: number;
+  currency?: string;
+  vendorId?: string;
+  costCenterId?: string;
+  notes?: string;
+}
+
+export interface CreateRequisitionRequest {
+  requestedBy?: string;
+  needByDate?: string;
+  legalEntity?: string;
+  currency?: string;
+  costCenterId?: string;
+  shipToBuildingId?: string;
+  shipToAddress?: string;
+  notes?: string;
+  lines: CreateRequisitionLineRequest[];
+}
+
 const DEFAULT_PO_STATUS: PurchaseOrderStatus = 'DRAFT';
 const VALID_PO_STATUSES: PurchaseOrderStatus[] = [
   'DRAFT',
@@ -164,9 +314,23 @@ const VALID_PO_STATUSES: PurchaseOrderStatus[] = [
   'APPROVED',
   'REJECTED',
   'SENT',
+  'ACKNOWLEDGED',
   'PARTIALLY_RECEIVED',
   'RECEIVED',
   'CLOSED',
+  'INVOICED',
+  'PAID',
+  'ON_HOLD',
+  'CANCELLED',
+];
+const DEFAULT_REQUISITION_STATUS: RequisitionStatus = 'DRAFT';
+const VALID_REQUISITION_STATUSES: RequisitionStatus[] = [
+  'DRAFT',
+  'PENDING_APPROVAL',
+  'APPROVED',
+  'REJECTED',
+  'PARTIALLY_CONVERTED',
+  'CONVERTED',
   'CANCELLED',
 ];
 
@@ -184,6 +348,12 @@ function toPOStatus(value: unknown): PurchaseOrderStatus {
     : DEFAULT_PO_STATUS;
 }
 
+function toRequisitionStatus(value: unknown): RequisitionStatus {
+  return typeof value === 'string' && VALID_REQUISITION_STATUSES.includes(value as RequisitionStatus)
+    ? (value as RequisitionStatus)
+    : DEFAULT_REQUISITION_STATUS;
+}
+
 function mapPOLine(raw: Record<string, unknown>): POLine {
   return {
     lineId: toStringValue(raw['lineId']),
@@ -198,6 +368,14 @@ function mapPOLine(raw: Record<string, unknown>): POLine {
     lineTotal: toNumberValue(raw['lineTotal'], 0),
     quantityReceived: toNumberValue(raw['quantityReceived'], 0),
     notes: toStringValue(raw['notes']) || undefined,
+    vendorId: toStringValue(raw['vendorId']) || undefined,
+    vendorName: toStringValue(raw['vendorName']) || undefined,
+    effectiveVendorId: toStringValue(raw['effectiveVendorId']) || undefined,
+    effectiveVendorName: toStringValue(raw['effectiveVendorName']) || undefined,
+    costCenterId: toStringValue(raw['costCenterId']) || undefined,
+    costCenterCode: toStringValue(raw['costCenterCode']) || undefined,
+    effectiveCostCenterId: toStringValue(raw['effectiveCostCenterId']) || undefined,
+    effectiveCostCenterCode: toStringValue(raw['effectiveCostCenterCode']) || undefined,
   };
 }
 
@@ -263,6 +441,102 @@ function mapPurchaseOrderDetail(raw: Record<string, unknown>): PurchaseOrderDeta
     notes: toStringValue(raw['notes']) || undefined,
     lines: linesRaw.map(mapPOLine),
     statusHistory: mapStatusHistory(raw['statusHistory']),
+  };
+}
+
+function mapRequisitionLine(raw: Record<string, unknown>): RequisitionLine {
+  return {
+    reqLineId: toStringValue(raw['reqLineId']),
+    requisitionId: toStringValue(raw['requisitionId']),
+    lineNumber: toNumberValue(raw['lineNumber'], 0),
+    status: toStringValue(raw['status'], 'DRAFT') as RequisitionLine['status'],
+    productType: toStringValue(raw['productType'], 'OTHER') as RequisitionProductType,
+    productId: toStringValue(raw['productId']) || undefined,
+    productDescription: toStringValue(raw['productDescription']),
+    sku: toStringValue(raw['sku']) || undefined,
+    quantity: toNumberValue(raw['quantity'], 0),
+    unitPrice: toNumberValue(raw['unitPrice'], 0),
+    lineTotal: toNumberValue(raw['lineTotal'], 0),
+    currency: toStringValue(raw['currency'], 'USD'),
+    vendorId: toStringValue(raw['vendorId']) || undefined,
+    vendorName: toStringValue(raw['vendorName']) || undefined,
+    vendorModelPriceId: toStringValue(raw['vendorModelPriceId']) || undefined,
+    costCenterId: toStringValue(raw['costCenterId']) || undefined,
+    costCenterCode: toStringValue(raw['costCenterCode']) || undefined,
+    sourceType: toStringValue(raw['sourceType'], 'MANUAL'),
+    sourceSnapshot: (raw['sourceSnapshot'] as Record<string, unknown>) ?? {},
+    convertedPoId: toStringValue(raw['convertedPoId']) || undefined,
+    convertedPoLineId: toStringValue(raw['convertedPoLineId']) || undefined,
+    notes: toStringValue(raw['notes']) || undefined,
+    createdAt: toStringValue(raw['createdAt']),
+    updatedAt: toStringValue(raw['updatedAt']),
+  };
+}
+
+function mapRequisitionSummary(raw: Record<string, unknown>): RequisitionSummary {
+  return {
+    requisitionId: toStringValue(raw['requisitionId']),
+    requisitionNumber: toStringValue(raw['requisitionNumber']),
+    status: toRequisitionStatus(raw['status']),
+    requestedBy: toStringValue(raw['requestedBy']) || undefined,
+    requestedDate: toStringValue(raw['requestedDate']),
+    needByDate: toStringValue(raw['needByDate']) || undefined,
+    legalEntity: toStringValue(raw['legalEntity']) || undefined,
+    currency: toStringValue(raw['currency'], 'USD'),
+    costCenterId: toStringValue(raw['costCenterId']) || undefined,
+    shipToBuildingId: toStringValue(raw['shipToBuildingId']) || undefined,
+    shipToAddress: toStringValue(raw['shipToAddress']) || undefined,
+    notes: toStringValue(raw['notes']) || undefined,
+    approvedBy: toStringValue(raw['approvedBy']) || undefined,
+    approvedDate: toStringValue(raw['approvedDate']) || undefined,
+    rejectedBy: toStringValue(raw['rejectedBy']) || undefined,
+    rejectedDate: toStringValue(raw['rejectedDate']) || undefined,
+    rejectionReason: toStringValue(raw['rejectionReason']) || undefined,
+    convertedDate: toStringValue(raw['convertedDate']) || undefined,
+    createdAt: toStringValue(raw['createdAt']),
+    updatedAt: toStringValue(raw['updatedAt']),
+    createdBy: toStringValue(raw['createdBy']) || undefined,
+    updatedBy: toStringValue(raw['updatedBy']) || undefined,
+  };
+}
+
+function mapRequisitionDetail(raw: Record<string, unknown>): RequisitionDetail {
+  const base = mapRequisitionSummary(raw);
+  const linesRaw = Array.isArray(raw['lines']) ? (raw['lines'] as Record<string, unknown>[]) : [];
+  return {
+    ...base,
+    lines: linesRaw.map(mapRequisitionLine),
+  };
+}
+
+function mapRequisitionPOLink(raw: Record<string, unknown>): RequisitionPOLink {
+  return {
+    requisitionPoLinkId: toStringValue(raw['requisitionPoLinkId']),
+    requisitionId: toStringValue(raw['requisitionId']),
+    reqLineId: toStringValue(raw['reqLineId']),
+    poId: toStringValue(raw['poId']),
+    poLineId: toStringValue(raw['poLineId']),
+    vendorId: toStringValue(raw['vendorId']),
+    linkedAt: toStringValue(raw['linkedAt']),
+  };
+}
+
+function mapRequisitionPage(
+  raw: RawPaginatedResponse<Record<string, unknown>>,
+  requestedPageSize: number
+): PaginatedResponse<RequisitionSummary> {
+  const page = toNumberValue(raw.page, 1);
+  const total = toNumberValue(raw.total, 0);
+  const pageSize = toNumberValue(raw.pageSize, toNumberValue(raw.limit, requestedPageSize));
+  const totalPages = toNumberValue(raw.totalPages, Math.max(1, Math.ceil(total / Math.max(pageSize, 1))));
+  const itemsRaw = Array.isArray(raw.items) ? raw.items : [];
+
+  return {
+    items: itemsRaw.map(mapRequisitionSummary),
+    total,
+    page,
+    pageSize,
+    totalPages,
   };
 }
 
@@ -573,6 +847,98 @@ export async function cancelPurchaseOrder(
   return mapPurchaseOrderDetail(response.data);
 }
 
+export async function postReceiptAccounting(
+  poId: string,
+  data: PostReceiptAccountingRequest
+): Promise<AccountingTransitionResult> {
+  const response = await apiClient.post<Record<string, unknown>>(
+    `/procurement/purchase-orders/${poId}/receipt-accounting`,
+    data
+  );
+
+  if (!response.success || !response.data) {
+    throw new ApiError(
+      response.error?.code || 'RECEIPT_ACCOUNTING_FAILED',
+      response.error?.message || 'Failed to post receipt accounting',
+      400,
+      response.requestId
+    );
+  }
+
+  return {
+    insertedEncumbrances: toNumberValue(response.data['insertedEncumbrances'], 0),
+    createdSubledgerEntries: toNumberValue(response.data['createdSubledgerEntries'], 0),
+    createdSubledgerLines: toNumberValue(response.data['createdSubledgerLines'], 0),
+  };
+}
+
+export async function postInvoiceAccounting(
+  poId: string,
+  data: PostInvoiceAccountingRequest
+): Promise<AccountingTransitionResult> {
+  const response = await apiClient.post<Record<string, unknown>>(
+    `/procurement/purchase-orders/${poId}/invoice-accounting`,
+    data
+  );
+
+  if (!response.success || !response.data) {
+    throw new ApiError(
+      response.error?.code || 'INVOICE_ACCOUNTING_FAILED',
+      response.error?.message || 'Failed to post invoice accounting',
+      400,
+      response.requestId
+    );
+  }
+
+  return {
+    insertedEncumbrances: toNumberValue(response.data['insertedEncumbrances'], 0),
+    createdSubledgerEntries: toNumberValue(response.data['createdSubledgerEntries'], 0),
+    createdSubledgerLines: toNumberValue(response.data['createdSubledgerLines'], 0),
+  };
+}
+
+export async function getPOCloseGuard(poId: string): Promise<POCloseGuardResult> {
+  const response = await apiClient.get<Record<string, unknown>>(
+    `/procurement/purchase-orders/${poId}/close-guard`
+  );
+
+  if (!response.success || !response.data) {
+    throw new ApiError(
+      response.error?.code || 'CLOSE_GUARD_FAILED',
+      response.error?.message || 'Failed to evaluate PO close guard',
+      400,
+      response.requestId
+    );
+  }
+
+  const reasons = Array.isArray(response.data['reasons'])
+    ? (response.data['reasons'] as unknown[]).filter((value): value is string => typeof value === 'string')
+    : [];
+
+  return {
+    canClose: Boolean(response.data['canClose']),
+    reasons,
+  };
+}
+
+export async function closePurchaseOrder(poId: string, closeNotes?: string): Promise<PurchaseOrderDetail> {
+  const response = await apiClient.post<Record<string, unknown>>(
+    `/procurement/purchase-orders/${poId}/close`,
+    { closeNotes }
+  );
+
+  if (!response.success || !response.data) {
+    throw new ApiError(
+      response.error?.code || 'CLOSE_FAILED',
+      response.error?.message || 'Failed to close purchase order',
+      400,
+      response.requestId
+    );
+  }
+
+  return mapPurchaseOrderDetail(response.data);
+}
+
 /**
  * Get vendors for dropdown
  */
@@ -614,6 +980,187 @@ export async function getCostCentersForDropdown(): Promise<CostCenterSummary[]> 
 }
 
 // ============================================================================
+// Requisition API
+// ============================================================================
+
+export async function listRequisitions(
+  filters?: RequisitionListFilters,
+  pagination?: PaginationParams
+): Promise<PaginatedResponse<RequisitionSummary>> {
+  const requestedPageSize = pagination?.pageSize ?? 20;
+  const queryParams = {
+    ...filters,
+    page: pagination?.page ?? 1,
+    pageSize: requestedPageSize,
+    sortBy: pagination?.sortBy ?? 'createdAt',
+    sortOrder: pagination?.sortOrder ?? 'desc',
+  };
+
+  const queryString = buildQueryString(queryParams);
+  const response = await apiClient.get<RawPaginatedResponse<Record<string, unknown>>>(
+    `/procurement/requisitions${queryString}`
+  );
+
+  if (!response.success || !response.data) {
+    throw new ApiError(
+      response.error?.code || 'LIST_FAILED',
+      response.error?.message || 'Failed to list requisitions',
+      400,
+      response.requestId
+    );
+  }
+
+  return mapRequisitionPage(response.data, requestedPageSize);
+}
+
+export async function getRequisition(requisitionId: string): Promise<RequisitionDetail> {
+  const response = await apiClient.get<Record<string, unknown>>(
+    `/procurement/requisitions/${requisitionId}`
+  );
+
+  if (!response.success || !response.data) {
+    throw new ApiError(
+      response.error?.code || 'NOT_FOUND',
+      response.error?.message || 'Requisition not found',
+      404,
+      response.requestId
+    );
+  }
+
+  return mapRequisitionDetail(response.data);
+}
+
+export async function createRequisition(
+  data: CreateRequisitionRequest
+): Promise<RequisitionDetail> {
+  const response = await apiClient.post<Record<string, unknown>>(
+    '/procurement/requisitions',
+    data
+  );
+
+  if (!response.success || !response.data) {
+    throw new ApiError(
+      response.error?.code || 'CREATE_FAILED',
+      response.error?.message || 'Failed to create requisition',
+      400,
+      response.requestId
+    );
+  }
+
+  return mapRequisitionDetail(response.data);
+}
+
+export async function submitRequisition(
+  requisitionId: string
+): Promise<RequisitionDetail> {
+  const response = await apiClient.post<Record<string, unknown>>(
+    `/procurement/requisitions/${requisitionId}/submit`
+  );
+
+  if (!response.success || !response.data) {
+    throw new ApiError(
+      response.error?.code || 'SUBMIT_FAILED',
+      response.error?.message || 'Failed to submit requisition',
+      400,
+      response.requestId
+    );
+  }
+
+  return mapRequisitionDetail(response.data);
+}
+
+export async function approveRequisition(
+  requisitionId: string,
+  notes?: string
+): Promise<RequisitionDetail> {
+  const response = await apiClient.post<Record<string, unknown>>(
+    `/procurement/requisitions/${requisitionId}/approve`,
+    { notes }
+  );
+
+  if (!response.success || !response.data) {
+    throw new ApiError(
+      response.error?.code || 'APPROVE_FAILED',
+      response.error?.message || 'Failed to approve requisition',
+      400,
+      response.requestId
+    );
+  }
+
+  return mapRequisitionDetail(response.data);
+}
+
+export async function rejectRequisition(
+  requisitionId: string,
+  reason: string
+): Promise<RequisitionDetail> {
+  const response = await apiClient.post<Record<string, unknown>>(
+    `/procurement/requisitions/${requisitionId}/reject`,
+    { reason }
+  );
+
+  if (!response.success || !response.data) {
+    throw new ApiError(
+      response.error?.code || 'REJECT_FAILED',
+      response.error?.message || 'Failed to reject requisition',
+      400,
+      response.requestId
+    );
+  }
+
+  return mapRequisitionDetail(response.data);
+}
+
+export async function convertRequisition(
+  requisitionId: string
+): Promise<RequisitionConversionResult> {
+  const response = await apiClient.post<Record<string, unknown>>(
+    `/procurement/requisitions/${requisitionId}/convert`
+  );
+
+  if (!response.success || !response.data) {
+    throw new ApiError(
+      response.error?.code || 'CONVERT_FAILED',
+      response.error?.message || 'Failed to convert requisition',
+      400,
+      response.requestId
+    );
+  }
+
+  const raw = response.data;
+  const rawPOs = Array.isArray(raw['purchaseOrders'])
+    ? (raw['purchaseOrders'] as Record<string, unknown>[])
+    : [];
+  const rawLinks = Array.isArray(raw['links']) ? (raw['links'] as Record<string, unknown>[]) : [];
+
+  return {
+    requisition: mapRequisitionDetail(raw['requisition'] as Record<string, unknown>),
+    purchaseOrders: rawPOs.map(mapPurchaseOrderDetail),
+    links: rawLinks.map(mapRequisitionPOLink),
+  };
+}
+
+export async function getRequisitionLinks(
+  requisitionId: string
+): Promise<RequisitionPOLink[]> {
+  const response = await apiClient.get<{ items?: Record<string, unknown>[] }>(
+    `/procurement/requisitions/${requisitionId}/links`
+  );
+
+  if (!response.success || !response.data) {
+    throw new ApiError(
+      response.error?.code || 'LIST_FAILED',
+      response.error?.message || 'Failed to fetch requisition links',
+      400,
+      response.requestId
+    );
+  }
+
+  const items = Array.isArray(response.data.items) ? response.data.items : [];
+  return items.map(mapRequisitionPOLink);
+}
+
+// ============================================================================
 // Export Procurement API
 // ============================================================================
 
@@ -630,12 +1177,26 @@ export const procurementApi = {
     reject: rejectPurchaseOrder,
     sendToVendor,
     cancel: cancelPurchaseOrder,
+    postReceiptAccounting,
+    postInvoiceAccounting,
+    getCloseGuard: getPOCloseGuard,
+    close: closePurchaseOrder,
   },
   vendors: {
     getForDropdown: getVendorsForDropdown,
   },
   costCenters: {
     getForDropdown: getCostCentersForDropdown,
+  },
+  requisitions: {
+    list: listRequisitions,
+    get: getRequisition,
+    create: createRequisition,
+    submit: submitRequisition,
+    approve: approveRequisition,
+    reject: rejectRequisition,
+    convert: convertRequisition,
+    links: getRequisitionLinks,
   },
 };
 

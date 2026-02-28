@@ -4,7 +4,6 @@ import { ErrorMessage } from '../../components/ui/ErrorMessage';
 import { EmptyState } from '../../components/ui/EmptyState';
 import {
   listLoaners,
-  getOverdueLoans,
   returnLoaner,
   type LoanerRecord,
 } from '../../services/ham-api';
@@ -23,8 +22,8 @@ export function LoanerManagementPage() {
       setIsLoading(true);
       setError(null);
       const result = activeTab === 'overdue'
-        ? await getOverdueLoans()
-        : await listLoaners('active');
+        ? await listLoaners('OVERDUE')
+        : await listLoaners('CHECKED_OUT');
       setLoaners(result);
     } catch {
       setError('Failed to load loaners. Please try again.');
@@ -117,7 +116,7 @@ export function LoanerManagementPage() {
                   <td>{new Date(l.expectedReturnDate).toLocaleDateString()}</td>
                   <td>{l.status}</td>
                   <td>
-                    {(l.status === 'active' || l.status === 'overdue') && (
+                    {(l.status === 'CHECKED_OUT' || l.status === 'OVERDUE') && (
                       <button onClick={() => handleReturn(l.loanId)}>Return</button>
                     )}
                   </td>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Asset Management System API - Swagger UI</title>
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css">
+  <link rel="icon" type="image/png" href="https://unpkg.com/swagger-ui-dist@5/favicon-32x32.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="https://unpkg.com/swagger-ui-dist@5/favicon-16x16.png" sizes="16x16">
+  <style>
+    html {
+      box-sizing: border-box;
+      overflow: -moz-scrollbars-vertical;
+      overflow-y: scroll;
+    }
+    
+    *,
+    *:before,
+    *:after {
+      box-sizing: inherit;
+    }
+
+    body {
+      margin: 0;
+      background: #fafafa;
+    }
+
+    .swagger-ui .topbar {
+      background-color: #1a365d;
+    }
+
+    .swagger-ui .topbar .download-url-wrapper .select-label {
+      color: #fff;
+    }
+
+    .swagger-ui .topbar .download-url-wrapper input[type=text] {
+      border-color: #3182ce;
+    }
+
+    .swagger-ui .info .title {
+      color: #1a365d;
+    }
+
+    .swagger-ui .info .title small.version-stamp {
+      background-color: #3182ce;
+    }
+
+    .swagger-ui .opblock.opblock-get .opblock-summary-method {
+      background: #3182ce;
+    }
+
+    .swagger-ui .opblock.opblock-post .opblock-summary-method {
+      background: #38a169;
+    }
+
+    .swagger-ui .opblock.opblock-put .opblock-summary-method {
+      background: #d69e2e;
+    }
+
+    .swagger-ui .opblock.opblock-delete .opblock-summary-method {
+      background: #e53e3e;
+    }
+
+    .swagger-ui .btn.authorize {
+      background-color: #3182ce;
+      border-color: #3182ce;
+      color: #fff;
+    }
+
+    .swagger-ui .btn.authorize:hover {
+      background-color: #2c5282;
+      border-color: #2c5282;
+    }
+
+    /* Custom header */
+    .custom-header {
+      background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+      color: white;
+      padding: 20px 40px;
+      text-align: center;
+    }
+
+    .custom-header h1 {
+      margin: 0 0 10px 0;
+      font-size: 28px;
+      font-weight: 600;
+    }
+
+    .custom-header p {
+      margin: 0;
+      opacity: 0.9;
+      font-size: 14px;
+    }
+
+    .custom-header .badges {
+      margin-top: 15px;
+    }
+
+    .custom-header .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      margin: 0 5px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .custom-header .badge-version {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .custom-header .badge-openapi {
+      background: #38a169;
+    }
+
+    .custom-header .badge-auth {
+      background: #d69e2e;
+    }
+  </style>
+</head>
+<body>
+  <div class="custom-header">
+    <h1>🏢 Asset Management System API</h1>
+    <p>Comprehensive lifecycle management for hardware, software, and enterprise assets</p>
+    <div class="badges">
+      <span class="badge badge-version">v1.0.0</span>
+      <span class="badge badge-openapi">OpenAPI 3.0.3</span>
+      <span class="badge badge-auth">JWT Auth</span>
+    </div>
+  </div>
+  <div id="swagger-ui"></div>
+  <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js" charset="UTF-8"></script>
+  <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-standalone-preset.js" charset="UTF-8"></script>
+  <script>
+    window.onload = function() {
+      const ui = SwaggerUIBundle({
+        url: "../openapi.yaml",
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        plugins: [
+          SwaggerUIBundle.plugins.DownloadUrl
+        ],
+        layout: "StandaloneLayout",
+        validatorUrl: null,
+        displayRequestDuration: true,
+        filter: true,
+        showExtensions: true,
+        showCommonExtensions: true,
+        tryItOutEnabled: false,
+        persistAuthorization: true,
+        defaultModelsExpandDepth: 2,
+        defaultModelExpandDepth: 2,
+        docExpansion: "list",
+        tagsSorter: "alpha",
+        operationsSorter: "alpha",
+        syntaxHighlight: {
+          activate: true,
+          theme: "monokai"
+        },
+        requestInterceptor: (request) => {
+          // Add custom headers if needed
+          return request;
+        },
+        onComplete: function() {
+          console.log("Swagger UI loaded successfully");
+        }
+      });
+
+      window.ui = ui;
+    };
+  </script>
+</body>
+</html>

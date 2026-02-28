@@ -7,15 +7,16 @@ import {
   checkDueMaintenance,
   updateMaintenancePlan,
   type MaintenancePlan,
+  type DueMaintenanceResponse,
 } from '../../services/eam-api';
 import styles from '../Page.module.css';
 
-type StatusFilter = 'all' | 'active' | 'paused' | 'completed';
+type StatusFilter = 'all' | 'active' | 'paused';
 
 export function MaintenancePlansPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [plans, setPlans] = useState<MaintenancePlan[]>([]);
-  const [duePlans, setDuePlans] = useState<MaintenancePlan[]>([]);
+  const [dueInfo, setDueInfo] = useState<DueMaintenanceResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
 
@@ -29,7 +30,7 @@ export function MaintenancePlansPage() {
         checkDueMaintenance(),
       ]);
       setPlans(planResult);
-      setDuePlans(dueResult);
+      setDueInfo(dueResult);
     } catch {
       setError('Failed to load maintenance plans. Please try again.');
     } finally {
@@ -43,7 +44,7 @@ export function MaintenancePlansPage() {
 
   const handlePause = async (planId: string) => {
     try {
-      await updateMaintenancePlan(planId, { status: 'paused' });
+      await updateMaintenancePlan(planId, { isActive: false });
       await fetchPlans();
     } catch {
       setError('Failed to pause maintenance plan. Please try again.');
@@ -52,14 +53,21 @@ export function MaintenancePlansPage() {
 
   const handleResume = async (planId: string) => {
     try {
-      await updateMaintenancePlan(planId, { status: 'active' });
+      await updateMaintenancePlan(planId, { isActive: true });
       await fetchPlans();
     } catch {
       setError('Failed to resume maintenance plan. Please try again.');
     }
   };
 
-  const isDue = (planId: string) => duePlans.some((p) => p.planId === planId);
+  const isDue = (planId: string) =>
+    dueInfo?.due.some((d) => d.planId === planId) ?? false;
+
+  const formatFrequency = (plan: MaintenancePlan): string => {
+    if (plan.frequencyDays) return `Every ${plan.frequencyDays} days`;
+    if (plan.frequencyHours) return `Every ${plan.frequencyHours} hours`;
+    return plan.scheduleType;
+  };
 
   return (
     <PageLayout
@@ -69,7 +77,7 @@ export function MaintenancePlansPage() {
       maxWidth="xl"
     >
       <div className={styles.pageContent}>
-        {duePlans.length > 0 && (
+        {dueInfo && dueInfo.summary.totalDue > 0 && (
           <div
             role="alert"
             style={{
@@ -80,7 +88,12 @@ export function MaintenancePlansPage() {
               borderRadius: 'var(--radius-md)',
             }}
           >
-            <strong>{duePlans.length} maintenance plan(s) due</strong>
+            <strong>{dueInfo.summary.totalDue} maintenance plan(s) due</strong>
+            {dueInfo.summary.overdue > 0 && (
+              <span style={{ marginLeft: 'var(--spacing-2)', color: 'var(--color-error, #ef4444)' }}>
+                ({dueInfo.summary.overdue} overdue)
+              </span>
+            )}
           </div>
         )}
 
@@ -96,7 +109,6 @@ export function MaintenancePlansPage() {
             <option value="all">All</option>
             <option value="active">Active</option>
             <option value="paused">Paused</option>
-            <option value="completed">Completed</option>
           </select>
         </div>
 
@@ -128,11 +140,11 @@ export function MaintenancePlansPage() {
             <thead>
               <tr>
                 <th scope="col">Name</th>
-                <th scope="col">Asset Tag</th>
+                <th scope="col">Type</th>
                 <th scope="col">Frequency</th>
-                <th scope="col">Status</th>
+                <th scope="col">Priority</th>
                 <th scope="col">Next Due</th>
-                <th scope="col">Tasks</th>
+                <th scope="col">Executions</th>
                 <th scope="col">Actions</th>
               </tr>
             </thead>
@@ -140,23 +152,22 @@ export function MaintenancePlansPage() {
               {plans.map((plan) => (
                 <tr key={plan.planId}>
                   <td>
-                    {plan.name}
+                    {plan.planName}
                     {isDue(plan.planId) && (
                       <span style={{ color: 'var(--color-warning, #f59e0b)', marginLeft: 'var(--spacing-1)' }} title="Due for maintenance">
                         ⚠
                       </span>
                     )}
                   </td>
-                  <td>{plan.assetTag}</td>
-                  <td>{plan.frequency}</td>
-                  <td>{plan.status}</td>
-                  <td>{plan.nextDue ? new Date(plan.nextDue).toLocaleDateString() : '—'}</td>
-                  <td>{plan.tasks.filter((t) => t.completed).length}/{plan.tasks.length}</td>
+                  <td>{plan.maintenanceType}</td>
+                  <td>{formatFrequency(plan)}</td>
+                  <td>{plan.priority}</td>
+                  <td>{plan.nextDueDate ? new Date(plan.nextDueDate).toLocaleDateString() : '—'}</td>
+                  <td>{plan.executionCount}</td>
                   <td>
-                    {plan.status === 'active' && (
+                    {plan.isActive ? (
                       <button onClick={() => handlePause(plan.planId)}>Pause</button>
-                    )}
-                    {plan.status === 'paused' && (
+                    ) : (
                       <button onClick={() => handleResume(plan.planId)}>Resume</button>
                     )}
                   </td>

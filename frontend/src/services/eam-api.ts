@@ -21,7 +21,16 @@ export interface WorkOrder {
   title: string;
   description: string;
   priority: 'low' | 'medium' | 'high' | 'critical';
-  status: 'open' | 'assigned' | 'in_progress' | 'completed' | 'cancelled';
+  status:
+    | 'open'
+    | 'assigned'
+    | 'in_progress'
+    | 'on_hold'
+    | 'pending_parts'
+    | 'pending_approval'
+    | 'completed'
+    | 'cancelled'
+    | 'closed';
   assignedTo?: string;
   assignedToName?: string;
   createdBy: string;
@@ -34,21 +43,43 @@ export interface WorkOrder {
 export interface MaintenancePlan {
   planId: string;
   assetId: string;
-  assetTag: string;
-  name: string;
-  description: string;
-  frequency: string;
-  lastExecuted?: string;
-  nextDue?: string;
-  status: 'active' | 'paused' | 'completed';
-  tasks: MaintenanceTask[];
+  planName: string;
+  description: string | null;
+  maintenanceType: string;
+  scheduleType: string;
+  frequencyDays: number | null;
+  frequencyHours: number | null;
+  lastPerformedDate: string | null;
+  nextDueDate: string | null;
+  estimatedDurationHours: number | null;
+  estimatedCost: number | null;
+  leadTimeDays: number;
+  isActive: boolean;
+  priority: string;
+  executionCount: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface MaintenanceTask {
-  taskId: string;
-  description: string;
-  estimatedMinutes: number;
-  completed: boolean;
+export interface DueMaintenanceItem {
+  planId: string;
+  assetId: string;
+  planName: string;
+  nextDueDate: string;
+  isOverdue: boolean;
+  isCritical: boolean;
+  priority: string;
+}
+
+export interface DueMaintenanceResponse {
+  due: DueMaintenanceItem[];
+  upcoming: DueMaintenanceItem[];
+  summary: {
+    totalDue: number;
+    overdue: number;
+    critical: number;
+    upcomingCount: number;
+  };
 }
 
 export interface LinearAsset {
@@ -83,6 +114,8 @@ export interface PartLevel {
 
 export interface CreateWorkOrderRequest {
   assetId: string;
+  buildingId?: string;
+  workType?: 'preventive' | 'corrective' | 'emergency' | 'inspection' | 'calibration' | 'installation' | 'modification' | 'decommission' | 'project' | 'other';
   title: string;
   description: string;
   priority: 'low' | 'medium' | 'high' | 'critical';
@@ -91,17 +124,26 @@ export interface CreateWorkOrderRequest {
 
 export interface CreateMaintenancePlanRequest {
   assetId: string;
-  name: string;
-  description: string;
-  frequency: string;
-  tasks: Array<{ description: string; estimatedMinutes: number }>;
+  planName: string;
+  description?: string;
+  maintenanceType: string;
+  scheduleType: string;
+  frequencyDays?: number;
+  frequencyHours?: number;
+  estimatedDurationHours?: number;
+  estimatedCost?: number;
+  priority?: string;
 }
 
 export interface UpdateMaintenancePlanRequest {
-  name?: string;
+  planName?: string;
   description?: string;
-  frequency?: string;
-  status?: 'active' | 'paused' | 'completed';
+  maintenanceType?: string;
+  scheduleType?: string;
+  frequencyDays?: number | null;
+  frequencyHours?: number | null;
+  isActive?: boolean;
+  priority?: string;
 }
 
 export interface CreateLinearAssetRequest {
@@ -128,16 +170,112 @@ export interface ConsumePartsRequest {
   workOrderId?: string;
 }
 
+export interface WorkOrderListFilters {
+  status?: WorkOrder['status'];
+  priority?: WorkOrder['priority'];
+  buildingId?: string;
+  building?: string;
+}
+
+const STATUS_UI_TO_API: Record<WorkOrder['status'], string> = {
+  open: 'OPEN',
+  assigned: 'ASSIGNED',
+  in_progress: 'IN_PROGRESS',
+  on_hold: 'ON_HOLD',
+  pending_parts: 'PENDING_PARTS',
+  pending_approval: 'PENDING_APPROVAL',
+  completed: 'COMPLETED',
+  cancelled: 'CANCELLED',
+  closed: 'CLOSED',
+};
+
+const STATUS_API_TO_UI: Record<string, WorkOrder['status']> = {
+  OPEN: 'open',
+  ASSIGNED: 'assigned',
+  IN_PROGRESS: 'in_progress',
+  ON_HOLD: 'on_hold',
+  PENDING_PARTS: 'pending_parts',
+  PENDING_APPROVAL: 'pending_approval',
+  COMPLETED: 'completed',
+  CANCELLED: 'cancelled',
+  CLOSED: 'closed',
+};
+
+const PRIORITY_UI_TO_API: Record<WorkOrder['priority'], string> = {
+  low: 'LOW',
+  medium: 'MEDIUM',
+  high: 'HIGH',
+  critical: 'CRITICAL',
+};
+
+const PRIORITY_API_TO_UI: Record<string, WorkOrder['priority']> = {
+  LOW: 'low',
+  MEDIUM: 'medium',
+  HIGH: 'high',
+  CRITICAL: 'critical',
+};
+
+function toStringValue(value: unknown, fallback = ''): string {
+  return typeof value === 'string' ? value : fallback;
+}
+
+function toNumberValue(value: unknown): number | undefined {
+  return typeof value === 'number' && Number.isFinite(value) ? value : undefined;
+}
+
+function mapApiStatusToUi(value: unknown): WorkOrder['status'] {
+  const key = toStringValue(value).toUpperCase();
+  return STATUS_API_TO_UI[key] ?? 'open';
+}
+
+function mapApiPriorityToUi(value: unknown): WorkOrder['priority'] {
+  const key = toStringValue(value).toUpperCase();
+  return PRIORITY_API_TO_UI[key] ?? 'medium';
+}
+
+function mapUiStatusToApi(value?: string): string | undefined {
+  if (!value) return undefined;
+  return STATUS_UI_TO_API[value as WorkOrder['status']] ?? value.toUpperCase();
+}
+
+function mapUiPriorityToApi(value?: string): string | undefined {
+  if (!value) return undefined;
+  return PRIORITY_UI_TO_API[value as WorkOrder['priority']] ?? value.toUpperCase();
+}
+
+function mapWorkOrder(raw: Record<string, unknown>): WorkOrder {
+  return {
+    workOrderId: toStringValue(raw['workOrderId']),
+    assetId: toStringValue(raw['assetId']),
+    assetTag: toStringValue(raw['assetTag']),
+    title: toStringValue(raw['title']),
+    description: toStringValue(raw['description']),
+    priority: mapApiPriorityToUi(raw['priority']),
+    status: mapApiStatusToUi(raw['status']),
+    assignedTo: toStringValue(raw['assignedTo']) || undefined,
+    assignedToName: toStringValue(raw['assignedToName']) || undefined,
+    createdBy: toStringValue(raw['createdBy']),
+    createdAt: toStringValue(raw['createdAt']),
+    completedAt: toStringValue(raw['completedAt']) || undefined,
+    estimatedHours: toNumberValue(raw['estimatedHours']),
+    actualHours: toNumberValue(raw['actualHours']),
+  };
+}
+
 // ============================================================================
 // Work Order API Functions
 // ============================================================================
 
-export async function listWorkOrders(status?: string, priority?: string): Promise<WorkOrder[]> {
+export async function listWorkOrders(filters: WorkOrderListFilters = {}): Promise<WorkOrder[]> {
   const params = new URLSearchParams();
-  if (status) params.set('status', status);
-  if (priority) params.set('priority', priority);
+  const mappedStatus = mapUiStatusToApi(filters.status);
+  const mappedPriority = mapUiPriorityToApi(filters.priority);
+  if (mappedStatus) params.set('status', mappedStatus);
+  if (mappedPriority) params.set('priority', mappedPriority);
+  if (filters.buildingId) params.set('buildingId', filters.buildingId);
+  if (filters.building) params.set('building', filters.building);
   const query = params.toString() ? `?${params.toString()}` : '';
-  const response = await apiClient.get<WorkOrder[]>(`/eam/work-orders${query}`);
+  const response = await apiClient.get<Record<string, unknown>[] | { items: Record<string, unknown>[] }>(`/eam/work-orders${query}`);
   if (!response.success || !response.data) {
     throw new ApiError(
       response.error?.code || 'FETCH_FAILED',
@@ -146,11 +284,13 @@ export async function listWorkOrders(status?: string, priority?: string): Promis
       response.requestId
     );
   }
-  return response.data;
+  const data = response.data;
+  const items = Array.isArray(data) ? data : data.items ?? [];
+  return items.map(mapWorkOrder);
 }
 
 export async function getWorkOrder(workOrderId: string): Promise<WorkOrder> {
-  const response = await apiClient.get<WorkOrder>(`/eam/work-orders/${workOrderId}`);
+  const response = await apiClient.get<Record<string, unknown>>(`/eam/work-orders/${workOrderId}`);
   if (!response.success || !response.data) {
     throw new ApiError(
       response.error?.code || 'FETCH_FAILED',
@@ -159,11 +299,17 @@ export async function getWorkOrder(workOrderId: string): Promise<WorkOrder> {
       response.requestId
     );
   }
-  return response.data;
+  return mapWorkOrder(response.data);
 }
 
 export async function createWorkOrder(data: CreateWorkOrderRequest): Promise<WorkOrder> {
-  const response = await apiClient.post<WorkOrder>('/eam/work-orders', data);
+  const workType = (data.workType ?? 'corrective').toUpperCase();
+  const payload = {
+    ...data,
+    workType,
+    priority: mapUiPriorityToApi(data.priority),
+  };
+  const response = await apiClient.post<Record<string, unknown>>('/eam/work-orders', payload);
   if (!response.success || !response.data) {
     throw new ApiError(
       response.error?.code || 'CREATE_FAILED',
@@ -172,11 +318,11 @@ export async function createWorkOrder(data: CreateWorkOrderRequest): Promise<Wor
       response.requestId
     );
   }
-  return response.data;
+  return mapWorkOrder(response.data);
 }
 
 export async function assignWorkOrder(workOrderId: string, assignedTo: string): Promise<WorkOrder> {
-  const response = await apiClient.post<WorkOrder>(`/eam/work-orders/${workOrderId}/assign`, { assignedTo });
+  const response = await apiClient.post<Record<string, unknown>>(`/eam/work-orders/${workOrderId}/assign`, { assignedTo });
   if (!response.success || !response.data) {
     throw new ApiError(
       response.error?.code || 'ASSIGN_FAILED',
@@ -185,11 +331,11 @@ export async function assignWorkOrder(workOrderId: string, assignedTo: string): 
       response.requestId
     );
   }
-  return response.data;
+  return mapWorkOrder(response.data);
 }
 
 export async function completeWorkOrder(workOrderId: string, actualHours?: number): Promise<WorkOrder> {
-  const response = await apiClient.post<WorkOrder>(`/eam/work-orders/${workOrderId}/complete`, { actualHours });
+  const response = await apiClient.post<Record<string, unknown>>(`/eam/work-orders/${workOrderId}/complete`, { actualHours });
   if (!response.success || !response.data) {
     throw new ApiError(
       response.error?.code || 'COMPLETE_FAILED',
@@ -198,7 +344,7 @@ export async function completeWorkOrder(workOrderId: string, actualHours?: numbe
       response.requestId
     );
   }
-  return response.data;
+  return mapWorkOrder(response.data);
 }
 
 // ============================================================================
@@ -207,7 +353,7 @@ export async function completeWorkOrder(workOrderId: string, actualHours?: numbe
 
 export async function listMaintenancePlans(status?: string): Promise<MaintenancePlan[]> {
   const query = status ? `?status=${status}` : '';
-  const response = await apiClient.get<MaintenancePlan[]>(`/eam/maintenance-plans${query}`);
+  const response = await apiClient.get<MaintenancePlan[] | { items: MaintenancePlan[] }>(`/eam/maintenance-plans${query}`);
   if (!response.success || !response.data) {
     throw new ApiError(
       response.error?.code || 'FETCH_FAILED',
@@ -216,7 +362,8 @@ export async function listMaintenancePlans(status?: string): Promise<Maintenance
       response.requestId
     );
   }
-  return response.data;
+  const data = response.data;
+  return Array.isArray(data) ? data : data.items ?? [];
 }
 
 export async function getMaintenancePlan(planId: string): Promise<MaintenancePlan> {
@@ -258,8 +405,8 @@ export async function updateMaintenancePlan(planId: string, data: UpdateMaintena
   return response.data;
 }
 
-export async function checkDueMaintenance(): Promise<MaintenancePlan[]> {
-  const response = await apiClient.get<MaintenancePlan[]>('/eam/maintenance-plans/check-due');
+export async function checkDueMaintenance(): Promise<DueMaintenanceResponse> {
+  const response = await apiClient.get<DueMaintenanceResponse>('/eam/maintenance-plans/check-due');
   if (!response.success || !response.data) {
     throw new ApiError(
       response.error?.code || 'FETCH_FAILED',
@@ -271,12 +418,13 @@ export async function checkDueMaintenance(): Promise<MaintenancePlan[]> {
   return response.data;
 }
 
+
 // ============================================================================
 // Linear Asset API Functions
 // ============================================================================
 
 export async function listLinearAssets(): Promise<LinearAsset[]> {
-  const response = await apiClient.get<LinearAsset[]>('/eam/linear-assets');
+  const response = await apiClient.get<LinearAsset[] | { items: LinearAsset[] }>('/eam/linear-assets');
   if (!response.success || !response.data) {
     throw new ApiError(
       response.error?.code || 'FETCH_FAILED',
@@ -285,7 +433,8 @@ export async function listLinearAssets(): Promise<LinearAsset[]> {
       response.requestId
     );
   }
-  return response.data;
+  const data = response.data;
+  return Array.isArray(data) ? data : data.items ?? [];
 }
 
 export async function getLinearAsset(linearAssetId: string): Promise<LinearAsset> {
@@ -315,7 +464,7 @@ export async function createLinearAsset(data: CreateLinearAssetRequest): Promise
 }
 
 export async function listSegments(linearAssetId: string): Promise<LinearSegment[]> {
-  const response = await apiClient.get<LinearSegment[]>(`/eam/linear-assets/${linearAssetId}/segments`);
+  const response = await apiClient.get<LinearSegment[] | { items: LinearSegment[] }>(`/eam/linear-assets/${linearAssetId}/segments`);
   if (!response.success || !response.data) {
     throw new ApiError(
       response.error?.code || 'FETCH_FAILED',
@@ -324,7 +473,8 @@ export async function listSegments(linearAssetId: string): Promise<LinearSegment
       response.requestId
     );
   }
-  return response.data;
+  const data = response.data;
+  return Array.isArray(data) ? data : data.items ?? [];
 }
 
 export async function updateSegment(linearAssetId: string, segmentId: string, data: UpdateSegmentRequest): Promise<LinearSegment> {
@@ -345,7 +495,7 @@ export async function updateSegment(linearAssetId: string, segmentId: string, da
 // ============================================================================
 
 export async function checkPartLevels(): Promise<PartLevel[]> {
-  const response = await apiClient.get<PartLevel[]>('/eam/parts/levels');
+  const response = await apiClient.get<PartLevel[] | { items: PartLevel[] }>('/eam/parts/levels');
   if (!response.success || !response.data) {
     throw new ApiError(
       response.error?.code || 'FETCH_FAILED',
@@ -354,7 +504,8 @@ export async function checkPartLevels(): Promise<PartLevel[]> {
       response.requestId
     );
   }
-  return response.data;
+  const data = response.data;
+  return Array.isArray(data) ? data : data.items ?? [];
 }
 
 export async function reserveParts(data: ReservePartsRequest): Promise<PartLevel> {

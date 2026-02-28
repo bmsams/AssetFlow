@@ -1,0 +1,25 @@
+{
+  "name": "@ams/search",
+  "version": "1.0.0",
+  "description": "OpenSearch integration for Asset Management System",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --platform=node --target=node18 --outfile=dist/index.js --external:@ams/* --external:@opensearch-project/* --external:@aws-sdk/*",
+    "clean": "rm -rf dist",
+    "test": "jest",
+    "typecheck": "tsc --noEmit"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@ams/types": "1.0.0",
+    "@ams/utils": "1.0.0",
+    "@opensearch-project/opensearch": "^2.5.0",
+    "@aws-sdk/credential-provider-node": "^3.478.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

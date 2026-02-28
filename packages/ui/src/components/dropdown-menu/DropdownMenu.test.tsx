@@ -8,7 +8,7 @@ describe('DropdownMenu', () => {
     const onClick = vi.fn();
     render(
       <DropdownMenu trigger={<button>Actions</button>} {...props}>
-        <DropdownMenu.Group label="Edit">
+        <DropdownMenu.Group label="Editing">
           <DropdownMenu.Item onClick={() => onClick('edit')}>Edit</DropdownMenu.Item>
           <DropdownMenu.Item onClick={() => onClick('clone')}>Clone</DropdownMenu.Item>
         </DropdownMenu.Group>
@@ -43,7 +43,9 @@ describe('DropdownMenu', () => {
     const user = userEvent.setup();
     const { onClick } = renderMenu();
     await user.click(screen.getByRole('button', { name: 'Actions' }));
-    await user.click(screen.getByText('Edit'));
+    // Use menuitem role to target the Edit item specifically (not the group label)
+    const editItem = screen.getAllByRole('menuitem').find(el => el.textContent === 'Edit')!;
+    await user.click(editItem);
     expect(onClick).toHaveBeenCalledWith('edit');
     await waitFor(() => {
       expect(screen.queryByRole('menu')).not.toBeInTheDocument();
@@ -73,10 +75,12 @@ describe('DropdownMenu', () => {
     renderMenu();
     await user.click(screen.getByRole('button', { name: 'Actions' }));
     const items = screen.getAllByRole('menuitem');
-    await user.keyboard('{ArrowDown}');
+    // Menu auto-focuses first item on open
     expect(items[0]).toHaveFocus();
     await user.keyboard('{ArrowDown}');
     expect(items[1]).toHaveFocus();
+    await user.keyboard('{ArrowDown}');
+    expect(items[2]).toHaveFocus();
   });
 
   it('renders item with icon when provided', async () => {

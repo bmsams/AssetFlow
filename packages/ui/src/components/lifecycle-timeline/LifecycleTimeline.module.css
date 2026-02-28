@@ -1,0 +1,145 @@
+/* LifecycleTimeline - Horizontal stepper */
+.timeline {
+  display: flex;
+  align-items: flex-start;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: var(--spacing-4, 1rem) 0;
+}
+
+.timeline::-webkit-scrollbar {
+  display: none;
+}
+
+/* Individual step */
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  flex-shrink: 0;
+  min-width: 100px;
+  padding: 0 var(--spacing-2, 0.5rem);
+}
+
+/* Circle indicator */
+.circle {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full, 9999px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  transition: all 200ms ease;
+}
+
+/* Completed: filled green */
+.circle.completed {
+  background-color: var(--color-success-500, #22c55e);
+  border: 2px solid var(--color-success-500, #22c55e);
+  color: white;
+}
+
+/* Current: filled blue with pulse */
+.circle.current {
+  background-color: var(--color-primary-500, #3b82f6);
+  border: 2px solid var(--color-primary-500, #3b82f6);
+  color: white;
+  box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5);
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Upcoming: gray outline */
+.circle.upcoming {
+  background-color: transparent;
+  border: 2px solid var(--color-gray-300, #d1d5db);
+  color: var(--color-gray-400, #9ca3af);
+}
+
+/* Check icon in completed circles */
+.checkIcon {
+  width: 14px;
+  height: 14px;
+}
+
+/* Connector line between steps */
+.connector {
+  position: absolute;
+  top: 14px;
+  left: calc(50% + 18px);
+  width: calc(100% - 36px);
+  height: 2px;
+  background-color: var(--color-gray-200, #e5e7eb);
+  z-index: 0;
+}
+
+.connectorCompleted {
+  background-color: var(--color-success-500, #22c55e);
+}
+
+/* Labels */
+.label {
+  margin-top: var(--spacing-2, 0.5rem);
+  font-size: var(--font-size-xs, 0.75rem);
+  font-weight: var(--font-weight-medium, 500);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.label.completed {
+  color: var(--color-success-700, #15803d);
+}
+
+.label.current {
+  color: var(--color-primary-600, #2563eb);
+  font-weight: var(--font-weight-semibold, 600);
+}
+
+.label.upcoming {
+  color: var(--color-text-muted, #9ca3af);
+}
+
+/* Date beneath label */
+.date {
+  margin-top: var(--spacing-0\.5, 0.125rem);
+  font-size: var(--font-size-2xs, 0.6875rem);
+  color: var(--color-text-tertiary, #9ca3af);
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Pulse animation for current step */
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(59, 130, 246, 0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .step {
+    min-width: 80px;
+  }
+
+  .circle {
+    width: 24px;
+    height: 24px;
+  }
+
+  .connector {
+    top: 12px;
+    left: calc(50% + 16px);
+    width: calc(100% - 32px);
+  }
+
+  .checkIcon {
+    width: 12px;
+    height: 12px;
+  }
+}

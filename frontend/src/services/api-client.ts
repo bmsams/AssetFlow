@@ -146,6 +146,25 @@ function isLikelyDnsResolutionError(error: Error): boolean {
   );
 }
 
+function isIncompleteSignatureResponse(response: Response, responseData: unknown): boolean {
+  if (response.status !== 403) {
+    return false;
+  }
+
+  const data = (responseData ?? {}) as {
+    readonly message?: string;
+    readonly error?: { readonly message?: string };
+    readonly __rawHeaders?: Headers;
+  };
+  const bodyMessage = `${data.message ?? ''} ${data.error?.message ?? ''}`.toLowerCase();
+  const errorTypeHeader = response.headers.get('x-amzn-errortype')?.toLowerCase() ?? '';
+
+  return (
+    errorTypeHeader.includes('incompletesignatureexception') ||
+    bodyMessage.includes('invalid key=value pair')
+  );
+}
+
 /**
  * Make an HTTP request with retry logic
  */
@@ -164,40 +183,66 @@ async function request<T>(
     ...options.headers,
   };
 
+  const token = !options.skipAuth ? getAccessToken() : null;
+
   // Add authorization header if authenticated and not skipped
-  if (!options.skipAuth) {
-    const token = getAccessToken();
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
   }
 
-  // Request configuration
-  const fetchOptions: RequestInit = {
-    method,
-    headers,
-    body: body ? JSON.stringify(body) : undefined,
+  const sendRequest = async (requestHeaders: Record<string, string>): Promise<{
+    response: Response;
+    responseData: unknown;
+  }> => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(
+      () => controller.abort(),
+      options.timeout || config.timeout
+    );
+
+    try {
+      const response = await fetch(url, {
+        method,
+        headers: requestHeaders,
+        body: body ? JSON.stringify(body) : undefined,
+        signal: controller.signal,
+      });
+      const responseData = await response.json().catch(() => ({}));
+      return { response, responseData };
+    } finally {
+      clearTimeout(timeoutId);
+    }
   };
+
+  const requestWithFallback = async (): Promise<{ response: Response; responseData: unknown }> => {
+    const primary = await sendRequest(headers);
+    if (
+      token &&
+      headers['Authorization']?.startsWith('Bearer ') &&
+      isIncompleteSignatureResponse(primary.response, primary.responseData)
+    ) {
+      const fallbackHeaders = {
+        ...headers,
+        Authorization: token,
+      };
+      return sendRequest(fallbackHeaders);
+    }
+    return primary;
+  }
 
   // Retry logic with exponential backoff
   let lastError: Error | null = null;
   for (let attempt = 0; attempt < config.retryAttempts; attempt++) {
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(
-        () => controller.abort(),
-        options.timeout || config.timeout
-      );
-
-      const response = await fetch(url, {
-        ...fetchOptions,
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      // Parse response
-      const responseData = await response.json().catch(() => ({}));
+      const { response, responseData } = await requestWithFallback();
+      const payload = (responseData ?? {}) as {
+        readonly data?: T;
+        readonly requestId?: string;
+        readonly error?: {
+          readonly code?: string;
+          readonly message?: string;
+        };
+      };
 
       // Handle 401 Unauthorized - redirect to login
       if (response.status === 401) {
@@ -208,17 +253,17 @@ async function request<T>(
           'UNAUTHORIZED',
           'Session expired. Please log in again.',
           401,
-          responseData.requestId
+          payload.requestId
         );
       }
 
       // Handle error responses
       if (!response.ok) {
         const error = new ApiError(
-          responseData.error?.code || 'UNKNOWN_ERROR',
-          responseData.error?.message || 'An unexpected error occurred',
+          payload.error?.code || 'UNKNOWN_ERROR',
+          payload.error?.message || 'An unexpected error occurred',
           response.status,
-          responseData.requestId
+          payload.requestId
         );
 
         // Retry on retryable errors
@@ -234,8 +279,8 @@ async function request<T>(
       // Return successful response
       return {
         success: true,
-        data: responseData.data ?? responseData,
-        requestId: responseData.requestId,
+        data: payload.data ?? (responseData as T),
+        requestId: payload.requestId,
       };
     } catch (error) {
       if (error instanceof ApiError) {

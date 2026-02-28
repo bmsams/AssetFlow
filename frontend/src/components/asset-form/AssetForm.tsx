@@ -13,7 +13,7 @@ import {
 import { parseApiErrorToFieldErrors } from './error-mapping';
 import { useEntityOptions } from '../../hooks/useEntityOptions';
 import { adminApi } from '../../services/admin-api';
-import type { Department, CostCenter } from '../../types/admin';
+import type { Building, Department, CostCenter, Stockroom } from '../../types/admin';
 import type { AssetType, AssetStatus, AnyAsset } from '../../types/asset';
 import styles from './AssetForm.module.css';
 
@@ -115,10 +115,16 @@ export function AssetForm({
   // Validates: Requirements 7.1, 7.2
   const fetchDepartments = useMemo(() => () => adminApi.departments.list(), []);
   const fetchCostCenters = useMemo(() => () => adminApi.costCenters.list(), []);
+  const fetchBuildings = useMemo(() => () => adminApi.buildings.list({ isActive: true }), []);
+  const fetchStockrooms = useMemo(() => () => adminApi.stockrooms.list({ isActive: true }), []);
   const departmentLabelFn = useCallback((d: Department) => d.name, []);
   const departmentValueFn = useCallback((d: Department) => d.departmentId, []);
   const costCenterLabelFn = useCallback((c: CostCenter) => `${c.code} - ${c.name}`, []);
   const costCenterValueFn = useCallback((c: CostCenter) => c.costCenterId, []);
+  const buildingLabelFn = useCallback((b: Building) => `${b.buildingCode} - ${b.name}`, []);
+  const buildingValueFn = useCallback((b: Building) => b.buildingId, []);
+  const stockroomLabelFn = useCallback((s: Stockroom) => `${s.stockroomCode} - ${s.name}`, []);
+  const stockroomValueFn = useCallback((s: Stockroom) => s.stockroomId, []);
 
   const { options: departmentOptions, isLoading: departmentsLoading } = useEntityOptions<Department>(
     fetchDepartments,
@@ -129,6 +135,16 @@ export function AssetForm({
     fetchCostCenters,
     costCenterLabelFn,
     costCenterValueFn
+  );
+  const { options: buildingOptions, isLoading: buildingsLoading } = useEntityOptions<Building>(
+    fetchBuildings,
+    buildingLabelFn,
+    buildingValueFn
+  );
+  const { options: stockroomOptions, isLoading: stockroomsLoading } = useEntityOptions<Stockroom>(
+    fetchStockrooms,
+    stockroomLabelFn,
+    stockroomValueFn
   );
 
   // Update form data when initialData changes (for edit mode)
@@ -356,6 +372,72 @@ export function AssetForm({
         />
       </div>
 
+      <h4 className={styles.subsectionTitle}>Location and Ownership</h4>
+      <div className={styles.fieldGrid}>
+        <FormField
+          name="stockroomId"
+          label="Stockroom"
+          type="select"
+          value={formData.stockroomId || ''}
+          onChange={handleFieldChange}
+          onBlur={handleFieldBlur}
+          error={getFieldError('stockroomId')}
+          options={stockroomOptions}
+          disabled={stockroomsLoading}
+          placeholder={stockroomsLoading ? 'Loading stockrooms...' : 'Select a stockroom'}
+        />
+        <FormField
+          name="buildingId"
+          label="Building"
+          type="select"
+          value={formData.buildingId || ''}
+          onChange={handleFieldChange}
+          onBlur={handleFieldBlur}
+          error={getFieldError('buildingId')}
+          options={buildingOptions}
+          disabled={buildingsLoading}
+          placeholder={buildingsLoading ? 'Loading buildings...' : 'Select a building'}
+        />
+        <FormField
+          name="floor"
+          label="Floor"
+          value={formData.floor || ''}
+          onChange={handleFieldChange}
+          onBlur={handleFieldBlur}
+          error={getFieldError('floor')}
+          placeholder="e.g., 2"
+        />
+        <FormField
+          name="room"
+          label="Room"
+          value={formData.room || ''}
+          onChange={handleFieldChange}
+          onBlur={handleFieldBlur}
+          error={getFieldError('room')}
+          placeholder="e.g., 201"
+        />
+        <FormField
+          name="rack"
+          label="Rack"
+          value={formData.rack || ''}
+          onChange={handleFieldChange}
+          onBlur={handleFieldBlur}
+          error={getFieldError('rack')}
+          placeholder="e.g., A-12"
+        />
+        <FormField
+          name="rackUnit"
+          label="Rack Unit"
+          type="number"
+          value={formData.rackUnit || ''}
+          onChange={handleFieldChange}
+          onBlur={handleFieldBlur}
+          error={getFieldError('rackUnit')}
+          min={1}
+          placeholder="e.g., 24"
+        />
+      </div>
+
       <h4 className={styles.subsectionTitle}>Financial</h4>
       <div className={styles.fieldGrid}>
         <FormField
@@ -498,6 +580,49 @@ export function AssetForm({
           onBlur={handleFieldBlur}
           error={getFieldError('criticalityLevel')}
           options={criticalityOptions}
+        />
+      </div>
+
+      <h4 className={styles.subsectionTitle}>Location</h4>
+      <div className={styles.fieldGrid}>
+        <FormField
+          name="facilityId"
+          label="Facility ID"
+          value={formData.facilityId || ''}
+          onChange={handleFieldChange}
+          onBlur={handleFieldBlur}
+          error={getFieldError('facilityId')}
+          placeholder="Facility UUID"
+        />
+        <FormField
+          name="buildingId"
+          label="Building"
+          type="select"
+          value={formData.buildingId || ''}
+          onChange={handleFieldChange}
+          onBlur={handleFieldBlur}
+          error={getFieldError('buildingId')}
+          options={buildingOptions}
+          disabled={buildingsLoading}
+          placeholder={buildingsLoading ? 'Loading buildings...' : 'Select a building'}
+        />
+        <FormField
+          name="floor"
+          label="Floor"
+          value={formData.floor || ''}
+          onChange={handleFieldChange}
+          onBlur={handleFieldBlur}
+          error={getFieldError('floor')}
+          placeholder="e.g., 1"
+        />
+        <FormField
+          name="zone"
+          label="Zone"
+          value={formData.zone || ''}
+          onChange={handleFieldChange}
+          onBlur={handleFieldBlur}
+          error={getFieldError('zone')}
+          placeholder="e.g., North Wing"
         />
       </div>
 

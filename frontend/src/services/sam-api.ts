@@ -85,7 +85,7 @@ export interface UnusedSubscription {
  * Get compliance positions for all software titles
  */
 export async function getCompliancePositions(): Promise<CompliancePosition[]> {
-  const response = await apiClient.get<CompliancePosition[]>(
+  const response = await apiClient.get<CompliancePosition[] | { items: CompliancePosition[] }>(
     '/reconciliation/compliance'
   );
 
@@ -98,14 +98,15 @@ export async function getCompliancePositions(): Promise<CompliancePosition[]> {
     );
   }
 
-  return response.data;
+  const data = response.data;
+  return Array.isArray(data) ? data : data.items ?? [];
 }
 
 /**
  * Get reclamation candidates/opportunities
  */
 export async function getReclamationCandidates(): Promise<ReclamationOpportunity[]> {
-  const response = await apiClient.get<ReclamationOpportunity[]>(
+  const response = await apiClient.get<ReclamationOpportunity[] | { items: ReclamationOpportunity[] }>(
     '/reclamation/candidates'
   );
 
@@ -118,7 +119,8 @@ export async function getReclamationCandidates(): Promise<ReclamationOpportunity
     );
   }
 
-  return response.data;
+  const data = response.data;
+  return Array.isArray(data) ? data : data.items ?? [];
 }
 
 /**
@@ -142,6 +144,32 @@ export async function getReconciliationSummary(): Promise<ReconciliationSummary>
 }
 
 /**
+ * Map backend CompliancePositionDetails (nested product object) to frontend CompliancePosition (flat)
+ */
+function mapBackendPosition(pos: Record<string, unknown>): CompliancePosition {
+  const product = (pos.product ?? {}) as Record<string, unknown>;
+  const entitlementDetails = (pos.entitlementDetails ?? {}) as Record<string, unknown>;
+  const metricTypes = (entitlementDetails.metricTypes ?? []) as string[];
+  return {
+    productId: (pos.productId ?? '') as string,
+    publisher: (product.publisher ?? 'Unknown') as string,
+    productName: (product.productName ?? 'Unknown Product') as string,
+    version: (product.version ?? '') as string,
+    edition: (product.edition ?? undefined) as string | undefined,
+    productCategory: (product.productCategory ?? '') as string,
+    licenseMetricType: (metricTypes[0] ?? 'PER_USER') as CompliancePosition['licenseMetricType'],
+    entitlementsOwned: Number(pos.entitlementsOwned ?? 0),
+    installationsFound: Number(pos.installationsFound ?? 0),
+    compliancePosition: (pos.compliancePosition ?? 'COMPLIANT') as CompliancePosition['compliancePosition'],
+    overUnderCount: Number(pos.overUnderCount ?? 0),
+    lastReconciledDate: (pos.lastReconciledAt ?? pos.lastReconciledDate ?? '') as string,
+    unitCost: 0,
+    totalEntitlementValue: 0,
+    potentialExposure: 0,
+  };
+}
+
+/**
  * Get full license workbench summary (aggregated data)
  */
 export async function getLicenseWorkbenchSummary(): Promise<LicenseWorkbenchSummary> {
@@ -158,7 +186,14 @@ export async function getLicenseWorkbenchSummary(): Promise<LicenseWorkbenchSumm
     );
   }
 
-  return response.data;
+  const data = response.data;
+  // Map backend nested positions to frontend flat structure
+  if (data.compliancePositions && data.compliancePositions.length > 0) {
+    data.compliancePositions = data.compliancePositions.map(
+      (p) => mapBackendPosition(p as unknown as Record<string, unknown>)
+    );
+  }
+  return data;
 }
 
 // ============================================================================
@@ -289,7 +324,7 @@ export async function applyPublisherRules(): Promise<RulesResult> {
  * Get unused subscriptions
  */
 export async function getUnusedSubscriptions(): Promise<UnusedSubscription[]> {
-  const response = await apiClient.get<UnusedSubscription[]>(
+  const response = await apiClient.get<UnusedSubscription[] | { items: UnusedSubscription[] }>(
     '/reclamation/unused-subscriptions'
   );
 
@@ -302,7 +337,8 @@ export async function getUnusedSubscriptions(): Promise<UnusedSubscription[]> {
     );
   }
 
-  return response.data;
+  const data = response.data;
+  return Array.isArray(data) ? data : data.items ?? [];
 }
 
 export const samApi = {

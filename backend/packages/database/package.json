@@ -1,0 +1,26 @@
+{
+  "name": "@ams/database",
+  "version": "1.0.0",
+  "description": "Database connection and utilities for Asset Management System",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --platform=node --target=node18 --outfile=dist/index.js --external:@ams/* --external:pg --external:@aws-sdk/*",
+    "clean": "rm -rf dist",
+    "test": "jest",
+    "typecheck": "tsc --noEmit"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@ams/types": "1.0.0",
+    "@ams/utils": "1.0.0",
+    "pg": "^8.11.3",
+    "@aws-sdk/client-secrets-manager": "^3.478.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.10.9",
+    "typescript": "^5.3.3"
+  }
+}

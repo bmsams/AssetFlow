@@ -48,17 +48,17 @@ describe('Card', () => {
 
   it('applies elevated variant', () => {
     const { container } = render(<Card variant="elevated">Text</Card>);
-    expect(container.firstChild).toHaveClass('elevated');
+    expect((container.firstChild as HTMLElement).className).toContain('elevated');
   });
 
   it('applies outlined variant', () => {
     const { container } = render(<Card variant="outlined">Text</Card>);
-    expect(container.firstChild).toHaveClass('outlined');
+    expect((container.firstChild as HTMLElement).className).toContain('outlined');
   });
 
   it('applies compact padding', () => {
     const { container } = render(<Card padding="compact">Text</Card>);
-    expect(container.firstChild).toHaveClass('paddingCompact');
+    expect((container.firstChild as HTMLElement).className).toContain('paddingCompact');
   });
 
   it('is clickable when interactive', async () => {

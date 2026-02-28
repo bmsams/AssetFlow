@@ -38,7 +38,11 @@ BEGIN
             pl.line_id,
             pl.po_id,
             pl.line_number,
-            pl.product_type::TEXT,       -- cast enum to varchar
+            CASE pl.product_type::TEXT
+                WHEN 'HARDWARE_MODEL' THEN 'HARDWARE'
+                WHEN 'SOFTWARE_PRODUCT' THEN 'SOFTWARE'
+                ELSE pl.product_type::TEXT
+            END,                         -- map enum to valid product_type values
             pl.product_id,
             pl.product_description,
             pl.sku,                      -- sku -> product_sku

@@ -55,7 +55,10 @@ import {
 import {
   PurchaseOrdersPage,
   PurchaseOrderForm,
-  PurchaseOrderDetailPage
+  PurchaseOrderDetailPage,
+  RequisitionsPage,
+  RequisitionForm,
+  RequisitionDetailPage,
 } from '../pages/procurement';
 
 // Receiving Components
@@ -284,6 +287,18 @@ export const routes: RouteObject[] = [
     element: <ProtectedRoute requiredRoles={['procurement_manager', 'admin']}><PurchaseOrdersPage /></ProtectedRoute>,
   },
   {
+    path: '/procurement/requisitions',
+    element: <ProtectedRoute requiredRoles={['procurement_manager', 'admin']}><RequisitionsPage /></ProtectedRoute>,
+  },
+  {
+    path: '/procurement/requisitions/new',
+    element: <ProtectedRoute requiredRoles={['procurement_manager', 'admin']}><RequisitionForm /></ProtectedRoute>,
+  },
+  {
+    path: '/procurement/requisitions/:requisitionId',
+    element: <ProtectedRoute requiredRoles={['procurement_manager', 'admin']}><RequisitionDetailPage /></ProtectedRoute>,
+  },
+  {
     path: '/procurement/purchase-orders/new',
     element: <ProtectedRoute requiredRoles={['procurement_manager', 'admin']}><PurchaseOrderForm /></ProtectedRoute>,
   },
@@ -448,6 +463,19 @@ export const navigationGroups: NavGroup[] = [
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
             <polyline points="14 2 14 8 20 8" />
+          </svg>
+        ),
+      },
+      {
+        path: '/procurement/requisitions',
+        label: 'Requisitions',
+        roles: ['admin', 'procurement_manager'] as UserRole[],
+        icon: (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M9 3h6l1 2h3v16H5V5h3l1-2z" />
+            <path d="M9 12h6" />
+            <path d="M9 16h6" />
+            <path d="M12 8h.01" />
           </svg>
         ),
       },

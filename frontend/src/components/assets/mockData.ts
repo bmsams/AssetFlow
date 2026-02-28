@@ -50,7 +50,7 @@ const generateMockAssets = (): Asset[] => {
     'Visual Studio Enterprise',
     'Jira Software Cloud',
     'Confluence Cloud',
-    'ServiceNow ITSM',
+    'Enterprise ITSM',
   ];
 
   const enterpriseNames = [

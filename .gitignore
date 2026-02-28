@@ -4,3 +4,15 @@ node_modules/
 dist/
 coverage/
 output/
+.venv/
+.vscode/
+.claude/
+.kiro/
+.playwright-mcp/
+cdk.out/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+*.tsbuildinfo

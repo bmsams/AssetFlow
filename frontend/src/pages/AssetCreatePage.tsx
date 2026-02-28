@@ -4,6 +4,7 @@ import { PageLayout } from '../components/layout/PageLayout';
 import { AssetForm } from '../components/asset-form/AssetForm';
 import type { AssetFormData } from '../components/asset-form/validation';
 import { assetApi } from '../services/asset-api';
+import { buildAssetAttributes } from './asset-form-payload';
 
 /**
  * AssetCreatePage - Wraps AssetForm in create mode
@@ -20,45 +21,13 @@ export function AssetCreatePage() {
     setIsSubmitting(true);
     try {
       const assetType = data.assetType;
+      const attributes = buildAssetAttributes(assetType, data);
       const asset = await assetApi.create({
         assetType,
         displayName: data.displayName,
         description: data.description || undefined,
         status: data.status,
-        attributes: {
-          status: data.status,
-          ...(assetType === 'HARDWARE' && {
-            serialNumber: data.serialNumber,
-            manufacturer: data.manufacturer,
-            model: data.model,
-            modelCategory: data.modelCategory,
-            cpu: data.cpu,
-            memoryGb: data.memoryGb,
-            storageGb: data.storageGb,
-            operatingSystem: data.operatingSystem,
-            ipAddress: data.ipAddress,
-            macAddress: data.macAddress,
-            purchasePrice: data.purchasePrice,
-            warrantyExpiration: data.warrantyExpiration,
-          }),
-          ...(assetType === 'SOFTWARE' && {
-            publisher: data.publisher,
-            productName: data.productName,
-            version: data.version,
-            edition: data.edition,
-            licenseType: data.licenseType,
-            isSaas: data.isSaas,
-          }),
-          ...(assetType === 'ENTERPRISE' && {
-            serialNumber: data.serialNumber,
-            manufacturer: data.manufacturer,
-            model: data.model,
-            assetClass: data.assetClass,
-            criticalityLevel: data.criticalityLevel,
-            operatingHours: data.operatingHours,
-            meterReading: data.meterReading,
-          }),
-        },
+        attributes: Object.keys(attributes).length > 0 ? attributes : undefined,
       });
       navigate(`/assets/${asset.assetId}`);
     } catch (err) {

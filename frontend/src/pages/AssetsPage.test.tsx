@@ -1,45 +1,75 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { AssetsPage } from './AssetsPage';
-import * as mockDataModule from '../components/assets/mockData';
+import { mockAssets } from '../components/assets/mockData';
 
-// Mock the simulateApiDelay to return immediately
-vi.mock('../components/assets/mockData', async () => {
-  const actual = await vi.importActual('../components/assets/mockData');
-  return {
-    ...actual,
-    simulateApiDelay: vi.fn((data) => Promise.resolve(data)),
-  };
-});
+// Mock the asset API to return mock data
+vi.mock('../services/asset-api', () => ({
+  assetApi: {
+    list: vi.fn(() => Promise.resolve({
+      items: mockAssets,
+      total: mockAssets.length,
+      page: 1,
+      pageSize: 25,
+      totalPages: Math.ceil(mockAssets.length / 25),
+    })),
+    getDetail: vi.fn(),
+    create: vi.fn(),
+    update: vi.fn(),
+    transitionState: vi.fn(),
+  },
+}));
+
+// Mock useAuth
+vi.mock('../hooks/useAuth', () => ({
+  useAuth: () => ({
+    user: { userId: 'test', email: 'test@test.com', name: 'Test', roles: ['admin'] },
+    isAuthenticated: true,
+    isLoading: false,
+    login: vi.fn(),
+    logout: vi.fn(),
+    hasRole: () => true,
+    hasAnyRole: () => true,
+  }),
+}));
+
+function renderPage() {
+  return render(
+    <MemoryRouter>
+      <AssetsPage />
+    </MemoryRouter>
+  );
+}
 
 describe('AssetsPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
   it('renders page title', () => {
-    render(<AssetsPage />);
-    expect(screen.getByText('All Assets')).toBeInTheDocument();
+    renderPage();
+    expect(screen.getByRole('heading', { name: 'All Assets' })).toBeInTheDocument();
   });
 
   it('renders page description', () => {
-    render(<AssetsPage />);
+    renderPage();
     expect(
       screen.getByText('View and manage all assets in your organization')
     ).toBeInTheDocument();
   });
 
   it('renders create asset button', () => {
-    render(<AssetsPage />);
+    renderPage();
     expect(screen.getByText('Create Asset')).toBeInTheDocument();
   });
 
   it('renders columns button', () => {
-    render(<AssetsPage />);
+    renderPage();
     expect(screen.getByText('Columns')).toBeInTheDocument();
   });
 
   it('renders filter section', async () => {
-    render(<AssetsPage />);
+    renderPage();
     
     await waitFor(() => {
       expect(screen.getByPlaceholderText(/search assets/i)).toBeInTheDocument();
@@ -47,7 +77,7 @@ describe('AssetsPage', () => {
   });
 
   it('renders asset table after loading', async () => {
-    render(<AssetsPage />);
+    renderPage();
     
     await waitFor(() => {
       expect(screen.getByRole('grid', { name: 'Assets table' })).toBeInTheDocument();
@@ -55,7 +85,7 @@ describe('AssetsPage', () => {
   });
 
   it('renders pagination after loading', async () => {
-    render(<AssetsPage />);
+    renderPage();
     
     await waitFor(() => {
       expect(screen.getByRole('navigation', { name: 'Pagination' })).toBeInTheDocument();
@@ -63,7 +93,7 @@ describe('AssetsPage', () => {
   });
 
   it('displays assets from mock data', async () => {
-    render(<AssetsPage />);
+    renderPage();
     
     // Wait for loading to complete and table to render
     await waitFor(() => {
@@ -77,7 +107,7 @@ describe('AssetsPage', () => {
   });
 
   it('filters assets by search', async () => {
-    render(<AssetsPage />);
+    renderPage();
     
     await waitFor(() => {
       expect(screen.getByPlaceholderText(/search assets/i)).toBeInTheDocument();
@@ -93,7 +123,7 @@ describe('AssetsPage', () => {
   });
 
   it('filters assets by type', async () => {
-    render(<AssetsPage />);
+    renderPage();
     
     await waitFor(() => {
       expect(screen.getByText('Hardware')).toBeInTheDocument();
@@ -113,7 +143,7 @@ describe('AssetsPage', () => {
   });
 
   it('shows bulk actions when assets are selected', async () => {
-    render(<AssetsPage />);
+    renderPage();
     
     await waitFor(() => {
       expect(screen.getByRole('grid', { name: 'Assets table' })).toBeInTheDocument();
@@ -128,7 +158,7 @@ describe('AssetsPage', () => {
   });
 
   it('clears selection when clear selection is clicked', async () => {
-    render(<AssetsPage />);
+    renderPage();
     
     await waitFor(() => {
       expect(screen.getByRole('grid', { name: 'Assets table' })).toBeInTheDocument();
@@ -149,7 +179,7 @@ describe('AssetsPage', () => {
   });
 
   it('changes page when pagination is clicked', async () => {
-    render(<AssetsPage />);
+    renderPage();
     
     await waitFor(() => {
       expect(screen.getByRole('navigation', { name: 'Pagination' })).toBeInTheDocument();
@@ -166,7 +196,7 @@ describe('AssetsPage', () => {
   });
 
   it('sorts assets when column header is clicked', async () => {
-    render(<AssetsPage />);
+    renderPage();
     
     await waitFor(() => {
       expect(screen.getByText('Name')).toBeInTheDocument();
@@ -183,7 +213,7 @@ describe('AssetsPage', () => {
   });
 
   it('opens column selector when columns button is clicked', async () => {
-    render(<AssetsPage />);
+    renderPage();
     
     await waitFor(() => {
       expect(screen.getByText('Columns')).toBeInTheDocument();
@@ -195,7 +225,7 @@ describe('AssetsPage', () => {
   });
 
   it('has accessible section landmarks', async () => {
-    render(<AssetsPage />);
+    renderPage();
     
     await waitFor(() => {
       expect(screen.getByRole('region', { name: 'Asset filters' })).toBeInTheDocument();
@@ -210,7 +240,7 @@ describe('AssetsPage - Requirements Validation', () => {
    * Validates Requirement 2.1: Paginated asset list with filtering and sorting
    */
   it('provides paginated asset list with filtering and sorting (Requirement 2.1)', async () => {
-    render(<AssetsPage />);
+    renderPage();
     
     await waitFor(() => {
       // Verify asset table is rendered
@@ -239,7 +269,7 @@ describe('AssetsPage - Requirements Validation', () => {
    * Validates Requirement 2.1: Column customization
    */
   it('supports column customization (Requirement 2.1)', async () => {
-    render(<AssetsPage />);
+    renderPage();
     
     await waitFor(() => {
       expect(screen.getByText('Columns')).toBeInTheDocument();
@@ -261,7 +291,7 @@ describe('AssetsPage - Requirements Validation', () => {
    * Validates Requirement 2.1: Bulk actions support
    */
   it('supports bulk actions (Requirement 2.1)', async () => {
-    render(<AssetsPage />);
+    renderPage();
     
     await waitFor(() => {
       expect(screen.getByRole('grid', { name: 'Assets table' })).toBeInTheDocument();
@@ -285,7 +315,7 @@ describe('AssetsPage - Requirements Validation', () => {
    * Validates Requirement 2.1: Asset registry display
    */
   it('displays comprehensive asset registry (Requirement 2.1)', async () => {
-    render(<AssetsPage />);
+    renderPage();
     
     // Wait for loading to complete
     await waitFor(() => {
@@ -306,7 +336,7 @@ describe('AssetsPage - Requirements Validation', () => {
    * Validates Requirement 2.1: Search functionality
    */
   it('supports search across asset attributes (Requirement 2.1)', async () => {
-    render(<AssetsPage />);
+    renderPage();
     
     await waitFor(() => {
       expect(screen.getByPlaceholderText(/search assets/i)).toBeInTheDocument();

@@ -1,0 +1,27 @@
+{
+  "name": "@ams/validation",
+  "version": "1.0.0",
+  "description": "Request validation middleware for Asset Management System",
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --platform=node --target=node18 --outfile=dist/index.js --external:@ams/* --external:ajv --external:ajv-formats",
+    "clean": "rm -rf dist src/*.js src/*.d.ts src/*.map src/**/*.js src/**/*.d.ts src/**/*.map",
+    "test": "jest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ams/types": "1.0.0",
+    "@ams/utils": "1.0.0",
+    "ajv": "^8.12.0",
+    "ajv-formats": "^2.1.1"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.131",
+    "@types/node": "^20.10.6",
+    "typescript": "^5.3.3"
+  },
+  "peerDependencies": {
+    "@types/aws-lambda": "^8.10.131"
+  }
+}

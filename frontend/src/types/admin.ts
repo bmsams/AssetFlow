@@ -327,6 +327,7 @@ export interface UpdateVendorRequest {
 export interface VendorModelPrice {
   vendorId: string;
   modelId: string;
+  countryCode: string;
   manufacturerName: string;
   modelName: string;
   sku: string | null;
@@ -341,6 +342,7 @@ export interface VendorModelPrice {
 export interface UpsertVendorModelPriceRequest {
   unitPrice: number;
   currency?: string;
+  countryCode?: string;
   vendorSku?: string;
   isActive?: boolean;
 }

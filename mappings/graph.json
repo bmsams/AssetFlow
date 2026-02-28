@@ -36,6 +36,13 @@
       "on_delete": "NO ACTION"
     },
     {
+      "from": "approval_steps",
+      "to": "approval_workflows",
+      "type": "fk",
+      "label": "workflow_id -> workflow_id",
+      "on_delete": "CASCADE"
+    },
+    {
       "from": "approval_thresholds",
       "to": "roles",
       "type": "fk",
@@ -190,6 +197,62 @@
       "on_delete": "NO ACTION"
     },
     {
+      "from": "catalog_categories",
+      "to": "catalog_categories",
+      "type": "fk",
+      "label": "parent_category_id -> category_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "catalog_entitlement_rules",
+      "to": "catalog_items",
+      "type": "fk",
+      "label": "catalog_item_id -> catalog_item_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "catalog_entitlement_rules",
+      "to": "catalog_categories",
+      "type": "fk",
+      "label": "category_id -> category_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "catalog_items",
+      "to": "catalog_categories",
+      "type": "fk",
+      "label": "category_id -> category_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "catalog_items",
+      "to": "catalog_categories",
+      "type": "fk",
+      "label": "subcategory_id -> category_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "contract_assets",
+      "to": "assets",
+      "type": "fk",
+      "label": "asset_id -> asset_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "contract_assets",
+      "to": "contracts",
+      "type": "fk",
+      "label": "contract_id -> contract_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "contract_entitlements",
+      "to": "contracts",
+      "type": "fk",
+      "label": "contract_id -> contract_id",
+      "on_delete": "CASCADE"
+    },
+    {
       "from": "contracts",
       "to": "users",
       "type": "fk",
@@ -274,6 +337,34 @@
       "on_delete": "NO ACTION"
     },
     {
+      "from": "deployment_records",
+      "to": "assets",
+      "type": "fk",
+      "label": "asset_id -> asset_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "deployment_relationships",
+      "to": "deployment_records",
+      "type": "fk",
+      "label": "deployment_id -> deployment_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "deployment_relationships",
+      "to": "assets",
+      "type": "fk",
+      "label": "source_asset_id -> asset_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "deployment_relationships",
+      "to": "assets",
+      "type": "fk",
+      "label": "target_asset_id -> asset_id",
+      "on_delete": "NO ACTION"
+    },
+    {
       "from": "depreciation_schedules",
       "to": "assets",
       "type": "fk",
@@ -295,6 +386,27 @@
       "on_delete": "NO ACTION"
     },
     {
+      "from": "destruction_certificates",
+      "to": "assets",
+      "type": "fk",
+      "label": "asset_id -> asset_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "destruction_certificates",
+      "to": "disposal_workflows",
+      "type": "fk",
+      "label": "workflow_id -> workflow_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "discovery_correlations",
+      "to": "assets",
+      "type": "fk",
+      "label": "asset_id -> asset_id",
+      "on_delete": "NO ACTION"
+    },
+    {
       "from": "discovery_records",
       "to": "assets",
       "type": "fk",
@@ -306,6 +418,20 @@
       "to": "assets",
       "type": "fk",
       "label": "matched_asset_id -> asset_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "disposal_tasks",
+      "to": "disposal_workflows",
+      "type": "fk",
+      "label": "workflow_id -> workflow_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "disposal_workflows",
+      "to": "assets",
+      "type": "fk",
+      "label": "asset_id -> asset_id",
       "on_delete": "NO ACTION"
     },
     {
@@ -498,6 +624,13 @@
       "on_delete": "CASCADE"
     },
     {
+      "from": "inventory_reservations",
+      "to": "stockroom_inventory",
+      "type": "fk",
+      "label": "inventory_id -> inventory_id",
+      "on_delete": "NO ACTION"
+    },
+    {
       "from": "lease_payments",
       "to": "users",
       "type": "fk",
@@ -523,6 +656,20 @@
       "to": "users",
       "type": "fk",
       "label": "updated_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "license_ownership_evidence",
+      "to": "entitlements",
+      "type": "fk",
+      "label": "entitlement_id -> entitlement_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "license_ownership_evidence",
+      "to": "vendors",
+      "type": "fk",
+      "label": "vendor_id -> vendor_id",
       "on_delete": "NO ACTION"
     },
     {
@@ -638,11 +785,18 @@
       "on_delete": "NO ACTION"
     },
     {
-      "from": "po_lines",
-      "to": "purchase_orders",
+      "from": "publisher_license_rules",
+      "to": "publisher_packs",
       "type": "fk",
-      "label": "po_id -> po_id",
+      "label": "pack_id -> pack_id",
       "on_delete": "CASCADE"
+    },
+    {
+      "from": "purchase_order_lines",
+      "to": "cost_centers",
+      "type": "fk",
+      "label": "cost_center_id -> cost_center_id",
+      "on_delete": "NO ACTION"
     },
     {
       "from": "purchase_order_lines",
@@ -869,6 +1023,34 @@
       "on_delete": "NO ACTION"
     },
     {
+      "from": "renewal_notifications",
+      "to": "saas_subscriptions",
+      "type": "fk",
+      "label": "subscription_id -> subscription_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "request_lines",
+      "to": "requests",
+      "type": "fk",
+      "label": "request_id -> request_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "retirement_tasks",
+      "to": "retirement_workflows",
+      "type": "fk",
+      "label": "workflow_id -> workflow_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "retirement_workflows",
+      "to": "assets",
+      "type": "fk",
+      "label": "asset_id -> asset_id",
+      "on_delete": "NO ACTION"
+    },
+    {
       "from": "role_permissions",
       "to": "permissions",
       "type": "fk",
@@ -929,6 +1111,27 @@
       "to": "users",
       "type": "fk",
       "label": "updated_by -> user_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "saas_usage_records",
+      "to": "saas_subscriptions",
+      "type": "fk",
+      "label": "subscription_id -> subscription_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "shadow_it_alerts",
+      "to": "shadow_it_detections",
+      "type": "fk",
+      "label": "detection_id -> detection_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "from": "shadow_it_detections",
+      "to": "known_applications",
+      "type": "fk",
+      "label": "known_application_id -> application_id",
       "on_delete": "NO ACTION"
     },
     {
@@ -1080,6 +1283,13 @@
     },
     {
       "from": "stockrooms",
+      "to": "buildings",
+      "type": "fk",
+      "label": "building_id -> building_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "stockrooms",
       "to": "cost_centers",
       "type": "fk",
       "label": "cost_center_id -> cost_center_id",
@@ -1217,6 +1427,34 @@
       "type": "fk",
       "label": "manager_id -> user_id",
       "on_delete": "NO ACTION"
+    },
+    {
+      "from": "vendor_asn_assets",
+      "to": "vendor_asns",
+      "type": "fk",
+      "label": "asn_id -> asn_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "vendor_asn_assets",
+      "to": "vendor_asn_lines",
+      "type": "fk",
+      "label": "asn_line_id -> line_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "vendor_asn_assets",
+      "to": "assets",
+      "type": "fk",
+      "label": "asset_id -> asset_id",
+      "on_delete": "NO ACTION"
+    },
+    {
+      "from": "vendor_asn_lines",
+      "to": "vendor_asns",
+      "type": "fk",
+      "label": "asn_id -> asn_id",
+      "on_delete": "CASCADE"
     },
     {
       "from": "vendor_model_prices",
@@ -1382,6 +1620,21 @@
     },
     {
       "from": "svc:ham-service",
+      "to": "destruction_certificates",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:ham-service",
+      "to": "disposal_tasks",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:ham-service",
+      "to": "disposal_workflows",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:ham-service",
       "to": "hardware_assets",
       "type": "service_reads"
     },
@@ -1447,6 +1700,26 @@
     },
     {
       "from": "svc:sam-service",
+      "to": "known_applications",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:sam-service",
+      "to": "license_ownership_evidence",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:sam-service",
+      "to": "publisher_license_rules",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:sam-service",
+      "to": "publisher_packs",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:sam-service",
       "to": "purchase_orders",
       "type": "service_reads"
     },
@@ -1467,7 +1740,27 @@
     },
     {
       "from": "svc:sam-service",
+      "to": "renewal_notifications",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:sam-service",
       "to": "saas_subscriptions",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:sam-service",
+      "to": "saas_usage_records",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:sam-service",
+      "to": "shadow_it_alerts",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:sam-service",
+      "to": "shadow_it_detections",
       "type": "service_reads"
     },
     {
@@ -1537,6 +1830,21 @@
     },
     {
       "from": "svc:lifecycle-service",
+      "to": "approval_routing_rules",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "approval_steps",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "approval_workflows",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
       "to": "asset_relationships",
       "type": "service_reads"
     },
@@ -1552,6 +1860,31 @@
     },
     {
       "from": "svc:lifecycle-service",
+      "to": "catalog_categories",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "catalog_entitlement_rules",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "catalog_items",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "contract_assets",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "contract_entitlements",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
       "to": "contracts",
       "type": "service_reads"
     },
@@ -1562,12 +1895,37 @@
     },
     {
       "from": "svc:lifecycle-service",
+      "to": "deployment_records",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "deployment_relationships",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "destruction_certificates",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "discovery_correlations",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
       "to": "hardware_assets",
       "type": "service_reads"
     },
     {
       "from": "svc:lifecycle-service",
       "to": "inspection_records",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "inventory_reservations",
       "type": "service_reads"
     },
     {
@@ -1588,6 +1946,26 @@
     {
       "from": "svc:lifecycle-service",
       "to": "receiving_records",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "request_lines",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "requests",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "retirement_tasks",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:lifecycle-service",
+      "to": "retirement_workflows",
       "type": "service_reads"
     },
     {
@@ -1632,12 +2010,57 @@
     },
     {
       "from": "svc:integration-service",
+      "to": "erp_connection_configs",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:integration-service",
+      "to": "erp_cost_centers",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:integration-service",
+      "to": "erp_purchase_orders",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:integration-service",
+      "to": "erp_sync_audit_logs",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:integration-service",
       "to": "hardware_assets",
       "type": "service_reads"
     },
     {
       "from": "svc:integration-service",
       "to": "purchase_orders",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:integration-service",
+      "to": "vendor_asn_assets",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:integration-service",
+      "to": "vendor_asn_lines",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:integration-service",
+      "to": "vendor_asns",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:integration-service",
+      "to": "vendor_catalog_items",
+      "type": "service_reads"
+    },
+    {
+      "from": "svc:integration-service",
+      "to": "vendor_integration_configs",
       "type": "service_reads"
     },
     {
@@ -2172,9 +2595,8 @@
     },
     {
       "from": "page:ContractsPage",
-      "to": "pkg:@ams/ui",
-      "type": "frontend_uses_component",
-      "detail": "DataTable"
+      "to": "api:contracts-api",
+      "type": "frontend_uses_api"
     },
     {
       "from": "page:DashboardPage",
@@ -2199,6 +2621,16 @@
     {
       "from": "page:LoginPage",
       "to": "api:auth-service",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:NotificationPreferencesPage",
+      "to": "api:notification-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:NotificationPreferencesPage",
+      "to": "api:notification-api",
       "type": "frontend_uses_api"
     },
     {
@@ -2277,12 +2709,6 @@
       "type": "frontend_uses_api"
     },
     {
-      "from": "page:admin/UserEditPage",
-      "to": "pkg:@ams/ui",
-      "type": "frontend_uses_component",
-      "detail": "Form"
-    },
-    {
       "from": "page:admin/UsersPage",
       "to": "api:admin-api",
       "type": "frontend_uses_api"
@@ -2298,13 +2724,23 @@
       "type": "frontend_uses_api"
     },
     {
-      "from": "page:ham/TransfersPage",
-      "to": "api:ham-api",
+      "from": "page:eam/LinearAssetsPage",
+      "to": "api:eam-api",
       "type": "frontend_uses_api"
     },
     {
-      "from": "page:ham/LoanerManagementPage",
-      "to": "api:ham-api",
+      "from": "page:eam/MaintenancePlansPage",
+      "to": "api:eam-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:eam/PartsInventoryPage",
+      "to": "api:eam-api",
+      "type": "frontend_uses_api"
+    },
+    {
+      "from": "page:eam/WorkOrdersPage",
+      "to": "api:eam-api",
       "type": "frontend_uses_api"
     },
     {
@@ -2318,40 +2754,14 @@
       "type": "frontend_uses_api"
     },
     {
-      "from": "page:eam/WorkOrdersPage",
-      "to": "api:eam-api",
+      "from": "page:ham/LoanerManagementPage",
+      "to": "api:ham-api",
       "type": "frontend_uses_api"
     },
     {
-      "from": "page:eam/MaintenancePlansPage",
-      "to": "api:eam-api",
+      "from": "page:ham/TransfersPage",
+      "to": "api:ham-api",
       "type": "frontend_uses_api"
-    },
-    {
-      "from": "page:eam/LinearAssetsPage",
-      "to": "api:eam-api",
-      "type": "frontend_uses_api"
-    },
-    {
-      "from": "page:eam/PartsInventoryPage",
-      "to": "api:eam-api",
-      "type": "frontend_uses_api"
-    },
-    {
-      "from": "page:NotificationPreferencesPage",
-      "to": "api:notification-api",
-      "type": "frontend_uses_api"
-    },
-    {
-      "from": "component:NotificationBell",
-      "to": "api:notification-api",
-      "type": "frontend_uses_api"
-    },
-    {
-      "from": "page:LicenseWorkbenchPage",
-      "to": "api:sam-api",
-      "type": "frontend_uses_api_actions",
-      "detail": "runReconciliation, initiateReclamation, analyzeShadowIt, generateComplianceReport, syncSaasUsage, applyPublisherRules, getUnusedSubscriptions"
     },
     {
       "from": "page:procurement/ApprovalWorkflow",
@@ -2502,19 +2912,7 @@
       "from": "svc:report-service",
       "to": "sns:asset-events",
       "type": "publishes_events"
-    },
-    {
-      "from": "frontend",
-      "to": "pkg:@ams/ui",
-      "type": "workspace_dependency",
-      "detail": "workspace:* — active, exports: DataTable, Form, MonoText, StatusBadge, DropdownMenu, MetricCard, Card, Tabs, SplitPanel, KPIBanner, ActivityFeed, DetailHeader, LifecycleTimeline, PageTransition, Header, Sidebar, CommandPalette, AppShell"
-    },
-    {
-      "from": "component:MainLayout",
-      "to": "pkg:@ams/ui",
-      "type": "frontend_uses_component",
-      "detail": "PageTransition (from @ams/ui/layouts)"
     }
   ],
-  "node_count": 145
+  "node_count": 177
 }
