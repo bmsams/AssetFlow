@@ -165,6 +165,19 @@ export async function installApiMocks(page: Page): Promise<void> {
       return json(route, 200, paginatedEmpty());
     }
 
+    if (method === 'GET' && apiPath === '/eam/maintenance-plans/check-due') {
+      return json(route, 200, {
+        due: [],
+        upcoming: [],
+        summary: {
+          totalDue: 0,
+          overdue: 0,
+          critical: 0,
+          upcomingCount: 0,
+        },
+      });
+    }
+
     if (method === 'GET' && apiPath.startsWith('/eam/')) {
       // EAM endpoints are mostly array responses in this frontend.
       if (apiPath === '/eam/linear-assets') return json(route, 200, []);
