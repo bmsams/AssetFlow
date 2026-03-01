@@ -732,7 +732,7 @@ export function calculateNextRunTime(
 
   // If the time has already passed today, start from tomorrow
   if (nextRun <= now) {
-    nextRun.setDate(nextRun.getDate() + 1);
+    nextRun.setUTCDate(nextRun.getUTCDate() + 1);
   }
 
   switch (frequency) {
@@ -748,7 +748,7 @@ export function calculateNextRunTime(
         if (daysUntilTarget <= 0) {
           daysUntilTarget += 7;
         }
-        nextRun.setDate(nextRun.getDate() + daysUntilTarget);
+        nextRun.setUTCDate(nextRun.getUTCDate() + daysUntilTarget);
       }
       break;
 
@@ -760,7 +760,9 @@ export function calculateNextRunTime(
           nextRun.setUTCMonth(nextRun.getUTCMonth() + 1);
         }
         // Handle months with fewer days
-        const lastDayOfMonth = new Date(nextRun.getUTCFullYear(), nextRun.getUTCMonth() + 1, 0).getDate();
+        const lastDayOfMonth = new Date(
+          Date.UTC(nextRun.getUTCFullYear(), nextRun.getUTCMonth() + 1, 0)
+        ).getUTCDate();
         if (dayOfMonth > lastDayOfMonth) {
           nextRun.setUTCDate(lastDayOfMonth);
         }
@@ -803,7 +805,7 @@ function calculateNextCronRun(_cronExpression: string, from: Date): Date {
   // Simplified: just return next day at the same time
   // In production, use a library like 'cron-parser'
   const next = new Date(from);
-  next.setDate(next.getDate() + 1);
+  next.setUTCDate(next.getUTCDate() + 1);
   return next;
 }
 
