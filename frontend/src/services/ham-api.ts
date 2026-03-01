@@ -14,20 +14,39 @@ import { apiClient, ApiError } from './api-client';
 // Types
 // ============================================================================
 
+export type TransferOrderStatus =
+  | 'DRAFT'
+  | 'PENDING_APPROVAL'
+  | 'APPROVED'
+  | 'REJECTED'
+  | 'IN_TRANSIT'
+  | 'PARTIALLY_RECEIVED'
+  | 'RECEIVED'
+  | 'COMPLETED'
+  | 'CANCELLED'
+  | 'ON_HOLD';
+
 export interface TransferOrder {
   transferId: string;
-  assetId: string;
-  assetTag: string;
+  transferNumber?: string;
+  assetId?: string;
+  assetTag?: string;
   fromStockroomId: string;
-  fromStockroomName: string;
+  fromStockroomName?: string;
   toStockroomId: string;
-  toStockroomName: string;
-  status: 'pending' | 'approved' | 'in_transit' | 'completed' | 'cancelled';
-  requestedBy: string;
+  toStockroomName?: string;
+  fromBuildingName?: string;
+  toBuildingName?: string;
+  status: TransferOrderStatus;
+  requestedBy?: string;
   approvedBy?: string;
-  requestedAt: string;
+  requestedAt?: string;
+  requestedDate?: string;
   approvedAt?: string;
   completedAt?: string;
+  totalLineCount?: number;
+  totalQuantity?: number;
+  receivedQuantity?: number;
   notes?: string;
 }
 
@@ -78,11 +97,47 @@ export interface DisposalRequest {
   certificateUrl?: string;
 }
 
+// Legacy shape; preserved for compatibility.
 export interface CreateTransferRequest {
   assetId: string;
   fromStockroomId: string;
   toStockroomId: string;
   notes?: string;
+}
+
+export type TransferPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'URGENT' | 'CRITICAL';
+
+export interface CreateTransferLineRequest {
+  assetId?: string;
+  productId?: string;
+  productType?: string;
+  productDescription?: string;
+  serialNumber?: string;
+  assetTag?: string;
+  quantity: number;
+  notes?: string;
+}
+
+export interface CreateTransferOrderRequest {
+  fromStockroomId: string;
+  toStockroomId: string;
+  priority?: TransferPriority;
+  reason?: string;
+  notes?: string;
+  lines: CreateTransferLineRequest[];
+}
+
+export interface CompleteTransferLineReceipt {
+  lineId: string;
+  receivedQuantity: number;
+  damagedQuantity?: number;
+  conditionReceived?: 'NEW' | 'EXCELLENT' | 'GOOD' | 'FAIR' | 'POOR' | 'DAMAGED' | 'UNKNOWN';
+  conditionNotes?: string;
+}
+
+export interface CompleteTransferRequest {
+  receivingNotes?: string;
+  lineReceipts: CompleteTransferLineReceipt[];
 }
 
 export interface CheckoutLoanerRequest {
@@ -103,13 +158,82 @@ export interface InitiateDisposalRequest {
   method: 'recycle' | 'donate' | 'destroy' | 'sell';
 }
 
+function toTransferStatus(value: string | undefined): TransferOrderStatus {
+  const status = (value ?? '').trim().toUpperCase();
+  switch (status) {
+    case 'DRAFT':
+      return 'DRAFT';
+    case 'PENDING':
+    case 'PENDING_APPROVAL':
+      return 'PENDING_APPROVAL';
+    case 'APPROVED':
+      return 'APPROVED';
+    case 'REJECTED':
+      return 'REJECTED';
+    case 'IN_TRANSIT':
+      return 'IN_TRANSIT';
+    case 'PARTIALLY_RECEIVED':
+      return 'PARTIALLY_RECEIVED';
+    case 'RECEIVED':
+      return 'RECEIVED';
+    case 'COMPLETED':
+      return 'COMPLETED';
+    case 'CANCELLED':
+      return 'CANCELLED';
+    case 'ON_HOLD':
+      return 'ON_HOLD';
+    default:
+      return 'PENDING_APPROVAL';
+  }
+}
+
+function mapTransferOrder(raw: Record<string, unknown>): TransferOrder {
+  const fromStockroomName =
+    (typeof raw['fromStockroomName'] === 'string' ? raw['fromStockroomName'] : undefined) ??
+    (typeof raw['fromStockroom'] === 'string' ? raw['fromStockroom'] : undefined);
+  const toStockroomName =
+    (typeof raw['toStockroomName'] === 'string' ? raw['toStockroomName'] : undefined) ??
+    (typeof raw['toStockroom'] === 'string' ? raw['toStockroom'] : undefined);
+
+  return {
+    transferId: String(raw['transferId'] ?? ''),
+    transferNumber: typeof raw['transferNumber'] === 'string' ? raw['transferNumber'] : undefined,
+    assetId: typeof raw['assetId'] === 'string' ? raw['assetId'] : undefined,
+    assetTag: typeof raw['assetTag'] === 'string' ? raw['assetTag'] : undefined,
+    fromStockroomId: String(raw['fromStockroomId'] ?? ''),
+    fromStockroomName,
+    toStockroomId: String(raw['toStockroomId'] ?? ''),
+    toStockroomName,
+    fromBuildingName: typeof raw['fromBuildingName'] === 'string' ? raw['fromBuildingName'] : undefined,
+    toBuildingName: typeof raw['toBuildingName'] === 'string' ? raw['toBuildingName'] : undefined,
+    status: toTransferStatus(typeof raw['status'] === 'string' ? raw['status'] : undefined),
+    requestedBy: typeof raw['requestedBy'] === 'string' ? raw['requestedBy'] : undefined,
+    approvedBy: typeof raw['approvedBy'] === 'string' ? raw['approvedBy'] : undefined,
+    requestedAt: typeof raw['requestedAt'] === 'string' ? raw['requestedAt'] : undefined,
+    requestedDate: typeof raw['requestedDate'] === 'string' ? raw['requestedDate'] : undefined,
+    approvedAt: typeof raw['approvedAt'] === 'string' ? raw['approvedAt'] : undefined,
+    completedAt: typeof raw['completedAt'] === 'string' ? raw['completedAt'] : undefined,
+    totalLineCount: typeof raw['totalLineCount'] === 'number' ? raw['totalLineCount'] : undefined,
+    totalQuantity: typeof raw['totalQuantity'] === 'number' ? raw['totalQuantity'] : undefined,
+    receivedQuantity: typeof raw['receivedQuantity'] === 'number' ? raw['receivedQuantity'] : undefined,
+    notes: typeof raw['notes'] === 'string' ? raw['notes'] : undefined,
+  };
+}
+
 // ============================================================================
 // Transfer API Functions
 // ============================================================================
 
 export async function listTransfers(status?: string): Promise<TransferOrder[]> {
-  const query = status ? `?status=${status}` : '';
-  const response = await apiClient.get<TransferOrder[] | { items: TransferOrder[] }>(`/ham/transfers${query}`);
+  const normalizedStatus = status && status.trim().length > 0
+    ? toTransferStatus(status)
+    : undefined;
+  const query = normalizedStatus ? `?status=${encodeURIComponent(normalizedStatus)}` : '';
+
+  const response = await apiClient.get<Record<string, unknown>[] | { items: Record<string, unknown>[] }>(
+    `/ham/transfers${query}`
+  );
+
   if (!response.success || !response.data) {
     throw new ApiError(
       response.error?.code || 'FETCH_FAILED',
@@ -118,12 +242,31 @@ export async function listTransfers(status?: string): Promise<TransferOrder[]> {
       response.requestId
     );
   }
+
   const data = response.data;
-  return Array.isArray(data) ? data : data.items ?? [];
+  const items = Array.isArray(data) ? data : data.items ?? [];
+  return items.map(mapTransferOrder);
 }
 
-export async function createTransfer(data: CreateTransferRequest): Promise<TransferOrder> {
-  const response = await apiClient.post<TransferOrder>('/ham/transfers', data);
+export async function createTransfer(
+  data: CreateTransferOrderRequest | CreateTransferRequest
+): Promise<TransferOrder> {
+  const payload: CreateTransferOrderRequest = 'lines' in data
+    ? data
+    : {
+      fromStockroomId: data.fromStockroomId,
+      toStockroomId: data.toStockroomId,
+      notes: data.notes,
+      lines: [
+        {
+          assetId: data.assetId,
+          quantity: 1,
+          notes: data.notes,
+        },
+      ],
+    };
+
+  const response = await apiClient.post<Record<string, unknown>>('/ham/transfers', payload);
   if (!response.success || !response.data) {
     throw new ApiError(
       response.error?.code || 'CREATE_FAILED',
@@ -132,11 +275,18 @@ export async function createTransfer(data: CreateTransferRequest): Promise<Trans
       response.requestId
     );
   }
-  return response.data;
+
+  const dataPayload = response.data as Record<string, unknown>;
+  const transfer = (dataPayload['transfer'] as Record<string, unknown> | undefined) ?? dataPayload;
+  if (!transfer || typeof transfer['transferId'] !== 'string') {
+    throw new ApiError('CREATE_FAILED', 'Transfer response missing transfer payload', 400, response.requestId);
+  }
+
+  return mapTransferOrder(transfer);
 }
 
 export async function approveTransfer(transferId: string): Promise<TransferOrder> {
-  const response = await apiClient.post<TransferOrder>(`/ham/transfers/${transferId}/approve`);
+  const response = await apiClient.post<Record<string, unknown>>(`/ham/transfers/${transferId}/approve`);
   if (!response.success || !response.data) {
     throw new ApiError(
       response.error?.code || 'APPROVE_FAILED',
@@ -145,11 +295,21 @@ export async function approveTransfer(transferId: string): Promise<TransferOrder
       response.requestId
     );
   }
-  return response.data;
+
+  const dataPayload = response.data as Record<string, unknown>;
+  const transfer = (dataPayload['transfer'] as Record<string, unknown> | undefined) ?? dataPayload;
+  if (!transfer || typeof transfer['transferId'] !== 'string') {
+    throw new ApiError('APPROVE_FAILED', 'Approval response missing transfer payload', 400, response.requestId);
+  }
+
+  return mapTransferOrder(transfer);
 }
 
-export async function completeTransfer(transferId: string): Promise<TransferOrder> {
-  const response = await apiClient.post<TransferOrder>(`/ham/transfers/${transferId}/complete`);
+export async function completeTransfer(
+  transferId: string,
+  data: CompleteTransferRequest = { lineReceipts: [] }
+): Promise<TransferOrder> {
+  const response = await apiClient.post<Record<string, unknown>>(`/ham/transfers/${transferId}/complete`, data);
   if (!response.success || !response.data) {
     throw new ApiError(
       response.error?.code || 'COMPLETE_FAILED',
@@ -158,7 +318,14 @@ export async function completeTransfer(transferId: string): Promise<TransferOrde
       response.requestId
     );
   }
-  return response.data;
+
+  const dataPayload = response.data as Record<string, unknown>;
+  const transfer = (dataPayload['transfer'] as Record<string, unknown> | undefined) ?? dataPayload;
+  if (!transfer || typeof transfer['transferId'] !== 'string') {
+    throw new ApiError('COMPLETE_FAILED', 'Complete response missing transfer payload', 400, response.requestId);
+  }
+
+  return mapTransferOrder(transfer);
 }
 
 // ============================================================================

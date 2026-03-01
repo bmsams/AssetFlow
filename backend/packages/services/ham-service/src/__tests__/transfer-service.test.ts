@@ -374,6 +374,76 @@ describe('Transfer Service', () => {
       ).rejects.toThrow('Cannot complete transfer in status: PENDING_APPROVAL');
     });
 
+    it('should reject duplicate line receipts', async () => {
+      mockTransferRepository.getTransferById.mockResolvedValue(mockTransfer as any);
+      mockTransferRepository.getTransferLines.mockResolvedValue(mockLines as any);
+
+      const firstLine = mockLines[0]!;
+      await expect(
+        transferService.completeTransfer(mockTransfer.transferId, {
+          receivedBy: '123e4567-e89b-12d3-a456-426614174000',
+          lineReceipts: [
+            { lineId: firstLine.lineId, receivedQuantity: 2 },
+            { lineId: firstLine.lineId, receivedQuantity: 3 },
+          ],
+        })
+      ).rejects.toThrow('INVALID_RECEIPT: Duplicate receipt for line');
+    });
+
+    it('should reject receipt lines that do not belong to transfer', async () => {
+      mockTransferRepository.getTransferById.mockResolvedValue(mockTransfer as any);
+      mockTransferRepository.getTransferLines.mockResolvedValue(mockLines as any);
+
+      await expect(
+        transferService.completeTransfer(mockTransfer.transferId, {
+          receivedBy: '123e4567-e89b-12d3-a456-426614174000',
+          lineReceipts: [
+            {
+              lineId: '123e4567-e89b-12d3-a456-426614174099',
+              receivedQuantity: 1,
+            },
+          ],
+        })
+      ).rejects.toThrow('UNKNOWN_RECEIPT_LINE: Line');
+    });
+
+    it('should reject damaged quantity greater than received quantity', async () => {
+      mockTransferRepository.getTransferById.mockResolvedValue(mockTransfer as any);
+      mockTransferRepository.getTransferLines.mockResolvedValue(mockLines as any);
+
+      const firstLine = mockLines[0]!;
+      await expect(
+        transferService.completeTransfer(mockTransfer.transferId, {
+          receivedBy: '123e4567-e89b-12d3-a456-426614174000',
+          lineReceipts: [
+            {
+              lineId: firstLine.lineId,
+              receivedQuantity: 2,
+              damagedQuantity: 3,
+            },
+          ],
+        })
+      ).rejects.toThrow('INVALID_RECEIPT: Damaged quantity');
+    });
+
+    it('should reject over-receipt against max receivable quantity', async () => {
+      mockTransferRepository.getTransferById.mockResolvedValue(mockTransfer as any);
+      mockTransferRepository.getTransferLines.mockResolvedValue(mockLines as any);
+
+      const firstLine = mockLines[0]!;
+      await expect(
+        transferService.completeTransfer(mockTransfer.transferId, {
+          receivedBy: '123e4567-e89b-12d3-a456-426614174000',
+          lineReceipts: [
+            {
+              lineId: firstLine.lineId,
+              receivedQuantity: 6,
+            },
+          ],
+        })
+      ).rejects.toThrow('OVER_RECEIPT: Received quantity');
+    });
+
     it('should handle partial receipt', async () => {
       mockTransferRepository.getTransferById.mockResolvedValue(mockTransfer as any);
       mockTransferRepository.getTransferLines.mockResolvedValue(mockLines as any);
@@ -400,6 +470,55 @@ describe('Transfer Service', () => {
       });
 
       expect(result.transfer.status).toBe('PARTIALLY_RECEIVED');
+    });
+
+    it('should fail completion when source inventory is insufficient', async () => {
+      mockTransferRepository.getTransferById.mockResolvedValue(mockTransfer as any);
+      mockTransferRepository.getTransferLines.mockResolvedValue(mockLines as any);
+
+      mockStockroomRepository.getInventoryByProduct.mockResolvedValue({
+        inventoryId: 'inv-1',
+        quantityOnHand: 3,
+      } as any);
+
+      const firstLine = mockLines[0]!;
+      await expect(
+        transferService.completeTransfer(mockTransfer.transferId, {
+          receivedBy: '123e4567-e89b-12d3-a456-426614174000',
+          lineReceipts: [
+            {
+              lineId: firstLine.lineId,
+              receivedQuantity: 5,
+            },
+          ],
+        })
+      ).rejects.toThrow('Insufficient inventory in source stockroom');
+
+      expect(mockTransferRepository.updateTransferLine).not.toHaveBeenCalled();
+      expect(mockTransferRepository.updateTransferStatus).not.toHaveBeenCalled();
+    });
+
+    it('should fail completion for product lines missing productType', async () => {
+      mockTransferRepository.getTransferById.mockResolvedValue(mockTransfer as any);
+      mockTransferRepository.getTransferLines.mockResolvedValue([
+        {
+          ...mockLines[0],
+          productType: null,
+        },
+      ] as any);
+
+      const firstLine = mockLines[0]!;
+      await expect(
+        transferService.completeTransfer(mockTransfer.transferId, {
+          receivedBy: '123e4567-e89b-12d3-a456-426614174000',
+          lineReceipts: [
+            {
+              lineId: firstLine.lineId,
+              receivedQuantity: 5,
+            },
+          ],
+        })
+      ).rejects.toThrow('INVALID_TRANSFER_LINE: productType is required');
     });
   });
 

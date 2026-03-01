@@ -56,19 +56,29 @@ test('procurement flow connects requisition -> PO -> receiving', async ({ page }
   await expect(page.getByText('No items to receive')).toBeVisible();
 });
 
-test('ham transfer flow supports approve and complete', async ({ page }) => {
+test('ham transfer flow supports create, approve, and complete', async ({ page }) => {
   await page.goto('/ham/transfers', { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('heading', { name: 'Transfers' })).toBeVisible();
 
-  const pendingRow = page.getByRole('row', { name: /TRF-1001/i });
+  await page.getByLabel('From Building').selectOption('bldg-hq');
+  await page.getByLabel('From Stockroom').selectOption('sr-main');
+  await page.getByLabel('To Building').selectOption('bldg-dc');
+  await page.getByLabel('To Stockroom').selectOption('sr-dc');
+  await page.getByLabel('Asset / Stock Item').selectOption('asset:asset-hq-01');
+  await page.getByLabel('Quantity').fill('1');
+  await page.getByRole('button', { name: 'Create Transfer' }).click();
+
+  await expect(page.getByText('Transfer request created successfully.')).toBeVisible();
+
+  const pendingRow = page.getByRole('row', { name: /TRF-1002/i });
   await expect(pendingRow).toContainText(/pending/i);
   await pendingRow.getByRole('button', { name: 'Approve' }).click();
 
-  const approvedRow = page.getByRole('row', { name: /TRF-1001/i });
+  const approvedRow = page.getByRole('row', { name: /TRF-1002/i });
   await expect(approvedRow).toContainText(/approved/i);
   await approvedRow.getByRole('button', { name: 'Complete' }).click();
 
-  const completedRow = page.getByRole('row', { name: /TRF-1001/i });
+  const completedRow = page.getByRole('row', { name: /TRF-1002/i });
   await expect(completedRow).toContainText(/completed/i);
   await expect(completedRow.getByRole('button', { name: 'Complete' })).toHaveCount(0);
 });

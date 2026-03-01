@@ -267,6 +267,18 @@ export async function handler(
       );
     }
 
+    if (
+      err.message.includes('OVER_RECEIPT') ||
+      err.message.includes('INVALID_RECEIPT') ||
+      err.message.includes('UNKNOWN_RECEIPT_LINE') ||
+      err.message.includes('INVALID_TRANSFER_LINE')
+    ) {
+      return createLambdaResponse(
+        HTTP_STATUS.BAD_REQUEST,
+        createErrorResponse(API_ERROR_CODES.VALIDATION_ERROR, err.message, requestId)
+      );
+    }
+
     if (err.message.includes('Insufficient inventory')) {
       return createLambdaResponse(
         HTTP_STATUS.CONFLICT,

@@ -16,15 +16,18 @@ import { apiClient, ApiError } from './api-client';
 // ============================================================================
 
 export interface InventoryItem {
-  itemId: string;
+  inventoryId: string;
   stockroomId: string;
-  productId: string;
-  productName: string;
-  quantity: number;
-  minQuantity?: number;
-  maxQuantity?: number;
+  productId?: string;
+  productType?: string;
+  productSku?: string;
+  productDescription?: string;
+  quantityOnHand: number;
+  quantityAvailable: number;
+  reorderPoint?: number;
+  reorderQuantity?: number;
   binLocation?: string;
-  lastUpdated: string;
+  updatedAt?: string;
 }
 
 export interface InventoryResponse {
@@ -61,7 +64,11 @@ export async function getStockroomInventory(
   if (params?.limit) queryParts.push(`limit=${params.limit}`);
 
   const queryString = queryParts.length > 0 ? `?${queryParts.join('&')}` : '';
-  const response = await apiClient.get<InventoryResponse>(
+  const response = await apiClient.get<{
+    items?: unknown[];
+    total?: number;
+    stockroomId?: string;
+  }>(
     `/ham/stockrooms/${stockroomId}/inventory${queryString}`
   );
 
@@ -74,7 +81,46 @@ export async function getStockroomInventory(
     );
   }
 
-  return response.data;
+  const raw = response.data;
+  const rawItems = Array.isArray(raw.items) ? raw.items : [];
+  const items: InventoryItem[] = rawItems.map((entry) => {
+    const item = entry as Record<string, unknown>;
+    const quantityOnHand =
+      typeof item['quantityOnHand'] === 'number'
+        ? item['quantityOnHand']
+        : typeof item['quantity'] === 'number'
+          ? item['quantity']
+          : 0;
+    const quantityAvailable =
+      typeof item['quantityAvailable'] === 'number'
+        ? item['quantityAvailable']
+        : quantityOnHand;
+
+    return {
+      inventoryId: String(item['inventoryId'] ?? item['itemId'] ?? ''),
+      stockroomId: String(item['stockroomId'] ?? stockroomId),
+      productId: typeof item['productId'] === 'string' ? item['productId'] : undefined,
+      productType: typeof item['productType'] === 'string' ? item['productType'] : undefined,
+      productSku: typeof item['productSku'] === 'string' ? item['productSku'] : undefined,
+      productDescription:
+        (typeof item['productDescription'] === 'string' ? item['productDescription'] : undefined) ??
+        (typeof item['productName'] === 'string' ? item['productName'] : undefined),
+      quantityOnHand,
+      quantityAvailable,
+      reorderPoint: typeof item['reorderPoint'] === 'number' ? item['reorderPoint'] : undefined,
+      reorderQuantity: typeof item['reorderQuantity'] === 'number' ? item['reorderQuantity'] : undefined,
+      binLocation: typeof item['binLocation'] === 'string' ? item['binLocation'] : undefined,
+      updatedAt:
+        (typeof item['updatedAt'] === 'string' ? item['updatedAt'] : undefined) ??
+        (typeof item['lastUpdated'] === 'string' ? item['lastUpdated'] : undefined),
+    };
+  });
+
+  return {
+    items,
+    total: typeof raw.total === 'number' ? raw.total : items.length,
+    stockroomId: typeof raw.stockroomId === 'string' ? raw.stockroomId : stockroomId,
+  };
 }
 
 /**

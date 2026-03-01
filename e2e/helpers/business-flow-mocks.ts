@@ -244,6 +244,80 @@ export async function installBusinessFlowMocks(page: Page): Promise<void> {
     ],
   };
 
+  const stockrooms = [
+    {
+      stockroomId: 'sr-main',
+      stockroomCode: 'MAIN',
+      name: 'Main Stockroom',
+      stockroomType: 'STANDARD',
+      roomId: null,
+      roomName: 'HQ Receiving',
+      managerId: null,
+      managerName: null,
+      totalItems: 120,
+      totalValue: 50000,
+      binCount: 12,
+      totalBins: 20,
+      isActive: true,
+      buildingId: 'bldg-hq',
+      building: 'HQ',
+      createdAt: nowIso,
+      updatedAt: nowIso,
+    },
+    {
+      stockroomId: 'sr-dc',
+      stockroomCode: 'DC',
+      name: 'Data Center Stockroom',
+      stockroomType: 'STANDARD',
+      roomId: null,
+      roomName: 'DC Receiving',
+      managerId: null,
+      managerName: null,
+      totalItems: 80,
+      totalValue: 42000,
+      binCount: 9,
+      totalBins: 15,
+      isActive: true,
+      buildingId: 'bldg-dc',
+      building: 'DC',
+      createdAt: nowIso,
+      updatedAt: nowIso,
+    },
+  ];
+
+  const inventoryByStockroom: Record<string, Array<Record<string, unknown>>> = {
+    'sr-main': [
+      {
+        inventoryId: 'inv-main-router',
+        stockroomId: 'sr-main',
+        productId: 'product-router-01',
+        productType: 'HARDWARE_MODEL',
+        productSku: 'RTR-001',
+        productDescription: 'HQ Router',
+        quantityOnHand: 8,
+        quantityAvailable: 6,
+        reorderPoint: 2,
+        reorderQuantity: 5,
+        updatedAt: nowIso,
+      },
+    ],
+    'sr-dc': [
+      {
+        inventoryId: 'inv-dc-ups',
+        stockroomId: 'sr-dc',
+        productId: 'product-ups-01',
+        productType: 'HARDWARE_MODEL',
+        productSku: 'UPS-001',
+        productDescription: 'Data Center UPS',
+        quantityOnHand: 3,
+        quantityAvailable: 3,
+        reorderPoint: 1,
+        reorderQuantity: 3,
+        updatedAt: nowIso,
+      },
+    ],
+  };
+
   const purchaseOrders = new Map<string, Record<string, unknown>>();
   purchaseOrders.set(
     'po-seeded-001',
@@ -266,9 +340,10 @@ export async function installBusinessFlowMocks(page: Page): Promise<void> {
       fromStockroomName: 'Main Stockroom',
       toStockroomId: 'sr-dc',
       toStockroomName: 'Data Center Stockroom',
-      status: 'pending',
+      status: 'PENDING_APPROVAL',
       requestedBy: 'e2e-user',
-      requestedAt: nowIso,
+      requestedDate: nowIso,
+      totalQuantity: 1,
       notes: 'Move router to DC',
     },
   ];
@@ -296,9 +371,23 @@ export async function installBusinessFlowMocks(page: Page): Promise<void> {
       return json(route, 200, paginated(buildings));
     }
 
+    if (method === 'GET' && apiPath === '/admin/stockrooms') {
+      return json(route, 200, paginated(stockrooms));
+    }
+
     if (method === 'GET' && apiPath === '/assets') {
       const buildingId = url.searchParams.get('buildingId') ?? '';
-      const items = assetsByBuilding[buildingId] ?? [];
+      const stockroomId = url.searchParams.get('stockroomId') ?? '';
+
+      const stockroom = stockrooms.find((entry) => entry.stockroomId === stockroomId);
+      const resolvedBuildingId = stockroom?.buildingId ?? buildingId;
+      const items = assetsByBuilding[resolvedBuildingId] ?? [];
+      return json(route, 200, paginated(items));
+    }
+
+    if (method === 'GET' && /^\/ham\/stockrooms\/[^/]+\/inventory$/.test(apiPath)) {
+      const stockroomId = apiPath.split('/')[3] ?? '';
+      const items = inventoryByStockroom[stockroomId] ?? [];
       return json(route, 200, paginated(items));
     }
 
@@ -630,13 +719,71 @@ export async function installBusinessFlowMocks(page: Page): Promise<void> {
       return json(route, 200, items);
     }
 
+    if (method === 'POST' && apiPath === '/ham/transfers') {
+      const body = postBody(route);
+      const lines = Array.isArray(body['lines']) ? (body['lines'] as Record<string, unknown>[]) : [];
+      const line = lines[0] ?? {};
+      const assetId = String(line['assetId'] ?? '');
+      const productId = String(line['productId'] ?? '');
+      const sourceStockroomId = String(body['fromStockroomId'] ?? '');
+      const destinationStockroomId = String(body['toStockroomId'] ?? '');
+
+      const sourceStockroom = stockrooms.find((entry) => entry.stockroomId === sourceStockroomId);
+      const destinationStockroom = stockrooms.find((entry) => entry.stockroomId === destinationStockroomId);
+
+      const sourceAssets = assetsByBuilding[sourceStockroom?.buildingId ?? ''] ?? [];
+      const asset = sourceAssets.find((entry) => String(entry['assetId']) === assetId);
+      const inventoryItems = inventoryByStockroom[sourceStockroomId] ?? [];
+      const inventoryItem = inventoryItems.find((entry) => String(entry['productId']) === productId);
+
+      const createdTransfer = {
+        transferId: `trf-${String(transfers.length + 1001)}`,
+        transferNumber: `TRF-${String(transfers.length + 1001)}`,
+        assetId: assetId || undefined,
+        assetTag: String(
+          line['assetTag'] ??
+          asset?.['assetTag'] ??
+          inventoryItem?.['productSku'] ??
+          line['productDescription'] ??
+          'UNKNOWN'
+        ),
+        fromStockroomId: sourceStockroomId,
+        fromStockroomName: sourceStockroom?.name ?? sourceStockroomId,
+        toStockroomId: destinationStockroomId,
+        toStockroomName: destinationStockroom?.name ?? destinationStockroomId,
+        fromBuildingName: buildings.find((entry) => entry.buildingId === sourceStockroom?.buildingId)?.name,
+        toBuildingName: buildings.find((entry) => entry.buildingId === destinationStockroom?.buildingId)?.name,
+        status: 'PENDING_APPROVAL',
+        priority: String(body['priority'] ?? 'NORMAL'),
+        requestedBy: 'e2e-user',
+        requestedDate: nowIso,
+        notes: String(body['notes'] ?? ''),
+        totalLineCount: lines.length,
+        totalQuantity: lines.reduce((sum, current) => sum + Number(current['quantity'] ?? 0), 0),
+      };
+
+      transfers.unshift(createdTransfer);
+
+      return json(route, 201, {
+        transfer: createdTransfer,
+        lines: lines.map((current, index) => ({
+          lineId: `line-${index + 1}`,
+          transferId: createdTransfer.transferId,
+          lineNumber: index + 1,
+          assetId: current['assetId'],
+          productId: current['productId'],
+          quantity: current['quantity'],
+        })),
+      });
+    }
+
     if (method === 'POST' && /^\/ham\/transfers\/[^/]+\/approve$/.test(apiPath)) {
       const transferId = apiPath.split('/')[3] ?? '';
       const transfer = transfers.find((entry) => String(entry['transferId']) === transferId);
       if (!transfer) {
         return json(route, 404, { error: { code: 'NOT_FOUND', message: 'Transfer not found' } });
       }
-      transfer.status = 'approved';
+      transfer.status = 'APPROVED';
       transfer.approvedAt = nowIso;
       transfer.approvedBy = 'e2e-approver';
       return json(route, 200, transfer);
@@ -648,7 +795,7 @@ export async function installBusinessFlowMocks(page: Page): Promise<void> {
       if (!transfer) {
         return json(route, 404, { error: { code: 'NOT_FOUND', message: 'Transfer not found' } });
       }
-      transfer.status = 'completed';
+      transfer.status = 'COMPLETED';
       transfer.completedAt = nowIso;
       return json(route, 200, transfer);
     }
@@ -697,4 +844,3 @@ export async function installBusinessFlowMocks(page: Page): Promise<void> {
     return route.fallback();
   });
 }
-

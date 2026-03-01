@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Transfer Service - Business logic layer for transfer order management
  *
  * Implements:
@@ -406,86 +406,243 @@ export async function completeTransfer(
 
   // Get current lines
   const currentLines = await repository.getTransferLines(transferId);
+  const currentLineIds = new Set(currentLines.map((line) => line.lineId));
 
   // Create a map of line receipts for easy lookup
   const receiptMap = new Map<UUID, LineReceiptRequest>();
   for (const receipt of request.lineReceipts) {
+    if (receiptMap.has(receipt.lineId)) {
+      throw new Error(`INVALID_RECEIPT: Duplicate receipt for line ${receipt.lineId}`);
+    }
+    if (!currentLineIds.has(receipt.lineId)) {
+      throw new Error(`UNKNOWN_RECEIPT_LINE: Line ${receipt.lineId} does not belong to transfer ${transferId}`);
+    }
+    if ((receipt.damagedQuantity ?? 0) > receipt.receivedQuantity) {
+      throw new Error(
+        `INVALID_RECEIPT: Damaged quantity (${receipt.damagedQuantity ?? 0}) exceeds received quantity (${receipt.receivedQuantity}) for line ${receipt.lineId}`
+      );
+    }
     receiptMap.set(receipt.lineId, receipt);
   }
 
-  // Validate no over-receipts (Task 6.1 — Requirement 5.5)
+  // Validate no over-receipts
   for (const line of currentLines) {
     const receipt = receiptMap.get(line.lineId);
-    if (receipt && receipt.receivedQuantity > line.shippedQuantity) {
+    const maxReceivableQty = line.shippedQuantity > 0 ? line.shippedQuantity : line.quantity;
+    if (receipt && receipt.receivedQuantity > maxReceivableQty) {
       throw new Error(
-        `OVER_RECEIPT: Received quantity (${receipt.receivedQuantity}) exceeds shipped quantity (${line.shippedQuantity}) for line ${line.lineId}`
+        `OVER_RECEIPT: Received quantity (${receipt.receivedQuantity}) exceeds max receivable quantity (${maxReceivableQty}) for line ${line.lineId}`
       );
     }
   }
 
-  // Update each line with receipt information
+  // Calculate receipt outcomes before mutations
   let totalReceivedQuantity = 0;
   let allLinesReceived = true;
+  const resolvedReceipts = new Map<
+    UUID,
+    {
+      receivedQty: number;
+      damagedQty: number;
+      lineStatus: 'RECEIVED' | 'PARTIALLY_RECEIVED';
+      conditionReceived?: LineReceiptRequest['conditionReceived'];
+      conditionNotes?: string;
+    }
+  >();
 
   for (const line of currentLines) {
+    const maxReceivableQty = line.shippedQuantity > 0 ? line.shippedQuantity : line.quantity;
     const receipt = receiptMap.get(line.lineId);
     if (receipt) {
       const receivedQty = receipt.receivedQuantity;
       const damagedQty = receipt.damagedQuantity ?? 0;
 
-      await repository.updateTransferLine(line.lineId, {
-        receivedQuantity: receivedQty,
-        damagedQuantity: damagedQty,
-        receivedDate: timestamp,
-        status: receivedQty >= line.quantity ? 'RECEIVED' : 'PARTIALLY_RECEIVED',
+      resolvedReceipts.set(line.lineId, {
+        receivedQty,
+        damagedQty,
+        lineStatus: receivedQty >= maxReceivableQty ? 'RECEIVED' : 'PARTIALLY_RECEIVED',
         conditionReceived: receipt.conditionReceived,
         conditionNotes: receipt.conditionNotes,
       });
 
-      // Audit log entry for line receipt (Task 6.2 — Requirement 5.4)
-      logger.info('Transfer line received', {
-        transferId,
-        lineId: line.lineId,
-        lineNumber: line.lineNumber,
-        receivedBy: request.receivedBy,
-        receivedQuantity: receivedQty,
-        damagedQuantity: damagedQty,
-        shippedQuantity: line.shippedQuantity,
-        conditionReceived: receipt.conditionReceived ?? null,
-        conditionNotes: receipt.conditionNotes ?? null,
-        timestamp,
-      });
-
-      await publishEvent('TRANSFER_LINE_RECEIVED', {
-        transferId,
-        lineId: line.lineId,
-        lineNumber: line.lineNumber,
-        receivedBy: request.receivedBy,
-        receivedQuantity: receivedQty,
-        damagedQuantity: damagedQty,
-        conditionReceived: receipt.conditionReceived ?? null,
-        conditionNotes: receipt.conditionNotes ?? null,
-        timestamp,
-      });
-
       totalReceivedQuantity += receivedQty;
 
-      if (receivedQty < line.quantity) {
+      if (receivedQty < maxReceivableQty) {
         allLinesReceived = false;
       }
     } else {
       // Line not in receipt, check if already received
-      if (line.receivedQuantity < line.quantity) {
+      if (line.receivedQuantity < maxReceivableQty) {
         allLinesReceived = false;
       }
       totalReceivedQuantity += line.receivedQuantity;
     }
   }
 
-  // Determine final status
+  // Update inventory quantities if transfer is fully completed
+  let fromStockroomUpdated = false;
+  let toStockroomUpdated = false;
+
+  if (allLinesReceived) {
+    type AggregatedProductMovement = {
+      productId: UUID;
+      productType: stockroomRepository.ProductType;
+      productDescription?: string;
+      issueQuantity: number;
+      goodQuantity: number;
+    };
+
+    const movementMap = new Map<string, AggregatedProductMovement>();
+
+    for (const line of currentLines) {
+      if (!line.productId) {
+        continue;
+      }
+
+      if (!line.productType) {
+        throw new Error(
+          `INVALID_TRANSFER_LINE: productType is required for line ${line.lineId} when productId is provided`
+        );
+      }
+
+      const resolvedReceipt = resolvedReceipts.get(line.lineId);
+      const receivedQty = resolvedReceipt?.receivedQty ?? line.receivedQuantity;
+      const damagedQty = resolvedReceipt?.damagedQty ?? line.damagedQuantity;
+      const goodQuantity = Math.max(0, receivedQty - damagedQty);
+      const productType = line.productType as stockroomRepository.ProductType;
+      const movementKey = `${line.productId}:${productType}`;
+      const existingMovement = movementMap.get(movementKey);
+
+      if (existingMovement) {
+        movementMap.set(movementKey, {
+          ...existingMovement,
+          issueQuantity: existingMovement.issueQuantity + line.quantity,
+          goodQuantity: existingMovement.goodQuantity + goodQuantity,
+        });
+        continue;
+      }
+
+      movementMap.set(movementKey, {
+        productId: line.productId,
+        productType,
+        productDescription: line.productDescription ?? undefined,
+        issueQuantity: line.quantity,
+        goodQuantity,
+      });
+    }
+
+    const sourceInventoryByKey = new Map<string, { inventoryId: UUID; quantityOnHand: number }>();
+
+    for (const [movementKey, movement] of movementMap.entries()) {
+      const fromInventory = await stockroomRepository.getInventoryByProduct(
+        transfer.fromStockroomId,
+        movement.productId,
+        movement.productType
+      );
+
+      if (!fromInventory || fromInventory.quantityOnHand < movement.issueQuantity) {
+        throw new Error(
+          `Insufficient inventory in source stockroom ${transfer.fromStockroomId} for product ${movement.productId}:${movement.productType}`
+        );
+      }
+
+      sourceInventoryByKey.set(movementKey, {
+        inventoryId: fromInventory.inventoryId,
+        quantityOnHand: fromInventory.quantityOnHand,
+      });
+    }
+
+    for (const [movementKey, movement] of movementMap.entries()) {
+      const sourceInventory = sourceInventoryByKey.get(movementKey);
+      if (!sourceInventory || sourceInventory.quantityOnHand < movement.issueQuantity) {
+        throw new Error(
+          `Insufficient inventory in source stockroom ${transfer.fromStockroomId} for product ${movement.productId}:${movement.productType}`
+        );
+      }
+
+      await stockroomRepository.adjustInventoryQuantity(
+        sourceInventory.inventoryId,
+        -movement.issueQuantity,
+        'issued'
+      );
+      fromStockroomUpdated = true;
+
+      if (movement.goodQuantity <= 0) {
+        continue;
+      }
+
+      const toInventory = await stockroomRepository.getInventoryByProduct(
+        transfer.toStockroomId,
+        movement.productId,
+        movement.productType
+      );
+
+      if (toInventory) {
+        await stockroomRepository.adjustInventoryQuantity(
+          toInventory.inventoryId,
+          movement.goodQuantity,
+          'received'
+        );
+      } else {
+        await stockroomRepository.createInventoryItem({
+          stockroomId: transfer.toStockroomId,
+          productId: movement.productId,
+          productType: movement.productType,
+          productDescription: movement.productDescription,
+          quantityOnHand: movement.goodQuantity,
+        });
+      }
+
+      toStockroomUpdated = true;
+    }
+  }
+
+  // Persist line receipt updates
+  for (const line of currentLines) {
+    const resolvedReceipt = resolvedReceipts.get(line.lineId);
+    if (!resolvedReceipt) {
+      continue;
+    }
+
+    await repository.updateTransferLine(line.lineId, {
+      receivedQuantity: resolvedReceipt.receivedQty,
+      damagedQuantity: resolvedReceipt.damagedQty,
+      receivedDate: timestamp,
+      status: resolvedReceipt.lineStatus,
+      conditionReceived: resolvedReceipt.conditionReceived,
+      conditionNotes: resolvedReceipt.conditionNotes,
+    });
+
+    // Audit log entry for line receipt
+    logger.info('Transfer line received', {
+      transferId,
+      lineId: line.lineId,
+      lineNumber: line.lineNumber,
+      receivedBy: request.receivedBy,
+      receivedQuantity: resolvedReceipt.receivedQty,
+      damagedQuantity: resolvedReceipt.damagedQty,
+      shippedQuantity: line.shippedQuantity,
+      conditionReceived: resolvedReceipt.conditionReceived ?? null,
+      conditionNotes: resolvedReceipt.conditionNotes ?? null,
+      timestamp,
+    });
+
+    await publishEvent('TRANSFER_LINE_RECEIVED', {
+      transferId,
+      lineId: line.lineId,
+      lineNumber: line.lineNumber,
+      receivedBy: request.receivedBy,
+      receivedQuantity: resolvedReceipt.receivedQty,
+      damagedQuantity: resolvedReceipt.damagedQty,
+      conditionReceived: resolvedReceipt.conditionReceived ?? null,
+      conditionNotes: resolvedReceipt.conditionNotes ?? null,
+      timestamp,
+    });
+  }
+
+  // Determine final status and update transfer after inventory posting succeeds
   const finalStatus: TransferOrderStatus = allLinesReceived ? 'COMPLETED' : 'PARTIALLY_RECEIVED';
 
-  // Update transfer status
   const updatedTransfer = await repository.updateTransferStatus(transferId, finalStatus, {
     receivedBy: request.receivedBy,
     receivedDate: timestamp,
@@ -499,64 +656,6 @@ export async function completeTransfer(
     throw new Error(`Failed to complete transfer: ${transferId}`);
   }
 
-  // Update inventory quantities if transfer is completed
-  let fromStockroomUpdated = false;
-  let toStockroomUpdated = false;
-
-  if (allLinesReceived) {
-    // Update inventory for each line
-    for (const line of currentLines) {
-      const receipt = receiptMap.get(line.lineId);
-      const receivedQty = receipt?.receivedQuantity ?? line.receivedQuantity;
-      const damagedQty = receipt?.damagedQuantity ?? line.damagedQuantity;
-      const goodQuantity = receivedQty - damagedQty;
-
-      if (line.productId && line.productType) {
-        // Decrease inventory at source stockroom
-        const fromInventory = await stockroomRepository.getInventoryByProduct(
-          transfer.fromStockroomId,
-          line.productId,
-          line.productType as stockroomRepository.ProductType
-        );
-
-        if (fromInventory) {
-          await stockroomRepository.adjustInventoryQuantity(
-            fromInventory.inventoryId,
-            -line.quantity,
-            'issued'
-          );
-          fromStockroomUpdated = true;
-        }
-
-        // Increase inventory at destination stockroom
-        const toInventory = await stockroomRepository.getInventoryByProduct(
-          transfer.toStockroomId,
-          line.productId,
-          line.productType as stockroomRepository.ProductType
-        );
-
-        if (toInventory) {
-          await stockroomRepository.adjustInventoryQuantity(
-            toInventory.inventoryId,
-            goodQuantity,
-            'received'
-          );
-          toStockroomUpdated = true;
-        } else {
-          // Create new inventory record at destination
-          await stockroomRepository.createInventoryItem({
-            stockroomId: transfer.toStockroomId,
-            productId: line.productId,
-            productType: line.productType as stockroomRepository.ProductType,
-            productDescription: line.productDescription ?? undefined,
-            quantityOnHand: goodQuantity,
-          });
-          toStockroomUpdated = true;
-        }
-      }
-    }
-  }
-
   // Get updated lines
   const updatedLines = await repository.getTransferLines(transferId);
 
@@ -565,7 +664,7 @@ export async function completeTransfer(
   await cache.del(stockroomTransfersCacheKey(transfer.fromStockroomId));
   await cache.del(stockroomTransfersCacheKey(transfer.toStockroomId));
 
-  // Publish completion event (includes building context — Task 6.3)
+  // Publish completion event (includes building context)
   await publishEvent('TRANSFER_ORDER_COMPLETED', {
     transferId: updatedTransfer.transferId,
     transferNumber: updatedTransfer.transferNumber,
@@ -741,4 +840,5 @@ export type {
   TransferOrderStatus,
   TransferPriority,
 } from './transfer-repository';
+
 

@@ -332,6 +332,23 @@ describe('Create Transfer Handler', () => {
       expect(result.statusCode).toBe(201);
       const body = JSON.parse(result.body);
       expect(body.success).toBe(true);
+      expect(body.data.transfer).toEqual(
+        expect.objectContaining({
+          transferId: '123e4567-e89b-12d3-a456-426614174004',
+          transferNumber: 'TRF-ABC123-XYZ',
+          fromStockroomId: '123e4567-e89b-12d3-a456-426614174001',
+          toStockroomId: '123e4567-e89b-12d3-a456-426614174002',
+          status: 'PENDING_APPROVAL',
+        })
+      );
+      expect(body.data.lines).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            lineId: '123e4567-e89b-12d3-a456-426614174005',
+            quantity: 5,
+          }),
+        ])
+      );
       expect(body.data.transfer.transferNumber).toBe('TRF-ABC123-XYZ');
     });
   });
@@ -659,6 +676,12 @@ describe('Complete Transfer Handler', () => {
       expect(body.success).toBe(true);
       expect(body.data.transfer.status).toBe('COMPLETED');
       expect(body.data.inventoryUpdated).toBe(true);
+      expect(body.data).toEqual(
+        expect.objectContaining({
+          fromStockroomUpdated: true,
+          toStockroomUpdated: true,
+        })
+      );
     });
 
     it('should handle partial receipt', async () => {
@@ -732,6 +755,48 @@ describe('Complete Transfer Handler', () => {
       const result = await completeTransferHandler(event);
 
       expect(result.statusCode).toBe(409);
+    });
+
+    it('should return 400 for over-receipt validation errors', async () => {
+      mockTransferService.completeTransfer.mockRejectedValue(
+        new Error('OVER_RECEIPT: Received quantity (6) exceeds max receivable quantity (5) for line line-1')
+      );
+
+      const event = createMockEvent({
+        pathParameters: { transferId: '123e4567-e89b-12d3-a456-426614174004' },
+        body: JSON.stringify({
+          lineReceipts: [
+            { lineId: '123e4567-e89b-12d3-a456-426614174005', receivedQuantity: 6 },
+          ],
+        }),
+      });
+
+      const result = await completeTransferHandler(event);
+
+      expect(result.statusCode).toBe(400);
+      const body = JSON.parse(result.body);
+      expect(body.error.code).toBe('VALIDATION_ERROR');
+    });
+
+    it('should return 400 for unknown receipt line errors', async () => {
+      mockTransferService.completeTransfer.mockRejectedValue(
+        new Error('UNKNOWN_RECEIPT_LINE: Line line-1 does not belong to transfer transfer-1')
+      );
+
+      const event = createMockEvent({
+        pathParameters: { transferId: '123e4567-e89b-12d3-a456-426614174004' },
+        body: JSON.stringify({
+          lineReceipts: [
+            { lineId: '123e4567-e89b-12d3-a456-426614174005', receivedQuantity: 1 },
+          ],
+        }),
+      });
+
+      const result = await completeTransferHandler(event);
+
+      expect(result.statusCode).toBe(400);
+      const body = JSON.parse(result.body);
+      expect(body.error.code).toBe('VALIDATION_ERROR');
     });
 
     it('should return 500 for unexpected errors', async () => {
