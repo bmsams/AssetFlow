@@ -17,6 +17,7 @@ export type {
   ReceivingRecord,
   ReceivingLine,
   ScannedAsset,
+  ReceivingReconciliationRow,
   CreateReceivingRecordInput,
   CreateReceivingLineInput,
   RecordAssetScanInput,
@@ -39,6 +40,7 @@ export {
   recordAssetScan,
   updateReceivingRecordStatus,
   getReceivingRecords,
+  getReceivingReconciliation,
   // Inspection repository functions
   createInspectionRecord,
   getInspectionRecordById,

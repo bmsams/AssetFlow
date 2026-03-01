@@ -25,6 +25,37 @@ import { getUserContext } from '../utils/user-context';
 
 const logger = createLogger({ service: 'record-receiving-handler' });
 
+interface CodedError extends Error {
+  code?: string;
+}
+
+const CONFLICT_ERROR_PATTERNS = [
+  'duplicate key value',
+  'unique constraint',
+  'already exists',
+];
+
+const BAD_REQUEST_ERROR_PATTERNS = [
+  'cannot be received',
+  'No receivable lines',
+  'is required',
+  'must be',
+  'No active stockroom',
+  'no remaining quantity to receive',
+];
+
+function isConflictError(error: CodedError): boolean {
+  if (error.code === '23505') {
+    return true;
+  }
+
+  return CONFLICT_ERROR_PATTERNS.some((pattern) => error.message.includes(pattern));
+}
+
+function isBadRequestError(error: CodedError): boolean {
+  return BAD_REQUEST_ERROR_PATTERNS.some((pattern) => error.message.includes(pattern));
+}
+
 /**
  * Validate a manual receiving line
  */
@@ -313,7 +344,7 @@ export async function handler(
 
     return createLambdaResponse(HTTP_STATUS.CREATED, createApiResponse(result, requestId));
   } catch (error) {
-    const err = error as Error;
+    const err = error as CodedError;
     logger.error('Failed to record receiving', err, { requestId });
 
     // Handle specific errors
@@ -324,12 +355,14 @@ export async function handler(
       );
     }
 
-    if (
-      err.message.includes('cannot be received') ||
-      err.message.includes('No receivable lines') ||
-      err.message.includes('is required') ||
-      err.message.includes('must be')
-    ) {
+    if (isConflictError(err)) {
+      return createLambdaResponse(
+        HTTP_STATUS.CONFLICT,
+        createErrorResponse(API_ERROR_CODES.CONFLICT, err.message, requestId)
+      );
+    }
+
+    if (isBadRequestError(err)) {
       return createLambdaResponse(
         HTTP_STATUS.BAD_REQUEST,
         createErrorResponse(API_ERROR_CODES.BAD_REQUEST, err.message, requestId)

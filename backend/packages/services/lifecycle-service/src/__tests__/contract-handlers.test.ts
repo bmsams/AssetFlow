@@ -41,7 +41,7 @@ jest.mock('@ams/utils', () => ({
   now: () => '2024-01-15T10:00:00.000Z',
   validateUUID: (value: string, fieldName: string) => {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    if (!uuidRegex.test(value)) {
+    if (typeof value !== 'string' || !uuidRegex.test(value)) {
       return { message: `${fieldName} must be a valid UUID` };
     }
     return null;
@@ -555,7 +555,15 @@ describe('Get Contracts by Vendor Handler', () => {
   });
 
   describe('Request Validation', () => {
-    it('should return 400 when vendorId is missing', async () => {
+    it('should list all contracts when vendorId is missing', async () => {
+      mockContractService.getContracts.mockResolvedValue({
+        items: [],
+        total: 0,
+        page: 1,
+        limit: 50,
+        hasMore: false,
+      } as any);
+
       const event = createMockEvent({
         httpMethod: 'GET',
         pathParameters: null,
@@ -563,7 +571,12 @@ describe('Get Contracts by Vendor Handler', () => {
 
       const result = await getContractsByVendorHandler(event);
 
-      expect(result.statusCode).toBe(400);
+      expect(result.statusCode).toBe(200);
+      expect(mockContractService.getContracts).toHaveBeenCalledWith(
+        { page: 1, limit: 50 },
+        undefined,
+        undefined
+      );
     });
 
     it('should return 400 when vendorId is not a valid UUID', async () => {

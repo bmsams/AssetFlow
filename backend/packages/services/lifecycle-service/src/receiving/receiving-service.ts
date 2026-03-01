@@ -185,6 +185,64 @@ export async function recordReceivingFromPO(
     throw new Error('No receivable lines found for this purchase order');
   }
 
+  const activeReceivingRecord = (await repository.getReceivingRecordsByPO(input.poId)).find(
+    (record) => record.status === 'PENDING' || record.status === 'IN_PROGRESS'
+  );
+
+  if (activeReceivingRecord) {
+    const existingLines = await repository.getReceivingLines(activeReceivingRecord.receivingId);
+    const existingPOLineIds = new Set(
+      existingLines
+        .map((line) => line.poLineId)
+        .filter((poLineId): poLineId is UUID => typeof poLineId === 'string' && poLineId.length > 0)
+    );
+
+    let createdLineCount = 0;
+    for (const poLine of poLines) {
+      const remainingQuantity = poLine.quantity - poLine.received_quantity;
+      if (remainingQuantity <= 0 || existingPOLineIds.has(poLine.line_id)) {
+        continue;
+      }
+
+      try {
+        await repository.createReceivingLineFromPO(activeReceivingRecord.receivingId, poLine.line_id);
+        createdLineCount += 1;
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        if (message.includes('no remaining quantity to receive')) {
+          continue;
+        }
+        throw error;
+      }
+    }
+
+    const lines =
+      createdLineCount > 0
+        ? await repository.getReceivingLines(activeReceivingRecord.receivingId)
+        : existingLines;
+
+    if (lines.length === 0) {
+      throw new Error('No receivable lines found for this purchase order');
+    }
+
+    const updatedRecord =
+      (await repository.getReceivingRecordById(activeReceivingRecord.receivingId)) ??
+      activeReceivingRecord;
+
+    logger.info('Reusing active receiving record for PO', {
+      receivingId: updatedRecord.receivingId,
+      poId: input.poId,
+      existingLineCount: existingLines.length,
+      createdLineCount,
+      totalLineCount: lines.length,
+    });
+
+    return {
+      receivingRecord: updatedRecord,
+      lines,
+    };
+  }
+
   // Create receiving record
   const receivingRecord = await repository.createReceivingRecord({
     poId: input.poId,
@@ -198,13 +256,27 @@ export async function recordReceivingFromPO(
   const lines: ReceivingLine[] = [];
   for (const poLine of poLines) {
     const remainingQuantity = poLine.quantity - poLine.received_quantity;
-    if (remainingQuantity > 0) {
+    if (remainingQuantity <= 0) {
+      continue;
+    }
+
+    try {
       const line = await repository.createReceivingLineFromPO(
         receivingRecord.receivingId,
         poLine.line_id
       );
       lines.push(line);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (!message.includes('no remaining quantity to receive')) {
+        throw error;
+      }
     }
+  }
+
+  if (lines.length === 0) {
+    await repository.updateReceivingRecordStatus(receivingRecord.receivingId, 'CANCELLED');
+    throw new Error('No receivable lines found for this purchase order');
   }
 
   // Publish event

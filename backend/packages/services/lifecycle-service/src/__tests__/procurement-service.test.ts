@@ -545,4 +545,190 @@ describe('Procurement Service', () => {
       );
     });
   });
+
+  describe('end-to-end PO creation with mixed line vendors', () => {
+    it('resolves mixed effective vendors, preserves total consistency, and allows submit', async () => {
+      const requesterId = '123e4567-e89b-12d3-a456-426614174000';
+      const headerVendorId = '123e4567-e89b-12d3-a456-426614174030';
+      const headerVendorName = 'Header Vendor';
+      const lineVendorAId = '123e4567-e89b-12d3-a456-426614174031';
+      const lineVendorAName = 'Line Vendor A';
+      const lineVendorBId = '123e4567-e89b-12d3-a456-426614174032';
+      const lineVendorBName = 'Line Vendor B';
+
+      const lines = [
+        {
+          lineId: 'line-1',
+          poId: 'po-mixed-1',
+          lineNumber: 1,
+          productId: 'product-1',
+          productType: 'HARDWARE_MODEL',
+          productName: 'Laptop',
+          productDescription: 'Laptop',
+          productSku: null,
+          quantity: 2,
+          receivedQuantity: 0,
+          unitPrice: 100,
+          totalPrice: 200,
+          status: 'PENDING' as const,
+          costCenterId: null,
+          costCenterCode: null,
+          vendorId: lineVendorAId,
+          vendorName: lineVendorAName,
+          effectiveVendorId: lineVendorAId,
+          effectiveVendorName: lineVendorAName,
+          effectiveCostCenterId: null,
+          effectiveCostCenterCode: null,
+          requestLineId: null,
+          notes: null,
+          createdAt: '2024-01-15T10:00:00.000Z',
+          updatedAt: '2024-01-15T10:00:00.000Z',
+        },
+        {
+          lineId: 'line-2',
+          poId: 'po-mixed-1',
+          lineNumber: 2,
+          productId: 'product-2',
+          productType: 'HARDWARE_MODEL',
+          productName: 'Dock',
+          productDescription: 'Dock',
+          productSku: null,
+          quantity: 1,
+          receivedQuantity: 0,
+          unitPrice: 50,
+          totalPrice: 50,
+          status: 'PENDING' as const,
+          costCenterId: null,
+          costCenterCode: null,
+          vendorId: null,
+          vendorName: null,
+          effectiveVendorId: headerVendorId,
+          effectiveVendorName: headerVendorName,
+          effectiveCostCenterId: null,
+          effectiveCostCenterCode: null,
+          requestLineId: null,
+          notes: null,
+          createdAt: '2024-01-15T10:00:00.000Z',
+          updatedAt: '2024-01-15T10:00:00.000Z',
+        },
+        {
+          lineId: 'line-3',
+          poId: 'po-mixed-1',
+          lineNumber: 3,
+          productId: 'product-3',
+          productType: 'HARDWARE_MODEL',
+          productName: 'Monitor',
+          productDescription: 'Monitor',
+          productSku: null,
+          quantity: 3,
+          receivedQuantity: 0,
+          unitPrice: 75,
+          totalPrice: 225,
+          status: 'PENDING' as const,
+          costCenterId: null,
+          costCenterCode: null,
+          vendorId: lineVendorBId,
+          vendorName: lineVendorBName,
+          effectiveVendorId: lineVendorBId,
+          effectiveVendorName: lineVendorBName,
+          effectiveCostCenterId: null,
+          effectiveCostCenterCode: null,
+          requestLineId: null,
+          notes: null,
+          createdAt: '2024-01-15T10:00:00.000Z',
+          updatedAt: '2024-01-15T10:00:00.000Z',
+        },
+      ];
+
+      const subtotal = lines.reduce((sum, line) => sum + line.totalPrice, 0);
+      const createdPO = {
+        poId: 'po-mixed-1',
+        poNumber: 'PO-MIXED-001',
+        vendorId: headerVendorId,
+        vendorName: headerVendorName,
+        requesterId,
+        requesterName: 'Requester',
+        approverId: null,
+        approverName: null,
+        status: 'DRAFT' as const,
+        orderDate: null,
+        expectedDeliveryDate: null,
+        actualDeliveryDate: null,
+        shippingAddress: null,
+        shippingMethod: null,
+        paymentTerms: null,
+        currency: 'USD',
+        subtotal,
+        taxAmount: 0,
+        shippingCost: 0,
+        totalAmount: subtotal,
+        notes: null,
+        internalNotes: null,
+        sourceRequestId: null,
+        erpReferenceId: null,
+        createdAt: '2024-01-15T10:00:00.000Z',
+        updatedAt: '2024-01-15T10:00:00.000Z',
+        createdBy: requesterId,
+        updatedBy: null,
+      };
+
+      mockProcurementRepository.createPurchaseOrder.mockResolvedValue({
+        purchaseOrder: createdPO,
+        lines,
+      } as any);
+      mockProcurementRepository.getPurchaseOrderById.mockResolvedValue(createdPO as any);
+      mockProcurementRepository.getPurchaseOrderLines.mockResolvedValue(lines as any);
+      mockProcurementRepository.updatePurchaseOrderStatus.mockResolvedValue({
+        ...createdPO,
+        status: 'PENDING_APPROVAL',
+      } as any);
+
+      const createResult = await procurementService.createPurchaseOrder(
+        {
+          vendorId: headerVendorId,
+          vendorName: headerVendorName,
+          requesterId,
+          lines: [
+            { productName: 'Laptop', quantity: 2, unitPrice: 100, vendorId: lineVendorAId, vendorName: lineVendorAName },
+            { productName: 'Dock', quantity: 1, unitPrice: 50 },
+            { productName: 'Monitor', quantity: 3, unitPrice: 75, vendorId: lineVendorBId, vendorName: lineVendorBName },
+          ],
+        },
+        requesterId
+      );
+
+      expect(createResult.lines.map((line) => line.effectiveVendorId)).toEqual([
+        lineVendorAId,
+        headerVendorId,
+        lineVendorBId,
+      ]);
+      expect(
+        createResult.lines.every((line) => line.totalPrice === line.quantity * line.unitPrice)
+      ).toBe(true);
+      expect(createResult.purchaseOrder.subtotal).toBe(
+        createResult.lines.reduce((sum, line) => sum + line.totalPrice, 0)
+      );
+
+      const submitted = await procurementService.submitPurchaseOrder(createdPO.poId, requesterId);
+      expect(submitted.status).toBe('PENDING_APPROVAL');
+    });
+
+    it('blocks submit when one line has no effective vendor', async () => {
+      const poId = 'po-mixed-2';
+      mockProcurementRepository.getPurchaseOrderById.mockResolvedValue({
+        poId,
+        poNumber: 'PO-MIXED-002',
+        status: 'DRAFT',
+      } as any);
+      mockProcurementRepository.getPurchaseOrderLines.mockResolvedValue([
+        { lineId: 'line-1', lineNumber: 1, effectiveVendorId: 'vendor-1', effectiveVendorName: 'Vendor 1' },
+        { lineId: 'line-2', lineNumber: 2, effectiveVendorId: null, effectiveVendorName: null },
+      ] as any);
+
+      await expect(procurementService.submitPurchaseOrder(poId, 'user-1')).rejects.toThrow(
+        'Cannot submit: line 2 has no vendor assigned'
+      );
+      expect(mockProcurementRepository.updatePurchaseOrderStatus).not.toHaveBeenCalled();
+    });
+  });
 });

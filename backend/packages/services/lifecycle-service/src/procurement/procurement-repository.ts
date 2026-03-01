@@ -484,8 +484,8 @@ const PURCHASE_ORDER_LINE_SELECT_SQL = `
   pol.status,
   pol.cost_center_id,
   cc.code AS cost_center_code,
-  NULL::uuid AS vendor_id,
-  NULL::text AS vendor_name,
+  pol.vendor_id,
+  COALESCE(line_vendor.vendor_name, pol.vendor_name) AS vendor_name,
   (
     SELECT rl.line_id
     FROM request_lines rl
@@ -497,7 +497,7 @@ const PURCHASE_ORDER_LINE_SELECT_SQL = `
   pol.created_at,
   pol.updated_at,
   po.vendor_id AS header_vendor_id,
-  v.vendor_name AS header_vendor_name,
+  header_vendor.vendor_name AS header_vendor_name,
   po.cost_center_id AS header_cost_center_id,
   hcc.code AS header_cost_center_code
 `;
@@ -557,6 +557,8 @@ async function ensureProcurementSchemaCompatibility(): Promise<void> {
         'total_price',
         'status',
         'cost_center_id',
+        'vendor_id',
+        'vendor_name',
       ],
       request_lines: ['line_id', 'request_id', 'purchase_order_id', 'purchase_order_line_id', 'updated_at'],
     };
@@ -920,10 +922,10 @@ export async function createPurchaseOrder(
         `INSERT INTO purchase_order_lines (
           po_id, line_number, product_id, product_type,
           product_description, product_sku, quantity, received_quantity,
-          unit_price, total_price, status, cost_center_id,
+          unit_price, total_price, status, cost_center_id, vendor_id, vendor_name,
           notes,
           created_at, updated_at
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, 0, $8, $9, 'PENDING', $10, $11, $12, $12)
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, 0, $8, $9, 'PENDING', $10, $11, $12, $13, $14, $14)
         RETURNING line_id`,
         [
           purchaseOrder.poId,
@@ -936,6 +938,8 @@ export async function createPurchaseOrder(
           lineInput.unitPrice,
           totalPrice,
           lineInput.costCenterId ?? null,
+          lineInput.vendorId ?? null,
+          lineInput.vendorName ?? null,
           lineInput.notes ?? null,
           timestamp,
         ]
@@ -957,7 +961,8 @@ export async function createPurchaseOrder(
           `SELECT ${PURCHASE_ORDER_LINE_SELECT_SQL}
            FROM purchase_order_lines pol
            JOIN purchase_orders po ON pol.po_id = po.po_id
-           LEFT JOIN vendors v ON po.vendor_id = v.vendor_id
+           LEFT JOIN vendors line_vendor ON pol.vendor_id = line_vendor.vendor_id
+           LEFT JOIN vendors header_vendor ON po.vendor_id = header_vendor.vendor_id
            LEFT JOIN cost_centers cc ON pol.cost_center_id = cc.cost_center_id
            LEFT JOIN cost_centers hcc ON po.cost_center_id = hcc.cost_center_id
            WHERE pol.line_id = $1`,
@@ -1023,7 +1028,8 @@ export async function getPurchaseOrderLines(poId: UUID): Promise<PurchaseOrderLi
     `SELECT ${PURCHASE_ORDER_LINE_SELECT_SQL}
      FROM purchase_order_lines pol
       JOIN purchase_orders po ON pol.po_id = po.po_id
-      LEFT JOIN vendors v ON po.vendor_id = v.vendor_id
+      LEFT JOIN vendors line_vendor ON pol.vendor_id = line_vendor.vendor_id
+      LEFT JOIN vendors header_vendor ON po.vendor_id = header_vendor.vendor_id
       LEFT JOIN cost_centers cc ON pol.cost_center_id = cc.cost_center_id
       LEFT JOIN cost_centers hcc ON po.cost_center_id = hcc.cost_center_id
       WHERE pol.po_id = $1

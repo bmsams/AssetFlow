@@ -218,6 +218,42 @@ describe('Record Receiving Handler', () => {
 
       expect(result.statusCode).toBe(400);
     });
+
+    it('should return 409 for duplicate/conflict receiving creation errors', async () => {
+      mockReceivingService.recordReceivingFromPO.mockRejectedValue(
+        new Error('duplicate key value violates unique constraint "unique_receiving_line"')
+      );
+
+      const event = createMockEvent({
+        body: JSON.stringify({
+          poId: '123e4567-e89b-12d3-a456-426614174001',
+        }),
+      });
+
+      const result = await recordReceivingHandler(event);
+
+      expect(result.statusCode).toBe(409);
+      const body = JSON.parse(result.body);
+      expect(body.error.code).toBe('CONFLICT');
+    });
+
+    it('should return 400 when blocked by stockroom availability constraints', async () => {
+      mockReceivingService.recordReceivingFromPO.mockRejectedValue(
+        new Error('No active stockroom is available for receiving')
+      );
+
+      const event = createMockEvent({
+        body: JSON.stringify({
+          poId: '123e4567-e89b-12d3-a456-426614174001',
+        }),
+      });
+
+      const result = await recordReceivingHandler(event);
+
+      expect(result.statusCode).toBe(400);
+      const body = JSON.parse(result.body);
+      expect(body.error.code).toBe('BAD_REQUEST');
+    });
   });
 
   describe('Manual receiving', () => {

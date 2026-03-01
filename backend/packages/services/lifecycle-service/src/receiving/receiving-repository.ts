@@ -45,6 +45,14 @@ export type AssetStatus =
   | 'RETIRED'
   | 'DISPOSED';
 
+type StockroomInventoryProductType =
+  | 'HARDWARE_MODEL'
+  | 'SOFTWARE_PRODUCT'
+  | 'SPARE_PART'
+  | 'CONSUMABLE'
+  | 'ACCESSORY'
+  | 'OTHER';
+
 /**
  * Inspection status for quality inspection workflow
  * Requirement 13: Enhanced Receiving Workflow
@@ -160,6 +168,8 @@ export interface ReceivingLine {
   readonly assetIdsCreated: UUID[];
   readonly serialNumbersScanned: string[];
   readonly notes: string | null;
+  readonly effectiveVendorId?: UUID | null;
+  readonly effectiveVendorName?: string | null;
   readonly createdAt: string;
   readonly updatedAt: string;
 }
@@ -177,6 +187,18 @@ export interface ScannedAsset {
   readonly receivingId: UUID;
   readonly poId: UUID | null;
   readonly createdAt: string;
+}
+
+export interface ReceivingReconciliationRow {
+  readonly productId: UUID;
+  readonly productType: string;
+  readonly receivingExpectedQuantity: number;
+  readonly receivingReceivedQuantity: number;
+  readonly poReceivedQuantity: number;
+  readonly stockroomOnHandQuantity: number;
+  readonly stockroomReservedQuantity: number;
+  readonly poInSync: boolean;
+  readonly stockroomCoversReceived: boolean;
 }
 
 /**
@@ -267,6 +289,16 @@ interface AssetRow {
   display_name: string | null;
   status: AssetStatus;
   created_at: string;
+}
+
+interface ReceivingReconciliationRowDb {
+  product_id: string;
+  product_type: string;
+  receiving_expected_quantity: number;
+  receiving_received_quantity: number;
+  po_received_quantity: number;
+  stockroom_on_hand_quantity: number;
+  stockroom_reserved_quantity: number;
 }
 
 interface PurchaseOrderLineRow {
@@ -368,6 +400,42 @@ function generateAssetTag(): string {
   return `AST-${timestamp}-${random}`;
 }
 
+function normalizeStockroomProductType(
+  productType: string | null | undefined
+): StockroomInventoryProductType | null {
+  if (!productType) {
+    return null;
+  }
+
+  switch (productType.trim().toUpperCase()) {
+    case 'HARDWARE':
+    case 'HARDWARE_MODEL':
+      return 'HARDWARE_MODEL';
+    case 'SOFTWARE':
+    case 'SOFTWARE_PRODUCT':
+      return 'SOFTWARE_PRODUCT';
+    case 'SPARE_PART':
+      return 'SPARE_PART';
+    case 'CONSUMABLE':
+      return 'CONSUMABLE';
+    case 'ACCESSORY':
+      return 'ACCESSORY';
+    case 'OTHER':
+    case 'SERVICE':
+    case 'BUNDLE':
+    default:
+      return 'OTHER';
+  }
+}
+
+function isHardwareProductType(productType: string | null | undefined): boolean {
+  if (!productType) {
+    return false;
+  }
+  const normalized = productType.trim().toUpperCase();
+  return normalized === 'HARDWARE' || normalized === 'HARDWARE_MODEL';
+}
+
 let receivingSchemaChecked = false;
 let receivingSchemaCheckPromise: Promise<void> | null = null;
 
@@ -422,6 +490,8 @@ async function ensureReceivingSchemaCompatibility(): Promise<void> {
         'product_description',
         'quantity',
         'received_quantity',
+        'vendor_id',
+        'vendor_name',
       ],
     };
 
@@ -629,19 +699,25 @@ export async function createReceivingLineFromPO(
          pol.product_description as product_name,
          pol.quantity,
          pol.received_quantity,
-         NULL::uuid AS vendor_id,
-         NULL::text AS vendor_name,
+         pol.vendor_id,
+         COALESCE(line_vendor.vendor_name, pol.vendor_name) AS vendor_name,
          po.vendor_id AS header_vendor_id,
-         v.vendor_name AS header_vendor_name
+         header_vendor.vendor_name AS header_vendor_name
        FROM purchase_order_lines pol
         JOIN purchase_orders po ON pol.po_id = po.po_id
-        LEFT JOIN vendors v ON po.vendor_id = v.vendor_id
+        LEFT JOIN vendors line_vendor ON pol.vendor_id = line_vendor.vendor_id
+        LEFT JOIN vendors header_vendor ON po.vendor_id = header_vendor.vendor_id
         WHERE pol.line_id = $1`,
       [poLineId]
     );
 
     if (!poLine) {
       throw new Error(`Purchase order line not found: ${poLineId}`);
+    }
+
+    const remainingQuantity = poLine.quantity - poLine.received_quantity;
+    if (remainingQuantity <= 0) {
+      throw new Error(`Purchase order line has no remaining quantity to receive: ${poLineId}`);
     }
 
     // Resolve effective vendor: line-level overrides header-level
@@ -676,7 +752,7 @@ export async function createReceivingLineFromPO(
         poLine.product_id,
         poLine.product_type,
         poLine.product_name,
-        poLine.quantity - poLine.received_quantity, // Remaining quantity to receive
+        remainingQuantity,
         timestamp,
       ]
     );
@@ -692,7 +768,7 @@ export async function createReceivingLineFromPO(
         total_quantity_expected = total_quantity_expected + $1,
         updated_at = $2
        WHERE receiving_id = $3`,
-      [poLine.quantity - poLine.received_quantity, timestamp, receivingId]
+      [remainingQuantity, timestamp, receivingId]
     );
 
     // Publish event with effective vendor info for downstream consumers
@@ -700,12 +776,16 @@ export async function createReceivingLineFromPO(
       lineId: result.line_id,
       receivingId,
       poLineId,
-      quantityExpected: poLine.quantity - poLine.received_quantity,
+      quantityExpected: remainingQuantity,
       effectiveVendorId: effectiveVendor.vendorId,
       effectiveVendorName: effectiveVendor.vendorName,
     });
 
-    return mapRowToReceivingLine(result);
+    return {
+      ...mapRowToReceivingLine(result),
+      effectiveVendorId: effectiveVendor.vendorId,
+      effectiveVendorName: effectiveVendor.vendorName,
+    };
   });
 }
 
@@ -832,6 +912,10 @@ export async function recordAssetScan(
       [receivingLine.receiving_id]
     );
 
+    const scannedProductType = input.productType ?? receivingLine.product_type ?? 'HARDWARE';
+    const scannedProductName =
+      input.productName ?? receivingLine.product_name ?? receivingLine.product_description ?? 'Unknown Product';
+
     // Create the asset record with status IN_STOCK
     const assetResult = await ctx.queryOne<AssetRow>(
       `INSERT INTO assets (
@@ -841,8 +925,8 @@ export async function recordAssetScan(
       RETURNING asset_id, asset_tag, NULL as serial_number, display_name, status, created_at`,
       [
         assetTag,
-        input.productType ?? receivingLine.product_type ?? 'HARDWARE',
-        input.productName ?? receivingLine.product_name ?? receivingLine.product_description ?? 'Unknown Product',
+        scannedProductType,
+        scannedProductName,
         input.notes ?? null,
         timestamp,
       ]
@@ -853,7 +937,7 @@ export async function recordAssetScan(
     }
 
     // If this is a hardware asset, create hardware_assets record with serial number and PO link
-    if ((input.productType ?? receivingLine.product_type ?? 'HARDWARE') === 'HARDWARE') {
+    if (isHardwareProductType(scannedProductType)) {
       await ctx.queryOne(
         `INSERT INTO hardware_assets (
           asset_id, serial_number, purchase_order_id, received_date, stockroom_id
@@ -892,6 +976,36 @@ export async function recordAssetScan(
         input.receivingLineId,
       ]
     );
+
+    const inventoryProductType = normalizeStockroomProductType(scannedProductType);
+    if (receivingRecord?.stockroom_id && receivingLine.product_id && inventoryProductType) {
+      await ctx.queryOne(
+        `INSERT INTO stockroom_inventory (
+          stockroom_id, product_id, product_type, product_description,
+          quantity_on_hand, quantity_reserved, last_received_date, created_at, updated_at
+        ) VALUES ($1, $2, $3, $4, 1, 0, $5, $5, $5)
+        ON CONFLICT (stockroom_id, product_id, product_type)
+        DO UPDATE SET
+          quantity_on_hand = stockroom_inventory.quantity_on_hand + 1,
+          product_description = COALESCE(EXCLUDED.product_description, stockroom_inventory.product_description),
+          last_received_date = EXCLUDED.last_received_date,
+          updated_at = EXCLUDED.updated_at`,
+        [
+          receivingRecord.stockroom_id,
+          receivingLine.product_id,
+          inventoryProductType,
+          scannedProductName,
+          timestamp,
+        ]
+      );
+    } else {
+      logger.warn('Skipping stockroom inventory update for receiving scan', {
+        receivingLineId: input.receivingLineId,
+        stockroomId: receivingRecord?.stockroom_id ?? null,
+        productId: receivingLine.product_id ?? null,
+        productType: scannedProductType,
+      });
+    }
 
     // Update receiving record totals
     await ctx.queryOne(
@@ -1095,6 +1209,75 @@ export async function getAssetsFromReceiving(receivingId: UUID): Promise<Scanned
     receivingId: row.receiving_id,
     poId: row.po_id,
     createdAt: row.created_at,
+  }));
+}
+
+/**
+ * Reconciliation snapshot for one receiving record.
+ * Compares receiving quantities against linked PO received quantities and
+ * stockroom on-hand balances for the same products.
+ */
+export async function getReceivingReconciliation(
+  receivingId: UUID
+): Promise<ReceivingReconciliationRow[]> {
+  const rows = await queryMany<ReceivingReconciliationRowDb>(
+    `WITH line_items AS (
+       SELECT
+         rl.product_id,
+         CASE
+           WHEN UPPER(COALESCE(rl.product_type, 'OTHER')) IN ('HARDWARE', 'HARDWARE_MODEL') THEN 'HARDWARE_MODEL'
+           WHEN UPPER(COALESCE(rl.product_type, 'OTHER')) IN ('SOFTWARE', 'SOFTWARE_PRODUCT') THEN 'SOFTWARE_PRODUCT'
+           WHEN UPPER(COALESCE(rl.product_type, 'OTHER')) = 'SPARE_PART' THEN 'SPARE_PART'
+           WHEN UPPER(COALESCE(rl.product_type, 'OTHER')) = 'CONSUMABLE' THEN 'CONSUMABLE'
+           WHEN UPPER(COALESCE(rl.product_type, 'OTHER')) = 'ACCESSORY' THEN 'ACCESSORY'
+           ELSE 'OTHER'
+         END AS normalized_product_type,
+         rl.quantity_expected,
+         rl.quantity_received,
+         COALESCE(pol.quantity_received, 0) AS po_quantity_received
+       FROM receiving_lines rl
+       LEFT JOIN purchase_order_lines pol ON rl.po_line_id = pol.line_id
+       WHERE rl.receiving_id = $1
+         AND rl.product_id IS NOT NULL
+     ),
+     normalized_lines AS (
+       SELECT
+         product_id,
+         normalized_product_type,
+         SUM(quantity_expected)::integer AS receiving_expected_quantity,
+         SUM(quantity_received)::integer AS receiving_received_quantity,
+         SUM(po_quantity_received)::integer AS po_received_quantity
+       FROM line_items
+       GROUP BY product_id, normalized_product_type
+     )
+     SELECT
+       nl.product_id,
+       nl.normalized_product_type AS product_type,
+       nl.receiving_expected_quantity,
+       nl.receiving_received_quantity,
+       nl.po_received_quantity,
+       COALESCE(si.quantity_on_hand, 0)::integer AS stockroom_on_hand_quantity,
+       COALESCE(si.quantity_reserved, 0)::integer AS stockroom_reserved_quantity
+     FROM normalized_lines nl
+     JOIN receiving_records rr ON rr.receiving_id = $1
+     LEFT JOIN stockroom_inventory si
+       ON si.stockroom_id = rr.stockroom_id
+      AND si.product_id = nl.product_id
+      AND si.product_type = nl.normalized_product_type
+     ORDER BY nl.product_id ASC`,
+    [receivingId]
+  );
+
+  return rows.map((row) => ({
+    productId: row.product_id,
+    productType: row.product_type,
+    receivingExpectedQuantity: row.receiving_expected_quantity,
+    receivingReceivedQuantity: row.receiving_received_quantity,
+    poReceivedQuantity: row.po_received_quantity,
+    stockroomOnHandQuantity: row.stockroom_on_hand_quantity,
+    stockroomReservedQuantity: row.stockroom_reserved_quantity,
+    poInSync: row.po_received_quantity >= row.receiving_received_quantity,
+    stockroomCoversReceived: row.stockroom_on_hand_quantity >= row.receiving_received_quantity,
   }));
 }
 
