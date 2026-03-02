@@ -4,6 +4,8 @@
   "workspaces": ["packages/*", "frontend"],
   "scripts": {
     "e2e": "npx playwright test -c e2e/playwright.config.ts",
+    "e2e:quick": "npx playwright test -c e2e/playwright.config.ts --grep @quick",
+    "e2e:real-api-smoke": "npx playwright test -c e2e/playwright.config.ts e2e/tests/real-api.transfer-smoke.spec.ts",
     "e2e:ui": "npx playwright test -c e2e/playwright.config.ts --ui",
     "e2e:report": "npx playwright show-report output/playwright/report"
   },

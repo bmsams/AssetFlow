@@ -219,6 +219,23 @@ describe('Create Transfer Handler', () => {
       expect(body.error.code).toBe('VALIDATION_ERROR');
     });
 
+    it('should return 400 when fromStockroomId is not a valid UUID', async () => {
+      const event = createMockEvent({
+        body: JSON.stringify({
+          fromStockroomId: 'not-a-uuid',
+          toStockroomId: '123e4567-e89b-12d3-a456-426614174002',
+          lines: [{ productId: '123e4567-e89b-12d3-a456-426614174003', quantity: 5 }],
+        }),
+      });
+
+      const result = await createTransferHandler(event);
+
+      expect(result.statusCode).toBe(400);
+      const body = JSON.parse(result.body);
+      expect(body.error.code).toBe('VALIDATION_ERROR');
+      expect(JSON.stringify(body.error.errors)).toContain('fromStockroomId must be a valid UUID');
+    });
+
     it('should return 400 when toStockroomId is missing', async () => {
       const event = createMockEvent({
         body: JSON.stringify({
@@ -580,6 +597,24 @@ describe('Complete Transfer Handler', () => {
       expect(result.statusCode).toBe(400);
     });
 
+    it('should return 400 when transferId is not a valid UUID', async () => {
+      const event = createMockEvent({
+        pathParameters: { transferId: 'not-a-uuid' },
+        body: JSON.stringify({
+          lineReceipts: [
+            { lineId: '123e4567-e89b-12d3-a456-426614174005', receivedQuantity: 5 },
+          ],
+        }),
+      });
+
+      const result = await completeTransferHandler(event);
+
+      expect(result.statusCode).toBe(400);
+      const body = JSON.parse(result.body);
+      expect(body.error.code).toBe('BAD_REQUEST');
+      expect(body.error.message).toBe('transferId must be a valid UUID');
+    });
+
     it('should return 400 when lineReceipts is missing', async () => {
       const event = createMockEvent({
         pathParameters: { transferId: '123e4567-e89b-12d3-a456-426614174004' },
@@ -589,6 +624,24 @@ describe('Complete Transfer Handler', () => {
       const result = await completeTransferHandler(event);
 
       expect(result.statusCode).toBe(400);
+    });
+
+    it('should return 400 when receipt lineId is not a valid UUID', async () => {
+      const event = createMockEvent({
+        pathParameters: { transferId: '123e4567-e89b-12d3-a456-426614174004' },
+        body: JSON.stringify({
+          lineReceipts: [
+            { lineId: 'not-a-uuid', receivedQuantity: 1 },
+          ],
+        }),
+      });
+
+      const result = await completeTransferHandler(event);
+
+      expect(result.statusCode).toBe(400);
+      const body = JSON.parse(result.body);
+      expect(body.error.code).toBe('VALIDATION_ERROR');
+      expect(JSON.stringify(body.error.errors)).toContain('lineId must be a valid UUID');
     });
 
     it('should return 400 when lineReceipts is empty', async () => {

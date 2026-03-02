@@ -8,13 +8,15 @@ import {
   approveTransfer,
   completeTransfer,
   type TransferOrder,
+  type TransferOrderLine,
   type TransferOrderStatus,
   type TransferPriority,
+  type CompleteTransferLineReceipt,
 } from '../../services/ham-api';
 import { adminApi } from '../../services/admin-api';
 import { assetApi } from '../../services/asset-api';
 import { stockroomApi, type InventoryItem } from '../../services/stockroom-api';
-import type { Building, Stockroom } from '../../types/admin';
+import type { Building, Floor, Room, Stockroom } from '../../types/admin';
 import type { Asset } from '../../types/asset';
 import styles from '../Page.module.css';
 
@@ -54,6 +56,17 @@ interface TransferItemOption {
   quantityAvailable?: number;
 }
 
+interface CompletionLineState {
+  lineId: string;
+  lineNumber?: number;
+  itemLabel: string;
+  expectedQuantity: number;
+  receivedQuantity: number;
+  damagedQuantity: number;
+  conditionReceived: '' | 'NEW' | 'EXCELLENT' | 'GOOD' | 'FAIR' | 'POOR' | 'DAMAGED' | 'UNKNOWN';
+  conditionNotes: string;
+}
+
 const INITIAL_FORM: CreateFormState = {
   fromBuildingId: '',
   fromStockroomId: '',
@@ -91,6 +104,32 @@ function getStockroomHints(stockroom: Stockroom): string[] {
     .map((value) => value.trim().toLowerCase());
 }
 
+function getExplicitStockroomBuildingIds(
+  stockroom: Stockroom,
+  roomToBuildingId: ReadonlyMap<string, string>
+): string[] {
+  const raw = stockroom as unknown as Record<string, unknown>;
+  const rawIds = [
+    raw['buildingId'],
+    raw['building_id'],
+    raw['buildingID'],
+  ];
+
+  const explicitIds = rawIds
+    .filter((value): value is string => typeof value === 'string' && value.trim().length > 0)
+    .map((value) => value.trim());
+
+  if (explicitIds.length > 0) {
+    return explicitIds;
+  }
+
+  if (stockroom.roomId && roomToBuildingId.has(stockroom.roomId)) {
+    return [roomToBuildingId.get(stockroom.roomId)!];
+  }
+
+  return [];
+}
+
 function stockroomMatchesBuilding(stockroom: Stockroom, building: Building): boolean {
   const buildingTokens = [building.buildingId, building.buildingCode, building.name]
     .filter((value): value is string => typeof value === 'string' && value.trim().length > 0)
@@ -106,13 +145,38 @@ function stockroomMatchesBuilding(stockroom: Stockroom, building: Building): boo
   );
 }
 
-function filterStockroomsByBuilding(stockrooms: Stockroom[], buildingId: string, buildings: Building[]): Stockroom[] {
+function filterStockroomsByBuilding(
+  stockrooms: Stockroom[],
+  buildingId: string,
+  buildings: Building[],
+  roomToBuildingId: ReadonlyMap<string, string>
+): Stockroom[] {
   if (!buildingId) return stockrooms;
 
   const building = buildings.find((item) => item.buildingId === buildingId);
   if (!building) return stockrooms;
 
-  const matched = stockrooms.filter((stockroom) => stockroomMatchesBuilding(stockroom, building));
+  const explicitMatches = stockrooms.filter((stockroom) => {
+    const explicitIds = getExplicitStockroomBuildingIds(stockroom, roomToBuildingId);
+    return explicitIds.includes(buildingId);
+  });
+
+  const heuristicFallbackMatches = stockrooms.filter((stockroom) => {
+    const explicitIds = getExplicitStockroomBuildingIds(stockroom, roomToBuildingId);
+    if (explicitIds.length > 0) {
+      return false;
+    }
+    return stockroomMatchesBuilding(stockroom, building);
+  });
+
+  const matchedById = new Set<string>();
+  const matched = [...explicitMatches, ...heuristicFallbackMatches].filter((stockroom) => {
+    if (matchedById.has(stockroom.stockroomId)) {
+      return false;
+    }
+    matchedById.add(stockroom.stockroomId);
+    return true;
+  });
 
   // Fallback: if stockrooms do not expose building linkage in this environment,
   // keep workflow usable by returning all stockrooms.
@@ -144,6 +208,29 @@ function getTransferRouteLabel(transfer: TransferOrder): string {
   return `${from} -> ${to}`;
 }
 
+function getLineExpectedQuantity(line: TransferOrderLine): number {
+  if (typeof line.shippedQuantity === 'number' && line.shippedQuantity > 0) {
+    return line.shippedQuantity;
+  }
+  if (typeof line.quantity === 'number' && line.quantity > 0) {
+    return line.quantity;
+  }
+  return 0;
+}
+
+function getTransferLineLabel(line: TransferOrderLine): string {
+  if (line.productDescription && line.productDescription.trim().length > 0) {
+    return line.productDescription;
+  }
+  if (line.productType && line.productType.trim().length > 0) {
+    return line.productType;
+  }
+  if (line.assetId && line.assetId.trim().length > 0) {
+    return `Asset ${line.assetId}`;
+  }
+  return `Line ${line.lineNumber ?? line.lineId}`;
+}
+
 export function TransfersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
@@ -153,21 +240,26 @@ export function TransfersPage() {
   const [transfers, setTransfers] = useState<TransferOrder[]>([]);
   const [buildings, setBuildings] = useState<Building[]>([]);
   const [stockrooms, setStockrooms] = useState<Stockroom[]>([]);
+  const [roomToBuildingId, setRoomToBuildingId] = useState<ReadonlyMap<string, string>>(new Map());
   const [assets, setAssets] = useState<Asset[]>([]);
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [form, setForm] = useState<CreateFormState>(INITIAL_FORM);
+  const [activeCompletionTransfer, setActiveCompletionTransfer] = useState<TransferOrder | null>(null);
+  const [completionLines, setCompletionLines] = useState<CompletionLineState[]>([]);
+  const [completionNotes, setCompletionNotes] = useState('');
+  const [isCompleting, setIsCompleting] = useState(false);
 
   const fromStockrooms = useMemo(
-    () => filterStockroomsByBuilding(stockrooms, form.fromBuildingId, buildings),
-    [stockrooms, form.fromBuildingId, buildings]
+    () => filterStockroomsByBuilding(stockrooms, form.fromBuildingId, buildings, roomToBuildingId),
+    [stockrooms, form.fromBuildingId, buildings, roomToBuildingId]
   );
 
   const toStockrooms = useMemo(
-    () => filterStockroomsByBuilding(stockrooms, form.toBuildingId, buildings),
-    [stockrooms, form.toBuildingId, buildings]
+    () => filterStockroomsByBuilding(stockrooms, form.toBuildingId, buildings, roomToBuildingId),
+    [stockrooms, form.toBuildingId, buildings, roomToBuildingId]
   );
 
   const transferItemOptions = useMemo<TransferItemOption[]>(() => {
@@ -216,17 +308,34 @@ export function TransfersPage() {
   const loadReferenceData = useCallback(async () => {
     try {
       setIsLoadingReference(true);
-      const [buildingResult, stockroomResult] = await Promise.all([
+      const [buildingResult, stockroomResult, floorResult, roomResult] = await Promise.all([
         adminApi.buildings.list({ isActive: true }, { pageSize: 500, sortBy: 'name', sortOrder: 'asc' }),
         adminApi.stockrooms.list({ isActive: true }, { pageSize: 500, sortBy: 'name', sortOrder: 'asc' }),
+        adminApi.floors.list(undefined, { isActive: true }, { pageSize: 500, sortBy: 'floorNumber', sortOrder: 'asc' }),
+        adminApi.rooms.list(undefined, { isActive: true }, { pageSize: 500, sortBy: 'roomNumber', sortOrder: 'asc' }),
       ]);
 
       setBuildings(buildingResult.items);
       setStockrooms(stockroomResult.items);
+
+      const floorBuildingByFloorId = new Map<string, string>();
+      for (const floor of floorResult.items as Floor[]) {
+        floorBuildingByFloorId.set(floor.floorId, floor.buildingId);
+      }
+
+      const roomBuildingMap = new Map<string, string>();
+      for (const room of roomResult.items as Room[]) {
+        const buildingId = floorBuildingByFloorId.get(room.floorId);
+        if (buildingId) {
+          roomBuildingMap.set(room.roomId, buildingId);
+        }
+      }
+      setRoomToBuildingId(roomBuildingMap);
     } catch {
       // Keep page usable even if one environment has partial admin data.
       setBuildings([]);
       setStockrooms([]);
+      setRoomToBuildingId(new Map());
     } finally {
       setIsLoadingReference(false);
     }
@@ -311,19 +420,95 @@ export function TransfersPage() {
     }
   };
 
-  const handleComplete = async (transferId: string) => {
+  const openCompleteDialog = (transfer: TransferOrder) => {
+    const transferLines = Array.isArray(transfer.lines) ? transfer.lines : [];
+    if (transferLines.length === 0) {
+      setError('Transfer completion requires line details, but no transfer lines were returned by the API.');
+      return;
+    }
+
+    const initialLines = transferLines.map((line) => {
+      const expectedQuantity = getLineExpectedQuantity(line);
+      return {
+        lineId: line.lineId,
+        lineNumber: line.lineNumber,
+        itemLabel: getTransferLineLabel(line),
+        expectedQuantity,
+        receivedQuantity: expectedQuantity,
+        damagedQuantity: 0,
+        conditionReceived: '',
+        conditionNotes: '',
+      } as CompletionLineState;
+    });
+
+    setError(null);
+    setSuccessMessage(null);
+    setActiveCompletionTransfer(transfer);
+    setCompletionLines(initialLines);
+    setCompletionNotes('');
+  };
+
+  const closeCompleteDialog = () => {
+    if (isCompleting) {
+      return;
+    }
+    setActiveCompletionTransfer(null);
+    setCompletionLines([]);
+    setCompletionNotes('');
+  };
+
+  const updateCompletionLine = (
+    lineId: string,
+    updater: (line: CompletionLineState) => CompletionLineState
+  ) => {
+    setCompletionLines((prev) => prev.map((line) => (line.lineId === lineId ? updater(line) : line)));
+  };
+
+  const submitCompletion = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!activeCompletionTransfer) {
+      return;
+    }
+
+    for (const line of completionLines) {
+      if (!Number.isInteger(line.receivedQuantity) || line.receivedQuantity < 0) {
+        setError(`Received quantity for line ${line.lineNumber ?? line.lineId} must be a whole number >= 0.`);
+        return;
+      }
+      if (!Number.isInteger(line.damagedQuantity) || line.damagedQuantity < 0) {
+        setError(`Damaged quantity for line ${line.lineNumber ?? line.lineId} must be a whole number >= 0.`);
+        return;
+      }
+      if (line.damagedQuantity > line.receivedQuantity) {
+        setError(`Damaged quantity cannot exceed received quantity for line ${line.lineNumber ?? line.lineId}.`);
+        return;
+      }
+    }
+
     try {
+      setIsCompleting(true);
       setError(null);
       setSuccessMessage(null);
-      await completeTransfer(transferId, { lineReceipts: [] });
+      const lineReceipts: CompleteTransferLineReceipt[] = completionLines.map((line) => ({
+        lineId: line.lineId,
+        receivedQuantity: line.receivedQuantity,
+        damagedQuantity: line.damagedQuantity,
+        conditionReceived: line.conditionReceived || undefined,
+        conditionNotes: line.conditionNotes.trim() || undefined,
+      }));
+
+      await completeTransfer(activeCompletionTransfer.transferId, {
+        receivingNotes: completionNotes.trim() || undefined,
+        lineReceipts,
+      });
+
+      closeCompleteDialog();
+      setSuccessMessage('Transfer completed successfully.');
       await fetchTransfers();
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to complete transfer. Please try again.';
-      if (/lineReceipts/i.test(message)) {
-        setError('Transfer completion requires line-level receiving details. This simplified page can approve and create transfers, but completion requires receiving details.');
-      } else {
-        setError(message);
-      }
+      setError(err instanceof Error ? err.message : 'Failed to complete transfer. Please try again.');
+    } finally {
+      setIsCompleting(false);
     }
   };
 
@@ -699,7 +884,7 @@ export function TransfersPage() {
                         <button onClick={() => handleApprove(transfer.transferId)}>Approve</button>
                       )}
                       {canComplete(transfer.status) && (
-                        <button onClick={() => handleComplete(transfer.transferId)}>Complete</button>
+                        <button onClick={() => openCompleteDialog(transfer)}>Complete</button>
                       )}
                     </td>
                   </tr>
@@ -707,6 +892,157 @@ export function TransfersPage() {
               })}
             </tbody>
           </table>
+        )}
+
+        {activeCompletionTransfer && (
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Complete transfer"
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(15, 23, 42, 0.55)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 'var(--spacing-4)',
+              zIndex: 20,
+            }}
+          >
+            <form
+              onSubmit={submitCompletion}
+              style={{
+                background: 'var(--color-surface, #ffffff)',
+                borderRadius: 'var(--radius-md, 8px)',
+                border: '1px solid var(--color-border, #e5e7eb)',
+                maxWidth: '920px',
+                width: '100%',
+                maxHeight: '85vh',
+                overflow: 'auto',
+                padding: 'var(--spacing-4)',
+                display: 'grid',
+                gap: 'var(--spacing-3)',
+              }}
+            >
+              <h2 style={{ margin: 0 }}>
+                Complete Transfer {activeCompletionTransfer.transferNumber ?? activeCompletionTransfer.transferId}
+              </h2>
+              <p style={{ margin: 0 }}>
+                Provide line-level receiving details before completing this transfer.
+              </p>
+
+              <table className={styles.dataTable || ''} role="table" aria-label="Transfer completion lines">
+                <thead>
+                  <tr>
+                    <th scope="col">Line</th>
+                    <th scope="col">Expected</th>
+                    <th scope="col">Received</th>
+                    <th scope="col">Damaged</th>
+                    <th scope="col">Condition</th>
+                    <th scope="col">Condition Notes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {completionLines.map((line) => (
+                    <tr key={line.lineId}>
+                      <td>{line.itemLabel}</td>
+                      <td>{line.expectedQuantity}</td>
+                      <td>
+                        <input
+                          type="number"
+                          min={0}
+                          step={1}
+                          value={line.receivedQuantity}
+                          onChange={(event) =>
+                            updateCompletionLine(line.lineId, (current) => ({
+                              ...current,
+                              receivedQuantity: Number(event.target.value) || 0,
+                            }))
+                          }
+                          style={{ width: '92px' }}
+                          disabled={isCompleting}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="number"
+                          min={0}
+                          step={1}
+                          value={line.damagedQuantity}
+                          onChange={(event) =>
+                            updateCompletionLine(line.lineId, (current) => ({
+                              ...current,
+                              damagedQuantity: Number(event.target.value) || 0,
+                            }))
+                          }
+                          style={{ width: '92px' }}
+                          disabled={isCompleting}
+                        />
+                      </td>
+                      <td>
+                        <select
+                          value={line.conditionReceived}
+                          onChange={(event) =>
+                            updateCompletionLine(line.lineId, (current) => ({
+                              ...current,
+                              conditionReceived: event.target.value as CompletionLineState['conditionReceived'],
+                            }))
+                          }
+                          disabled={isCompleting}
+                        >
+                          <option value="">Unspecified</option>
+                          <option value="NEW">New</option>
+                          <option value="EXCELLENT">Excellent</option>
+                          <option value="GOOD">Good</option>
+                          <option value="FAIR">Fair</option>
+                          <option value="POOR">Poor</option>
+                          <option value="DAMAGED">Damaged</option>
+                          <option value="UNKNOWN">Unknown</option>
+                        </select>
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          value={line.conditionNotes}
+                          onChange={(event) =>
+                            updateCompletionLine(line.lineId, (current) => ({
+                              ...current,
+                              conditionNotes: event.target.value,
+                            }))
+                          }
+                          style={{ width: '100%' }}
+                          placeholder="Optional notes"
+                          disabled={isCompleting}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              <label>
+                Receiving Notes
+                <textarea
+                  value={completionNotes}
+                  onChange={(event) => setCompletionNotes(event.target.value)}
+                  style={{ width: '100%' }}
+                  rows={3}
+                  placeholder="Optional receiving notes"
+                  disabled={isCompleting}
+                />
+              </label>
+
+              <div style={{ display: 'flex', gap: 'var(--spacing-2)', justifyContent: 'flex-end' }}>
+                <button type="button" onClick={closeCompleteDialog} disabled={isCompleting}>
+                  Cancel
+                </button>
+                <button type="submit" disabled={isCompleting}>
+                  {isCompleting ? 'Completing...' : 'Complete Transfer'}
+                </button>
+              </div>
+            </form>
+          </div>
         )}
       </div>
     </PageLayout>

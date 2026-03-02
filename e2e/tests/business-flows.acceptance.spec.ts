@@ -77,10 +77,54 @@ test('ham transfer flow supports create, approve, and complete', async ({ page }
   const approvedRow = page.getByRole('row', { name: /TRF-1002/i });
   await expect(approvedRow).toContainText(/approved/i);
   await approvedRow.getByRole('button', { name: 'Complete' }).click();
+  await expect(page.getByRole('dialog', { name: 'Complete transfer' })).toBeVisible();
+  await page.getByRole('button', { name: 'Complete Transfer' }).click();
 
   const completedRow = page.getByRole('row', { name: /TRF-1002/i });
   await expect(completedRow).toContainText(/completed/i);
   await expect(completedRow.getByRole('button', { name: 'Complete' })).toHaveCount(0);
+});
+
+test('ham transfer edge validation blocks invalid create and invalid completion receipts', async ({ page }) => {
+  await page.goto('/ham/transfers', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('heading', { name: 'Transfers' })).toBeVisible();
+
+  // Create validation: same source/destination stockroom is rejected.
+  await page.getByLabel('From Building').selectOption('bldg-hq');
+  await page.getByLabel('From Stockroom').selectOption('sr-main');
+  await page.getByLabel('To Building').selectOption('bldg-hq');
+  await page.getByLabel('To Stockroom').selectOption('sr-main');
+  await page.getByLabel('Asset / Stock Item').selectOption('asset:asset-hq-01');
+  await page.getByLabel('Quantity').fill('1');
+  await page.getByRole('button', { name: 'Create Transfer' }).click();
+  await expect(page.getByText('Source and destination stockrooms must be different.')).toBeVisible();
+
+  // Create validation: requested quantity cannot exceed source availability.
+  await page.getByLabel('To Building').selectOption('bldg-dc');
+  await page.getByLabel('To Stockroom').selectOption('sr-dc');
+  await page.getByLabel('Asset / Stock Item').selectOption('inventory:inv-main-router');
+  await page.getByLabel('Quantity').fill('99');
+  await page.getByRole('button', { name: 'Create Transfer' }).click();
+  await expect(page.getByText('Quantity exceeds available stock in the source stockroom.')).toBeVisible();
+  await page.getByRole('button', { name: 'Retry' }).click();
+  await expect(page.getByRole('row', { name: /TRF-1001/i })).toBeVisible();
+
+  // Completion validation: damaged quantity cannot exceed received quantity.
+  const pendingRow = page.getByRole('row', { name: /TRF-1001/i });
+  await pendingRow.getByRole('button', { name: 'Approve' }).click();
+
+  const approvedRow = page.getByRole('row', { name: /TRF-1001/i });
+  await approvedRow.getByRole('button', { name: 'Complete' }).click();
+  await expect(page.getByRole('dialog', { name: 'Complete transfer' })).toBeVisible();
+
+  const completionLinesTable = page.getByRole('table', { name: 'Transfer completion lines' });
+  await completionLinesTable.locator('input[type="number"]').nth(0).fill('1'); // received
+  await completionLinesTable.locator('input[type="number"]').nth(1).fill('2'); // damaged
+  await page.getByRole('button', { name: 'Complete Transfer' }).click();
+
+  await expect(
+    page.getByText(/Damaged quantity cannot exceed received quantity/i)
+  ).toBeVisible();
 });
 
 test('eam work orders supports building switch and building-scoped asset creation', async ({ page }) => {

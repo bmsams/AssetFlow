@@ -48,6 +48,21 @@ export interface TransferOrder {
   totalQuantity?: number;
   receivedQuantity?: number;
   notes?: string;
+  lines?: TransferOrderLine[];
+}
+
+export interface TransferOrderLine {
+  lineId: string;
+  lineNumber?: number;
+  assetId?: string;
+  productId?: string;
+  productType?: string;
+  productDescription?: string;
+  quantity: number;
+  shippedQuantity?: number;
+  receivedQuantity?: number;
+  damagedQuantity?: number;
+  status?: string;
 }
 
 export interface LoanerRecord {
@@ -195,6 +210,25 @@ function mapTransferOrder(raw: Record<string, unknown>): TransferOrder {
     (typeof raw['toStockroomName'] === 'string' ? raw['toStockroomName'] : undefined) ??
     (typeof raw['toStockroom'] === 'string' ? raw['toStockroom'] : undefined);
 
+  const rawLines = Array.isArray(raw['lines']) ? raw['lines'] : [];
+  const lines = rawLines
+    .filter((line): line is Record<string, unknown> => !!line && typeof line === 'object')
+    .map((line) => ({
+      lineId: String(line['lineId'] ?? ''),
+      lineNumber: typeof line['lineNumber'] === 'number' ? line['lineNumber'] : undefined,
+      assetId: typeof line['assetId'] === 'string' ? line['assetId'] : undefined,
+      productId: typeof line['productId'] === 'string' ? line['productId'] : undefined,
+      productType: typeof line['productType'] === 'string' ? line['productType'] : undefined,
+      productDescription:
+        typeof line['productDescription'] === 'string' ? line['productDescription'] : undefined,
+      quantity: typeof line['quantity'] === 'number' ? line['quantity'] : 0,
+      shippedQuantity: typeof line['shippedQuantity'] === 'number' ? line['shippedQuantity'] : undefined,
+      receivedQuantity: typeof line['receivedQuantity'] === 'number' ? line['receivedQuantity'] : undefined,
+      damagedQuantity: typeof line['damagedQuantity'] === 'number' ? line['damagedQuantity'] : undefined,
+      status: typeof line['status'] === 'string' ? line['status'] : undefined,
+    }))
+    .filter((line) => line.lineId.length > 0);
+
   return {
     transferId: String(raw['transferId'] ?? ''),
     transferNumber: typeof raw['transferNumber'] === 'string' ? raw['transferNumber'] : undefined,
@@ -217,6 +251,7 @@ function mapTransferOrder(raw: Record<string, unknown>): TransferOrder {
     totalQuantity: typeof raw['totalQuantity'] === 'number' ? raw['totalQuantity'] : undefined,
     receivedQuantity: typeof raw['receivedQuantity'] === 'number' ? raw['receivedQuantity'] : undefined,
     notes: typeof raw['notes'] === 'string' ? raw['notes'] : undefined,
+    lines,
   };
 }
 

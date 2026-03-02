@@ -49,6 +49,15 @@ describe('ham-api transfer contract normalization', () => {
             toStockroom: 'DC Stockroom',
             status: 'pending',
             requestedAt: '2026-03-01T00:00:00.000Z',
+            lines: [
+              {
+                lineId: 'line-1',
+                lineNumber: 1,
+                quantity: 1,
+                shippedQuantity: 1,
+                status: 'SHIPPED',
+              },
+            ],
           },
         ],
       },
@@ -61,6 +70,8 @@ describe('ham-api transfer contract normalization', () => {
     expect(result[0]?.status).toBe('PENDING_APPROVAL');
     expect(result[0]?.fromStockroomName).toBe('Main Stockroom');
     expect(result[0]?.toStockroomName).toBe('DC Stockroom');
+    expect(result[0]?.lines?.[0]?.lineId).toBe('line-1');
+    expect(result[0]?.lines?.[0]?.quantity).toBe(1);
   });
 
   it('converts legacy create payload to transfer-order lines contract', async () => {

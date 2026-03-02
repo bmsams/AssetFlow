@@ -10,7 +10,7 @@ import type { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { API_ERROR_CODES, createApiResponse, createErrorResponse, createLambdaResponse, HTTP_STATUS } from '@ams/types';
 import { createLogger } from '@ams/utils';
 
-import type { TransferOrderStatus } from '../transfer/transfer-service';
+import type { TransferOrder, TransferOrderLine, TransferOrderStatus } from '../transfer/transfer-service';
 import * as transferService from '../transfer/transfer-service';
 
 const logger = createLogger({ service: 'list-transfers-handler' });
@@ -70,10 +70,28 @@ export async function handler(
     }
 
     const result = await transferService.listTransfers({ page, limit }, statusFilter);
+    const itemsWithLines = await Promise.all(
+      result.items.map(async (transfer) => {
+        const transferWithLines = await transferService.getTransfer(transfer.transferId);
+        return {
+          ...(transfer as TransferOrder),
+          lines: transferWithLines?.lines ?? ([] as TransferOrderLine[]),
+        };
+      })
+    );
 
     logger.info('Transfers listed', { requestId, total: result.total, page, limit });
 
-    return createLambdaResponse(HTTP_STATUS.OK, createApiResponse(result, requestId));
+    return createLambdaResponse(
+      HTTP_STATUS.OK,
+      createApiResponse(
+        {
+          ...result,
+          items: itemsWithLines,
+        },
+        requestId
+      )
+    );
   } catch (error) {
     const err = error as Error;
     logger.error('Failed to list transfers', err, { requestId });

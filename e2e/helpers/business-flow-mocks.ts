@@ -345,6 +345,19 @@ export async function installBusinessFlowMocks(page: Page): Promise<void> {
       requestedDate: nowIso,
       totalQuantity: 1,
       notes: 'Move router to DC',
+      lines: [
+        {
+          lineId: 'trf-1001-line-1',
+          transferId: 'TRF-1001',
+          lineNumber: 1,
+          assetId: 'asset-hq-01',
+          quantity: 1,
+          shippedQuantity: 1,
+          receivedQuantity: 0,
+          damagedQuantity: 0,
+          status: 'SHIPPED',
+        },
+      ],
     },
   ];
 
@@ -760,20 +773,27 @@ export async function installBusinessFlowMocks(page: Page): Promise<void> {
         notes: String(body['notes'] ?? ''),
         totalLineCount: lines.length,
         totalQuantity: lines.reduce((sum, current) => sum + Number(current['quantity'] ?? 0), 0),
+        lines: lines.map((current, index) => ({
+          lineId: `line-${index + 1}`,
+          transferId: `trf-${String(transfers.length + 1001)}`,
+          lineNumber: index + 1,
+          assetId: current['assetId'],
+          productId: current['productId'],
+          productType: current['productType'],
+          productDescription: current['productDescription'],
+          quantity: Number(current['quantity'] ?? 0),
+          shippedQuantity: Number(current['quantity'] ?? 0),
+          receivedQuantity: 0,
+          damagedQuantity: 0,
+          status: 'SHIPPED',
+        })),
       };
 
       transfers.unshift(createdTransfer);
 
       return json(route, 201, {
         transfer: createdTransfer,
-        lines: lines.map((current, index) => ({
-          lineId: `line-${index + 1}`,
-          transferId: createdTransfer.transferId,
-          lineNumber: index + 1,
-          assetId: current['assetId'],
-          productId: current['productId'],
-          quantity: current['quantity'],
-        })),
+        lines: createdTransfer.lines,
       });
     }
 
@@ -795,8 +815,46 @@ export async function installBusinessFlowMocks(page: Page): Promise<void> {
       if (!transfer) {
         return json(route, 404, { error: { code: 'NOT_FOUND', message: 'Transfer not found' } });
       }
+      const body = postBody(route);
+      const receipts = Array.isArray(body['lineReceipts']) ? body['lineReceipts'] : [];
+      if (receipts.length === 0) {
+        return json(route, 400, {
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'lineReceipts must contain at least one item',
+          },
+        });
+      }
+
+      const transferLines = Array.isArray(transfer['lines']) ? transfer['lines'] : [];
+      const lineIds = new Set(
+        transferLines
+          .filter((line): line is Record<string, unknown> => !!line && typeof line === 'object')
+          .map((line) => String(line['lineId'] ?? ''))
+      );
+      const hasUnknownLine = (receipts as unknown[]).some((receipt) => {
+        const receiptObj = toObject(receipt);
+        return !lineIds.has(String(receiptObj['lineId'] ?? ''));
+      });
+      if (hasUnknownLine) {
+        return json(route, 400, {
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'UNKNOWN_RECEIPT_LINE: One or more receipt lines do not belong to this transfer',
+          },
+        });
+      }
+
       transfer.status = 'COMPLETED';
       transfer.completedAt = nowIso;
+      transfer.receivedQuantity = Number(transfer['totalQuantity'] ?? transfer['receivedQuantity'] ?? 0);
+      if (Array.isArray(transfer['lines'])) {
+        transfer.lines = (transfer['lines'] as Record<string, unknown>[]).map((line) => ({
+          ...line,
+          status: 'RECEIVED',
+          receivedQuantity: Number(line['shippedQuantity'] ?? line['quantity'] ?? 0),
+        }));
+      }
       return json(route, 200, transfer);
     }
 

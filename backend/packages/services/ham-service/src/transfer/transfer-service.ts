@@ -402,17 +402,41 @@ export async function completeTransfer(
     throw new Error(`Cannot complete transfer in status: ${transfer.status}`);
   }
 
+  if (!Array.isArray(request.lineReceipts) || request.lineReceipts.length === 0) {
+    throw new Error('INVALID_RECEIPT: lineReceipts must contain at least one item');
+  }
+
   const timestamp = now();
 
   // Get current lines
   const currentLines = await repository.getTransferLines(transferId);
+  if (currentLines.length === 0) {
+    throw new Error(`INVALID_RECEIPT: Transfer ${transferId} has no lines to receive`);
+  }
   const currentLineIds = new Set(currentLines.map((line) => line.lineId));
+
+  if (!request.lineReceipts.some((receipt) => receipt.receivedQuantity > 0)) {
+    throw new Error('INVALID_RECEIPT: At least one line receipt must have receivedQuantity greater than 0');
+  }
 
   // Create a map of line receipts for easy lookup
   const receiptMap = new Map<UUID, LineReceiptRequest>();
   for (const receipt of request.lineReceipts) {
     if (receiptMap.has(receipt.lineId)) {
       throw new Error(`INVALID_RECEIPT: Duplicate receipt for line ${receipt.lineId}`);
+    }
+    if (!Number.isInteger(receipt.receivedQuantity) || receipt.receivedQuantity < 0) {
+      throw new Error(
+        `INVALID_RECEIPT: receivedQuantity must be a non-negative integer for line ${receipt.lineId}`
+      );
+    }
+    if (
+      receipt.damagedQuantity !== undefined &&
+      (!Number.isInteger(receipt.damagedQuantity) || receipt.damagedQuantity < 0)
+    ) {
+      throw new Error(
+        `INVALID_RECEIPT: damagedQuantity must be a non-negative integer for line ${receipt.lineId}`
+      );
     }
     if (!currentLineIds.has(receipt.lineId)) {
       throw new Error(`UNKNOWN_RECEIPT_LINE: Line ${receipt.lineId} does not belong to transfer ${transferId}`);
