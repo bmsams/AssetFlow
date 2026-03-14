@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams, useSearchParams, Link } from 'react-router-dom';
+import { Form } from '@ams/ui';
 import { procurementApi } from '../../services/procurement-api';
 import { receivingApi } from '../../services/receiving-api';
 import type { ReceivingRecordResponse, ReceivingLine, ScanAssetResponse } from '../../services/receiving-api';
@@ -425,8 +426,8 @@ export function ReceivingForm() {
   /**
    * Submit receiving
    */
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
+    if (isSaving) return;
 
     // Validate at least one serial number entered
     const hasSerials = lineStates.some((line) => line.serialNumbers.length > 0);
@@ -613,7 +614,12 @@ export function ReceivingForm() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit}>
+      <Form
+        initialValues={{}}
+        onSubmit={handleSubmit}
+        className={styles.form}
+        showSubmitError={false}
+      >
         {/* Line Items */}
         {lineStates.map((line) => (
           <div key={line.lineId} className={styles.formSection} style={{ marginBottom: 'var(--spacing-4)' }}>
@@ -803,24 +809,16 @@ export function ReceivingForm() {
         ))}
 
         {/* Form Actions */}
-        <div className={styles.formActions}>
-          <button
-            type="button"
-            className={styles.secondaryButton}
-            onClick={handleCancel}
-            disabled={isSaving}
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className={styles.primaryButton}
+        <Form.Actions>
+          <Form.Submit
+            label={`Complete Receiving (${getTotalSerialsEntered()} items)`}
+            submittingLabel="Processing..."
+            cancelLabel="Cancel"
+            onCancel={() => { void handleCancel(); }}
             disabled={isSaving || isScanning || getTotalSerialsEntered() === 0}
-          >
-            {isSaving ? 'Processing...' : `Complete Receiving (${getTotalSerialsEntered()} items)`}
-          </button>
-        </div>
-      </form>
+          />
+        </Form.Actions>
+      </Form>
     </div>
   );
 }

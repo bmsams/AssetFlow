@@ -1,14 +1,17 @@
-import { useCallback, type ChangeEvent } from 'react';
+import { useCallback, useEffect, type ChangeEvent } from 'react';
 import { useFormContext } from './FormContext';
 import styles from './Form.module.css';
 
 export interface FormInputProps {
   name: string;
-  type?: 'text' | 'number' | 'email' | 'password' | 'date' | 'url';
+  type?: 'text' | 'number' | 'email' | 'password' | 'date' | 'url' | 'tel';
   placeholder?: string;
   prefix?: string;
   mono?: boolean;
   disabled?: boolean;
+  min?: number | string;
+  max?: number | string;
+  step?: number | string;
   dependsOn?: string;
 }
 
@@ -19,10 +22,18 @@ export function FormInput({
   prefix,
   mono = false,
   disabled = false,
+  min,
+  max,
+  step,
+  dependsOn,
 }: FormInputProps) {
-  const { values, errors, touched, setValue, setTouched } = useFormContext();
+  const { values, errors, touched, setValue, setTouched, registerDependency } = useFormContext();
   const value = values[name] ?? '';
   const hasError = !!(errors[name] && touched[name]);
+
+  useEffect(() => {
+    return registerDependency(name, dependsOn);
+  }, [dependsOn, name, registerDependency]);
 
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -52,6 +63,9 @@ export function FormInput({
       value={value}
       placeholder={placeholder}
       disabled={disabled}
+      min={min}
+      max={max}
+      step={step}
       onChange={handleChange}
       onBlur={handleBlur}
       aria-invalid={hasError || undefined}

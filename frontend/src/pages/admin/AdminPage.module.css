@@ -105,18 +105,32 @@
   align-items: center;
   gap: var(--spacing-2);
   padding: var(--spacing-2) var(--spacing-4);
-  background-color: var(--color-primary-500);
+  background:
+    linear-gradient(
+      140deg,
+      var(--color-accent-500, var(--color-primary-500)) 0%,
+      var(--color-accent-600, var(--color-primary-600)) 100%
+    );
   color: white;
   border: none;
   border-radius: var(--radius-md);
   font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: transform 0.15s, filter 0.15s, box-shadow 0.15s;
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--color-primary-900) 18%, transparent);
 }
 
 .primaryButton:hover {
-  background-color: var(--color-primary-600);
+  transform: translateY(-1px);
+  filter: saturate(1.03) brightness(0.98);
+}
+
+.primaryButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .buttonIcon {
@@ -136,11 +150,17 @@
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
 }
 
 .secondaryButton:hover {
-  background-color: var(--color-background);
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-border-hover);
+}
+
+.secondaryButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .iconButton {
@@ -196,10 +216,16 @@
 
 /* Table */
 .tableContainer {
-  background-color: var(--color-surface);
+  background:
+    linear-gradient(
+      160deg,
+      color-mix(in srgb, var(--color-surface-elevated) 80%, transparent) 0%,
+      var(--color-surface) 100%
+    );
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   overflow: hidden;
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--color-gray-900) 10%, transparent);
 }
 
 .table {
@@ -503,10 +529,16 @@
 }
 
 .form {
-  background-color: var(--color-surface);
+  background:
+    linear-gradient(
+      160deg,
+      color-mix(in srgb, var(--color-surface-elevated) 84%, transparent) 0%,
+      var(--color-surface) 100%
+    );
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--spacing-6);
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--color-gray-900) 9%, transparent);
 }
 
 .formSection {
@@ -569,7 +601,8 @@
 .formSelect:focus,
 .formTextarea:focus {
   outline: none;
-  border-color: var(--color-primary-500);
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-border-focus) 20%, transparent);
 }
 
 .formInput.error,

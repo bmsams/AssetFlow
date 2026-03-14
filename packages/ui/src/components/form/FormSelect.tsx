@@ -1,4 +1,4 @@
-import { useCallback, type ChangeEvent } from 'react';
+import { useCallback, useEffect, type ChangeEvent } from 'react';
 import { useFormContext } from './FormContext';
 import styles from './Form.module.css';
 
@@ -15,10 +15,15 @@ export function FormSelect({
   options,
   placeholder,
   disabled = false,
+  dependsOn,
 }: FormSelectProps) {
-  const { values, errors, touched, setValue, setTouched } = useFormContext();
+  const { values, errors, touched, setValue, setTouched, registerDependency } = useFormContext();
   const value = values[name] ?? '';
   const hasError = !!(errors[name] && touched[name]);
+
+  useEffect(() => {
+    return registerDependency(name, dependsOn);
+  }, [dependsOn, name, registerDependency]);
 
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLSelectElement>) => {

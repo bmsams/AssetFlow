@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
+import { Form } from '@ams/ui';
 import {
   procurementApi,
   type CreatePurchaseOrderRequest,
@@ -272,8 +273,8 @@ export function PurchaseOrderForm() {
   /**
    * Handle form submission
    */
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
+    if (isSaving) return;
 
     if (!validateForm()) return;
 
@@ -484,7 +485,12 @@ export function PurchaseOrderForm() {
       )}
 
       <div className={styles.formContainer} style={{ maxWidth: '1200px' }}>
-        <form onSubmit={handleSubmit} className={styles.form}>
+        <Form
+          initialValues={{}}
+          onSubmit={handleSubmit}
+          className={styles.form}
+          showSubmitError={false}
+        >
           {/* Basic Information Section */}
           <div className={styles.formSection}>
             <h2 className={styles.formSectionTitle}>Basic Information</h2>
@@ -825,28 +831,16 @@ export function PurchaseOrderForm() {
           </div>
 
           {/* Form Actions */}
-          <div className={styles.formActions}>
-            <button
-              type="button"
-              className={styles.secondaryButton}
-              onClick={() => navigate('/procurement/purchase-orders')}
-              disabled={isSaving}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className={styles.primaryButton}
+          <Form.Actions>
+            <Form.Submit
+              label={isEditing ? 'Update Purchase Order' : 'Create Purchase Order'}
+              submittingLabel="Saving..."
+              cancelLabel="Cancel"
+              onCancel={() => navigate('/procurement/purchase-orders')}
               disabled={isSaving || lineItems.length === 0}
-            >
-              {isSaving
-                ? 'Saving...'
-                : isEditing
-                ? 'Update Purchase Order'
-                : 'Create Purchase Order'}
-            </button>
-          </div>
-        </form>
+            />
+          </Form.Actions>
+        </Form>
       </div>
     </div>
   );

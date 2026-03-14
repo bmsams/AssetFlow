@@ -24,8 +24,9 @@ export function FormCombobox({
   loadOptions,
   placeholder,
   disabled = false,
+  dependsOn,
 }: FormComboboxProps) {
-  const { values, errors, touched, setValue, setTouched } = useFormContext();
+  const { values, errors, touched, setValue, setTouched, registerDependency } = useFormContext();
   const selectedValue = values[name] ?? '';
   const hasError = !!(errors[name] && touched[name]);
 
@@ -43,6 +44,10 @@ export function FormCombobox({
     : baseOptions;
 
   const selectedLabel = baseOptions.find((o) => o.value === selectedValue)?.label ?? '';
+
+  useEffect(() => {
+    return registerDependency(name, dependsOn);
+  }, [dependsOn, name, registerDependency]);
 
   // Async loading
   useEffect(() => {

@@ -174,6 +174,7 @@ export function RequisitionForm() {
   };
 
   const handleSubmit = async () => {
+    if (isSubmitting) return;
     if (!validate()) {
       return;
     }

@@ -56,6 +56,10 @@ export interface DeploymentFormProps {
   onSubmit: (data: DeploymentFormData) => void;
   /** Callback when form is cancelled */
   onCancel: () => void;
+  /** Whether parent dialog is currently submitting */
+  isSubmitting?: boolean;
+  /** Error message from parent submission */
+  error?: string | null;
 }
 
 /**
@@ -68,6 +72,8 @@ export function DeploymentForm({
   transition,
   onSubmit,
   onCancel,
+  isSubmitting = false,
+  error = null,
 }: DeploymentFormProps) {
   // Form state
   const [assignedTo, setAssignedTo] = useState('');
@@ -118,6 +124,7 @@ export function DeploymentForm({
   // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
 
     const deploymentData: DeploymentFormData = {
       assetId: asset.assetId,
@@ -183,6 +190,7 @@ export function DeploymentForm({
           className={styles.closeButton}
           onClick={onCancel}
           aria-label="Close form"
+          disabled={isSubmitting}
         >
           <span className="material-icons">close</span>
         </button>
@@ -192,6 +200,12 @@ export function DeploymentForm({
         <p className={styles.description}>
           {transition.description}
         </p>
+        {error && (
+          <div className={styles.errorMessage}>
+            <span className="material-icons">error</span>
+            <span>{error}</span>
+          </div>
+        )}
 
         <div className={styles.assetDetails}>
           <div className={styles.assetDetail}>
@@ -390,6 +404,7 @@ export function DeploymentForm({
           type="button"
           className={styles.cancelButton}
           onClick={onCancel}
+          disabled={isSubmitting}
         >
           Cancel
         </button>
@@ -397,8 +412,9 @@ export function DeploymentForm({
           type="submit"
           className={styles.confirmButton}
           style={{ backgroundColor: transition.color }}
+          disabled={isSubmitting}
         >
-          Deploy Asset
+          {isSubmitting ? 'Processing...' : 'Deploy Asset'}
         </button>
       </div>
     </form>

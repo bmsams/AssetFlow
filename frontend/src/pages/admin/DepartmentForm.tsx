@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
+import { Form } from '@ams/ui';
 import { adminApi } from '../../services/admin-api';
 import type { Department, CreateDepartmentRequest, UpdateDepartmentRequest } from '../../types/admin';
 import styles from './AdminPage.module.css';
@@ -18,12 +19,11 @@ export function DepartmentForm() {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [formData, setFormData] = useState({
+  const [initialValues, setInitialValues] = useState({
     code: '',
     name: '',
     parentDepartmentId: '',
   });
-  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     adminApi.departments.list({ isActive: true }, { pageSize: 100 })
@@ -36,7 +36,7 @@ export function DepartmentForm() {
       setIsLoading(true);
       adminApi.departments.get(departmentId)
         .then(dept => {
-          setFormData({
+          setInitialValues({
             code: dept.code,
             name: dept.name,
             parentDepartmentId: dept.parentDepartmentId || '',
@@ -47,32 +47,28 @@ export function DepartmentForm() {
     }
   }, [departmentId, isEditing]);
 
-  const validateForm = () => {
+  const validateForm = (values: Record<string, any>) => {
     const errors: Record<string, string> = {};
-    if (!formData.code.trim()) errors.code = 'Code is required';
-    if (!formData.name.trim()) errors.name = 'Name is required';
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
+    if (!values.code?.trim()) errors.code = 'Code is required';
+    if (!values.name?.trim()) errors.name = 'Name is required';
+    return errors;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-
+  const handleSubmit = async (values: Record<string, any>) => {
     try {
       setIsSaving(true);
       setError(null);
       if (isEditing && departmentId) {
         const data: UpdateDepartmentRequest = {
-          name: formData.name,
-          parentDepartmentId: formData.parentDepartmentId || undefined,
+          name: values.name,
+          parentDepartmentId: values.parentDepartmentId || undefined,
         };
         await adminApi.departments.update(departmentId, data);
       } else {
         const data: CreateDepartmentRequest = {
-          code: formData.code,
-          name: formData.name,
-          parentDepartmentId: formData.parentDepartmentId || undefined,
+          code: values.code,
+          name: values.name,
+          parentDepartmentId: values.parentDepartmentId || undefined,
         };
         await adminApi.departments.create(data);
       }
@@ -101,33 +97,51 @@ export function DepartmentForm() {
       {error && <div className={styles.errorBanner}><p>{error}</p></div>}
 
       <div className={styles.formContainer}>
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.formSection}>
-            <div className={styles.formGrid}>
-              <div className={styles.formGroup}>
-                <label htmlFor="dept-code" className={`${styles.formLabel} ${styles.required}`}>Code</label>
-                <input id="dept-code" type="text" value={formData.code} onChange={(e) => setFormData(p => ({...p, code: e.target.value}))} disabled={isEditing} className={`${styles.formInput} ${formErrors.code ? styles.error : ''}`} placeholder="e.g., IT" />
-                {formErrors.code && <span className={styles.formError}>{formErrors.code}</span>}
-              </div>
-              <div className={styles.formGroup}>
-                <label htmlFor="dept-name" className={`${styles.formLabel} ${styles.required}`}>Name</label>
-                <input id="dept-name" type="text" value={formData.name} onChange={(e) => setFormData(p => ({...p, name: e.target.value}))} className={`${styles.formInput} ${formErrors.name ? styles.error : ''}`} placeholder="e.g., Information Technology" />
-                {formErrors.name && <span className={styles.formError}>{formErrors.name}</span>}
-              </div>
-              <div className={styles.formGroup}>
-                <label htmlFor="dept-parent" className={styles.formLabel}>Parent Department</label>
-                <select id="dept-parent" value={formData.parentDepartmentId} onChange={(e) => setFormData(p => ({...p, parentDepartmentId: e.target.value}))} className={styles.formSelect}>
-                  <option value="">None (Top Level)</option>
-                  {departments.map(d => <option key={d.departmentId} value={d.departmentId}>{d.name}</option>)}
-                </select>
-              </div>
-            </div>
-          </div>
-          <div className={styles.formActions}>
-            <button type="button" className={styles.secondaryButton} onClick={() => navigate('/admin/departments')} disabled={isSaving}>Cancel</button>
-            <button type="submit" className={styles.primaryButton} disabled={isSaving}>{isSaving ? 'Saving...' : 'Save'}</button>
-          </div>
-        </form>
+        <Form
+          initialValues={initialValues}
+          onSubmit={handleSubmit}
+          validate={validateForm}
+          className={styles.form}
+        >
+          <Form.Section title="Department Details" columns={2}>
+            <Form.Field name="code" label="Code" required>
+              <Form.Input
+                name="code"
+                placeholder="e.g., IT"
+                disabled={isSaving || isEditing}
+              />
+            </Form.Field>
+            <Form.Field name="name" label="Name" required>
+              <Form.Input
+                name="name"
+                placeholder="e.g., Information Technology"
+                disabled={isSaving}
+              />
+            </Form.Field>
+            <Form.Field name="parentDepartmentId" label="Parent Department">
+              <Form.Select
+                name="parentDepartmentId"
+                options={[
+                  { value: '', label: 'None (Top Level)' },
+                  ...departments.map((department) => ({
+                    value: department.departmentId,
+                    label: department.name,
+                  })),
+                ]}
+                placeholder="None (Top Level)"
+                disabled={isSaving}
+              />
+            </Form.Field>
+          </Form.Section>
+          <Form.Actions>
+            <Form.Submit
+              label={isSaving ? 'Saving...' : 'Save'}
+              cancelLabel="Cancel"
+              onCancel={() => navigate('/admin/departments')}
+              disableUntilDirty
+            />
+          </Form.Actions>
+        </Form>
       </div>
     </div>
   );

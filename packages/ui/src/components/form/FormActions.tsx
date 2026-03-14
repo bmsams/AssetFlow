@@ -26,18 +26,22 @@ export function FormActions({ sticky = false, children }: FormActionsProps) {
 
 export interface FormSubmitProps {
   label?: string;
+  submittingLabel?: string;
   cancelLabel?: string;
   onCancel?: () => void;
   disableUntilDirty?: boolean;
+  disabled?: boolean;
 }
 
 export function FormSubmit({
   label = 'Submit',
+  submittingLabel = 'Submitting...',
   cancelLabel,
   onCancel,
   disableUntilDirty = false,
+  disabled = false,
 }: FormSubmitProps) {
-  const { dirty } = useFormContext();
+  const { dirty, isSubmitting } = useFormContext();
 
   const handleCancel = useCallback(() => {
     onCancel?.();
@@ -50,6 +54,7 @@ export function FormSubmit({
           type="button"
           className={styles.cancelButton}
           onClick={handleCancel}
+          disabled={isSubmitting}
         >
           {cancelLabel}
         </button>
@@ -57,9 +62,9 @@ export function FormSubmit({
       <button
         type="submit"
         className={styles.submitButton}
-        disabled={disableUntilDirty && !dirty}
+        disabled={disabled || isSubmitting || (disableUntilDirty && !dirty)}
       >
-        {label}
+        {isSubmitting ? submittingLabel : label}
       </button>
     </div>
   );

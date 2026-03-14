@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
+import { Form } from '@ams/ui';
 import { adminApi } from '../../services/admin-api';
 import type { CreateManufacturerRequest, UpdateManufacturerRequest } from '../../types/admin';
 import styles from './AdminPage.module.css';
@@ -16,37 +17,34 @@ export function ManufacturerForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [formData, setFormData] = useState({ name: '', website: '' });
-  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [initialValues, setInitialValues] = useState({ name: '', website: '' });
 
   useEffect(() => {
     if (isEditing && manufacturerId) {
       setIsLoading(true);
       adminApi.manufacturers.get(manufacturerId)
-        .then(m => setFormData({ name: m.name, website: m.website || '' }))
+        .then(m => setInitialValues({ name: m.name, website: m.website || '' }))
         .catch(err => setError(err.message))
         .finally(() => setIsLoading(false));
     }
   }, [manufacturerId, isEditing]);
 
-  const validateForm = () => {
+  const validateForm = (values: Record<string, any>) => {
     const errors: Record<string, string> = {};
-    if (!formData.name.trim()) errors.name = 'Name is required';
-    if (formData.website && !/^https?:\/\//.test(formData.website)) errors.website = 'Invalid URL (must start with http:// or https://)';
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
+    if (!values.name?.trim()) errors.name = 'Name is required';
+    if (values.website && !/^https?:\/\//.test(values.website)) errors.website = 'Invalid URL (must start with http:// or https://)';
+    return errors;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validateForm()) return;
+  const handleSubmit = async (values: Record<string, any>) => {
     try {
       setIsSaving(true);
+      setError(null);
       if (isEditing && manufacturerId) {
-        const data: UpdateManufacturerRequest = { name: formData.name, website: formData.website || undefined };
+        const data: UpdateManufacturerRequest = { name: values.name, website: values.website || undefined };
         await adminApi.manufacturers.update(manufacturerId, data);
       } else {
-        const data: CreateManufacturerRequest = { name: formData.name, website: formData.website || undefined };
+        const data: CreateManufacturerRequest = { name: values.name, website: values.website || undefined };
         await adminApi.manufacturers.create(data);
       }
       navigate('/admin/manufacturers');
@@ -66,26 +64,38 @@ export function ManufacturerForm() {
       <div className={styles.pageHeader}><h1 className={styles.pageTitle}>{isEditing ? 'Edit Manufacturer' : 'New Manufacturer'}</h1></div>
       {error && <div className={styles.errorBanner}><p>{error}</p></div>}
       <div className={styles.formContainer}>
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.formSection}>
-            <div className={styles.formGrid}>
-              <div className={styles.formGroup}>
-                <label htmlFor="mfr-name" className={`${styles.formLabel} ${styles.required}`}>Name</label>
-                <input id="mfr-name" type="text" value={formData.name} onChange={(e) => setFormData(p => ({...p, name: e.target.value}))} className={`${styles.formInput} ${formErrors.name ? styles.error : ''}`} placeholder="e.g., Dell Technologies" />
-                {formErrors.name && <span className={styles.formError}>{formErrors.name}</span>}
-              </div>
-              <div className={styles.formGroup}>
-                <label htmlFor="mfr-website" className={styles.formLabel}>Website</label>
-                <input id="mfr-website" type="url" value={formData.website} onChange={(e) => setFormData(p => ({...p, website: e.target.value}))} className={`${styles.formInput} ${formErrors.website ? styles.error : ''}`} placeholder="https://example.com" />
-                {formErrors.website && <span className={styles.formError}>{formErrors.website}</span>}
-              </div>
-            </div>
-          </div>
-          <div className={styles.formActions}>
-            <button type="button" className={styles.secondaryButton} onClick={() => navigate('/admin/manufacturers')} disabled={isSaving}>Cancel</button>
-            <button type="submit" className={styles.primaryButton} disabled={isSaving}>{isSaving ? 'Saving...' : 'Save'}</button>
-          </div>
-        </form>
+        <Form
+          initialValues={initialValues}
+          onSubmit={handleSubmit}
+          validate={validateForm}
+          className={styles.form}
+        >
+          <Form.Section title="Manufacturer Details" columns={2}>
+            <Form.Field name="name" label="Name" required>
+              <Form.Input
+                name="name"
+                placeholder="e.g., Dell Technologies"
+                disabled={isSaving}
+              />
+            </Form.Field>
+            <Form.Field name="website" label="Website">
+              <Form.Input
+                name="website"
+                type="url"
+                placeholder="https://example.com"
+                disabled={isSaving}
+              />
+            </Form.Field>
+          </Form.Section>
+          <Form.Actions>
+            <Form.Submit
+              label={isSaving ? 'Saving...' : 'Save'}
+              cancelLabel="Cancel"
+              onCancel={() => navigate('/admin/manufacturers')}
+              disableUntilDirty
+            />
+          </Form.Actions>
+        </Form>
       </div>
     </div>
   );

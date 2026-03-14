@@ -49,6 +49,10 @@ export interface MaintenanceFormProps {
   onSubmit: (data: MaintenanceFormData) => void;
   /** Callback when form is cancelled */
   onCancel: () => void;
+  /** Whether parent dialog is currently submitting */
+  isSubmitting?: boolean;
+  /** Error message from parent submission */
+  error?: string | null;
 }
 
 /**
@@ -61,6 +65,8 @@ export function MaintenanceForm({
   transition,
   onSubmit,
   onCancel,
+  isSubmitting = false,
+  error = null,
 }: MaintenanceFormProps) {
   // Form state
   const [maintenanceType, setMaintenanceType] = useState<'REPAIR' | 'PREVENTIVE' | 'UPGRADE' | 'INSPECTION'>('REPAIR');
@@ -98,6 +104,7 @@ export function MaintenanceForm({
   // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
 
     const selectedVendor = vendors.find(v => v.id === vendorId);
     const selectedTechnician = technicians.find(t => t.id === internalTechnicianId);
@@ -140,6 +147,7 @@ export function MaintenanceForm({
           className={styles.closeButton}
           onClick={onCancel}
           aria-label="Close form"
+          disabled={isSubmitting}
         >
           <span className="material-icons">close</span>
         </button>
@@ -149,6 +157,12 @@ export function MaintenanceForm({
         <p className={styles.description}>
           {transition.description}
         </p>
+        {error && (
+          <div className={styles.errorMessage}>
+            <span className="material-icons">error</span>
+            <span>{error}</span>
+          </div>
+        )}
 
         <div className={styles.assetDetails}>
           <div className={styles.assetDetail}>
@@ -426,6 +440,7 @@ export function MaintenanceForm({
           type="button"
           className={styles.cancelButton}
           onClick={onCancel}
+          disabled={isSubmitting}
         >
           Cancel
         </button>
@@ -433,8 +448,9 @@ export function MaintenanceForm({
           type="submit"
           className={styles.confirmButton}
           style={{ backgroundColor: transition.color }}
+          disabled={isSubmitting}
         >
-          Send to Maintenance
+          {isSubmitting ? 'Processing...' : 'Send to Maintenance'}
         </button>
       </div>
     </form>

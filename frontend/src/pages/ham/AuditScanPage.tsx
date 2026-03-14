@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Form } from '@ams/ui';
 import { PageLayout } from '../../components/layout/PageLayout';
 import { ErrorMessage } from '../../components/ui/ErrorMessage';
 import { EmptyState } from '../../components/ui/EmptyState';
@@ -10,24 +11,34 @@ import styles from '../Page.module.css';
 
 export function AuditScanPage() {
   const [error, setError] = useState<string | null>(null);
-  const [assetTag, setAssetTag] = useState('');
-  const [locationId, setLocationId] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [initialValues, setInitialValues] = useState({ assetTag: '', locationId: '' });
   const [scanResult, setScanResult] = useState<string | null>(null);
   const [recentScans, setRecentScans] = useState<AuditScan[]>([]);
 
-  const handleScan = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!assetTag.trim() || !locationId.trim()) return;
+  const validateScanForm = (values: Record<string, any>) => {
+    const errors: Record<string, string> = {};
+    if (!values.assetTag?.trim()) errors.assetTag = 'Asset Tag is required';
+    if (!values.locationId?.trim()) errors.locationId = 'Location ID is required';
+    return errors;
+  };
+
+  const handleScan = async (values: Record<string, any>) => {
     try {
+      setIsSaving(true);
       setScanResult(null);
       setError(null);
-      const scan = await recordAuditScan({ assetTag: assetTag.trim(), locationId: locationId.trim() });
+      const scan = await recordAuditScan({
+        assetTag: values.assetTag.trim(),
+        locationId: values.locationId.trim(),
+      });
       setScanResult(scan.matched ? 'Match confirmed' : 'Mismatch detected');
       setRecentScans((prev) => [scan, ...prev]);
-      setAssetTag('');
-      setLocationId('');
+      setInitialValues({ assetTag: '', locationId: '' });
     } catch {
       setError('Failed to record scan. Please try again.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -39,34 +50,38 @@ export function AuditScanPage() {
       maxWidth="xl"
     >
       <div className={styles.pageContent}>
-        <form onSubmit={handleScan} style={{ marginBottom: 'var(--spacing-6)', display: 'flex', gap: 'var(--spacing-2)', alignItems: 'flex-end', flexWrap: 'wrap' }}>
-          <div>
-            <label htmlFor="asset-tag" style={{ display: 'block', marginBottom: 'var(--spacing-1)' }}>Asset Tag</label>
-            <input
-              id="asset-tag"
-              type="text"
-              value={assetTag}
-              onChange={(e) => setAssetTag(e.target.value)}
-              placeholder="AMS-HW-..."
-              required
+        <Form
+          initialValues={initialValues}
+          onSubmit={handleScan}
+          validate={validateScanForm}
+          className={styles.form}
+        >
+          <Form.Section title="Record Scan" columns={2}>
+            <Form.Field name="assetTag" label="Asset Tag" required>
+              <Form.Input
+                name="assetTag"
+                placeholder="AMS-HW-..."
+                disabled={isSaving}
+              />
+            </Form.Field>
+            <Form.Field name="locationId" label="Location ID" required>
+              <Form.Input
+                name="locationId"
+                placeholder="Location ID"
+                disabled={isSaving}
+              />
+            </Form.Field>
+          </Form.Section>
+          <Form.Actions>
+            <Form.Submit
+              label={isSaving ? 'Recording...' : 'Record Scan'}
+              disableUntilDirty
             />
-          </div>
-          <div>
-            <label htmlFor="location-id" style={{ display: 'block', marginBottom: 'var(--spacing-1)' }}>Location ID</label>
-            <input
-              id="location-id"
-              type="text"
-              value={locationId}
-              onChange={(e) => setLocationId(e.target.value)}
-              placeholder="Location ID"
-              required
-            />
-          </div>
-          <button type="submit">Record Scan</button>
-        </form>
+          </Form.Actions>
+        </Form>
 
         {scanResult && (
-          <div role="status" style={{ marginBottom: 'var(--spacing-4)', padding: 'var(--spacing-2)', background: 'var(--color-background)', borderRadius: 'var(--radius-md)' }}>
+          <div role="status" className={styles.statusMessage}>
             {scanResult}
           </div>
         )}
@@ -80,7 +95,7 @@ export function AuditScanPage() {
           />
         )}
 
-        <h2 style={{ fontSize: 'var(--font-size-lg)', marginBottom: 'var(--spacing-3)' }}>Recent Scans</h2>
+        <h2 className={styles.sectionHeading}>Recent Scans</h2>
 
         {recentScans.length === 0 && (
           <EmptyState

@@ -44,6 +44,10 @@ export interface ReturnFormProps {
   onSubmit: (data: ReturnFormData) => void;
   /** Callback when form is cancelled */
   onCancel: () => void;
+  /** Whether parent dialog is currently submitting */
+  isSubmitting?: boolean;
+  /** Error message from parent submission */
+  error?: string | null;
 }
 
 /**
@@ -56,6 +60,8 @@ export function ReturnForm({
   transition,
   onSubmit,
   onCancel,
+  isSubmitting = false,
+  error = null,
 }: ReturnFormProps) {
   // Form state
   const [returnDate, setReturnDate] = useState(
@@ -90,6 +96,7 @@ export function ReturnForm({
   // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
 
     // If needs maintenance is checked, we might want to modify the data
     // or handle this specially in the parent component
@@ -126,6 +133,7 @@ export function ReturnForm({
           className={styles.closeButton}
           onClick={onCancel}
           aria-label="Close form"
+          disabled={isSubmitting}
         >
           <span className="material-icons">close</span>
         </button>
@@ -135,6 +143,12 @@ export function ReturnForm({
         <p className={styles.description}>
           {transition.description}
         </p>
+        {error && (
+          <div className={styles.errorMessage}>
+            <span className="material-icons">error</span>
+            <span>{error}</span>
+          </div>
+        )}
 
         <div className={styles.assetDetails}>
           <div className={styles.assetDetail}>
@@ -320,6 +334,7 @@ export function ReturnForm({
           type="button"
           className={styles.cancelButton}
           onClick={onCancel}
+          disabled={isSubmitting}
         >
           Cancel
         </button>
@@ -327,8 +342,9 @@ export function ReturnForm({
           type="submit"
           className={styles.confirmButton}
           style={{ backgroundColor: transition.color }}
+          disabled={isSubmitting}
         >
-          Return Asset
+          {isSubmitting ? 'Processing...' : 'Return Asset'}
         </button>
       </div>
     </form>

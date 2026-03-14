@@ -31,6 +31,8 @@ export interface StateTransitionDialogProps {
     transition: TransitionAction;
     onSubmit: (data: TransitionFormData) => void;
     onCancel: () => void;
+    isSubmitting?: boolean;
+    error?: string | null;
   }>;
 }
 
@@ -114,6 +116,8 @@ export function StateTransitionDialog({
             transition={transition}
             onSubmit={handleSubmit}
             onCancel={onClose}
+            isSubmitting={isSubmitting}
+            error={error}
           />
         ) : (
           renderDefaultForm()

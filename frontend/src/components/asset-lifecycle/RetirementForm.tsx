@@ -48,6 +48,10 @@ export interface RetirementFormProps {
   onSubmit: (data: RetirementFormData) => void;
   /** Callback when form is cancelled */
   onCancel: () => void;
+  /** Whether parent dialog is currently submitting */
+  isSubmitting?: boolean;
+  /** Error message from parent submission */
+  error?: string | null;
 }
 
 /**
@@ -60,6 +64,8 @@ export function RetirementForm({
   transition,
   onSubmit,
   onCancel,
+  isSubmitting = false,
+  error = null,
 }: RetirementFormProps) {
   // Form state
   const [retirementDate, setRetirementDate] = useState(
@@ -95,6 +101,7 @@ export function RetirementForm({
   // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
 
     const selectedAsset = replacementAssets.find(a => a.id === replacementAssetId);
     const selectedApprover = approvers.find(a => a.id === approvedBy);
@@ -135,6 +142,7 @@ export function RetirementForm({
           className={styles.closeButton}
           onClick={onCancel}
           aria-label="Close form"
+          disabled={isSubmitting}
         >
           <span className="material-icons">close</span>
         </button>
@@ -144,6 +152,12 @@ export function RetirementForm({
         <p className={styles.description}>
           {transition.description}
         </p>
+        {error && (
+          <div className={styles.errorMessage}>
+            <span className="material-icons">error</span>
+            <span>{error}</span>
+          </div>
+        )}
 
         <div className={styles.assetDetails}>
           <div className={styles.assetDetail}>
@@ -396,6 +410,7 @@ export function RetirementForm({
           type="button"
           className={styles.cancelButton}
           onClick={onCancel}
+          disabled={isSubmitting}
         >
           Cancel
         </button>
@@ -403,8 +418,9 @@ export function RetirementForm({
           type="submit"
           className={styles.confirmButton}
           style={{ backgroundColor: transition.color }}
+          disabled={isSubmitting}
         >
-          Retire Asset
+          {isSubmitting ? 'Processing...' : 'Retire Asset'}
         </button>
       </div>
     </form>

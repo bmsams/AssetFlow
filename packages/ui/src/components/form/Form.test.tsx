@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi } from 'vitest';
 import { Form } from './index';
@@ -161,7 +161,7 @@ describe('Form', () => {
             />
           </Form.Field>
           <Form.Field name="city" label="City">
-            <Form.Input name="city" placeholder="Enter city" />
+            <Form.Input name="city" placeholder="Enter city" dependsOn="country" />
           </Form.Field>
         </Form.Section>
         <Form.Submit label="Save" />
@@ -171,6 +171,7 @@ describe('Form', () => {
     expect(screen.getByLabelText('City')).toHaveValue('New York');
     await user.selectOptions(screen.getByLabelText('Country'), 'uk');
     expect(screen.getByLabelText('Country')).toHaveValue('uk');
+    expect(screen.getByLabelText('City')).toHaveValue('');
   });
 
   it('renders select with options', async () => {
@@ -254,5 +255,61 @@ describe('Form', () => {
     );
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
+  });
+
+  it('prevents duplicate submissions while submit is in progress', async () => {
+    const user = userEvent.setup();
+    let resolveSubmit: (() => void) | undefined;
+    const onSubmit = vi.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveSubmit = resolve;
+        })
+    );
+
+    render(
+      <Form initialValues={{ name: 'John' }} onSubmit={onSubmit}>
+        <Form.Section title="Info">
+          <Form.Field name="name" label="Name">
+            <Form.Input name="name" />
+          </Form.Field>
+        </Form.Section>
+        <Form.Submit label="Save" />
+      </Form>
+    );
+
+    const submitButton = screen.getByRole('button', { name: 'Save' });
+    await user.click(submitButton);
+    await user.click(submitButton);
+
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Submitting...' })).toBeDisabled();
+    });
+
+    resolveSubmit?.();
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
+    });
+  });
+
+  it('shows form-level submit error when submit throws', async () => {
+    const user = userEvent.setup();
+    render(
+      <Form
+        initialValues={{ name: 'John' }}
+        onSubmit={vi.fn().mockRejectedValue(new Error('Submit failed'))}
+      >
+        <Form.Section title="Info">
+          <Form.Field name="name" label="Name">
+            <Form.Input name="name" />
+          </Form.Field>
+        </Form.Section>
+        <Form.Submit label="Save" />
+      </Form>
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('Submit failed');
   });
 });

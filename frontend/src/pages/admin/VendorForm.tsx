@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
+import { Form } from '@ams/ui';
 import { adminApi } from '../../services/admin-api';
 import type { VendorType, VendorRating, CreateVendorRequest, UpdateVendorRequest, Model, VendorModelPrice } from '../../types/admin';
 import styles from './AdminPage.module.css';
@@ -33,13 +34,17 @@ export function VendorForm() {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [formData, setFormData] = useState({
-    vendorCode: '', vendorName: '', vendorType: '' as VendorType | '', contactName: '', contactEmail: '', contactPhone: '',
-    addressLine1: '', addressLine2: '', city: '', stateProvince: '', postalCode: '', country: '', paymentTerms: '', rating: '' as VendorRating | '',
+  const [initialValues, setInitialValues] = useState({
+    vendorCode: '',
+    vendorName: '',
+    vendorType: '' as VendorType | '',
+    contactName: '',
+    contactEmail: '',
+    contactPhone: '',
+    paymentTerms: '',
+    rating: '' as VendorRating | '',
   });
-  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
-  // Vendor ↔ Model pricing (edit mode only)
   const [models, setModels] = useState<Model[]>([]);
   const [modelPrices, setModelPrices] = useState<VendorModelPrice[]>([]);
   const [isPricingLoading, setIsPricingLoading] = useState(false);
@@ -58,11 +63,15 @@ export function VendorForm() {
     if (isEditing && vendorId) {
       setIsLoading(true);
       adminApi.vendors.get(vendorId)
-        .then(v => setFormData({
-          vendorCode: v.vendorCode || '', vendorName: v.vendorName, vendorType: v.vendorType || '',
-          contactName: v.contactName || '', contactEmail: v.contactEmail || '', contactPhone: v.contactPhone || '',
-          addressLine1: '', addressLine2: '', city: '', stateProvince: '', postalCode: '', country: '',
-          paymentTerms: v.paymentTerms || '', rating: v.rating || '',
+        .then(v => setInitialValues({
+          vendorCode: v.vendorCode || '',
+          vendorName: v.vendorName,
+          vendorType: v.vendorType || '',
+          contactName: v.contactName || '',
+          contactEmail: v.contactEmail || '',
+          contactPhone: v.contactPhone || '',
+          paymentTerms: v.paymentTerms || '',
+          rating: v.rating || '',
         }))
         .catch(err => setError(err.message))
         .finally(() => setIsLoading(false));
@@ -87,39 +96,46 @@ export function VendorForm() {
       .finally(() => setIsPricingLoading(false));
   }, [isEditing, vendorId]);
 
-  const validateForm = () => {
+  const validateForm = (values: Record<string, any>) => {
     const errors: Record<string, string> = {};
-    if (!formData.vendorName.trim()) errors.vendorName = 'Vendor name is required';
-    if (formData.contactEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.contactEmail)) errors.contactEmail = 'Invalid email';
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
+    if (!values.vendorName?.trim()) errors.vendorName = 'Vendor name is required';
+    if (values.contactEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.contactEmail)) errors.contactEmail = 'Invalid email';
+    return errors;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validateForm()) return;
+  const handleSubmit = async (values: Record<string, any>) => {
     try {
       setIsSaving(true);
+      setError(null);
       if (isEditing && vendorId) {
         const data: UpdateVendorRequest = {
-          vendorName: formData.vendorName, vendorType: formData.vendorType || undefined,
-          contactName: formData.contactName || undefined, contactEmail: formData.contactEmail || undefined,
-          contactPhone: formData.contactPhone || undefined, paymentTerms: formData.paymentTerms || undefined,
-          rating: formData.rating || undefined,
+          vendorName: values.vendorName,
+          vendorType: values.vendorType || undefined,
+          contactName: values.contactName || undefined,
+          contactEmail: values.contactEmail || undefined,
+          contactPhone: values.contactPhone || undefined,
+          paymentTerms: values.paymentTerms || undefined,
+          rating: values.rating || undefined,
         };
         await adminApi.vendors.update(vendorId, data);
       } else {
         const data: CreateVendorRequest = {
-          vendorCode: formData.vendorCode || undefined, vendorName: formData.vendorName,
-          vendorType: formData.vendorType || undefined, contactName: formData.contactName || undefined,
-          contactEmail: formData.contactEmail || undefined, contactPhone: formData.contactPhone || undefined,
-          paymentTerms: formData.paymentTerms || undefined,
+          vendorCode: values.vendorCode || undefined,
+          vendorName: values.vendorName,
+          vendorType: values.vendorType || undefined,
+          contactName: values.contactName || undefined,
+          contactEmail: values.contactEmail || undefined,
+          contactPhone: values.contactPhone || undefined,
+          paymentTerms: values.paymentTerms || undefined,
         };
         await adminApi.vendors.create(data);
       }
       navigate('/admin/vendors');
-    } catch (err) { setError(err instanceof Error ? err.message : 'Failed to save'); }
-    finally { setIsSaving(false); }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const refreshPricing = async () => {
@@ -202,46 +218,73 @@ export function VendorForm() {
       <div className={styles.pageHeader}><h1 className={styles.pageTitle}>{isEditing ? 'Edit Vendor' : 'New Vendor'}</h1></div>
       {error && <div className={styles.errorBanner}><p>{error}</p></div>}
       <div className={styles.formContainer}>
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.formSection}>
-            <h2 className={styles.formSectionTitle}>Basic Information</h2>
-            <div className={styles.formGrid}>
-              <div className={styles.formGroup}>
-                <label htmlFor="vendor-code" className={styles.formLabel}>Vendor Code</label>
-                <input id="vendor-code" type="text" value={formData.vendorCode} onChange={(e) => setFormData(p => ({...p, vendorCode: e.target.value}))} className={styles.formInput} placeholder="Auto-generated if empty" />
-              </div>
-              <div className={styles.formGroup}>
-                <label htmlFor="vendor-name" className={`${styles.formLabel} ${styles.required}`}>Vendor Name</label>
-                <input id="vendor-name" type="text" value={formData.vendorName} onChange={(e) => setFormData(p => ({...p, vendorName: e.target.value}))} className={`${styles.formInput} ${formErrors.vendorName ? styles.error : ''}`} />
-                {formErrors.vendorName && <span className={styles.formError}>{formErrors.vendorName}</span>}
-              </div>
-              <div className={styles.formGroup}>
-                <label htmlFor="vendor-type" className={styles.formLabel}>Type</label>
-                <select id="vendor-type" value={formData.vendorType} onChange={(e) => setFormData(p => ({...p, vendorType: e.target.value as VendorType}))} className={styles.formSelect}>
-                  <option value="">Select...</option>
-                  {VENDOR_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
-                </select>
-              </div>
-              {isEditing && (
-                <div className={styles.formGroup}>
-                  <label htmlFor="vendor-rating" className={styles.formLabel}>Rating</label>
-                  <select id="vendor-rating" value={formData.rating} onChange={(e) => setFormData(p => ({...p, rating: e.target.value as VendorRating}))} className={styles.formSelect}>
-                    <option value="">Not Rated</option>
-                    {VENDOR_RATINGS.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
-                  </select>
-                </div>
-              )}
-            </div>
-          </div>
-          <div className={styles.formSection}>
-            <h2 className={styles.formSectionTitle}>Contact</h2>
-            <div className={styles.formGrid}>
-              <div className={styles.formGroup}><label htmlFor="vendor-contact-name" className={styles.formLabel}>Contact Name</label><input id="vendor-contact-name" type="text" value={formData.contactName} onChange={(e) => setFormData(p => ({...p, contactName: e.target.value}))} className={styles.formInput} /></div>
-              <div className={styles.formGroup}><label htmlFor="vendor-email" className={styles.formLabel}>Email</label><input id="vendor-email" type="email" value={formData.contactEmail} onChange={(e) => setFormData(p => ({...p, contactEmail: e.target.value}))} className={`${styles.formInput} ${formErrors.contactEmail ? styles.error : ''}`} />{formErrors.contactEmail && <span className={styles.formError}>{formErrors.contactEmail}</span>}</div>
-              <div className={styles.formGroup}><label htmlFor="vendor-phone" className={styles.formLabel}>Phone</label><input id="vendor-phone" type="tel" value={formData.contactPhone} onChange={(e) => setFormData(p => ({...p, contactPhone: e.target.value}))} className={styles.formInput} /></div>
-              <div className={styles.formGroup}><label htmlFor="vendor-payment-terms" className={styles.formLabel}>Payment Terms</label><input id="vendor-payment-terms" type="text" value={formData.paymentTerms} onChange={(e) => setFormData(p => ({...p, paymentTerms: e.target.value}))} className={styles.formInput} placeholder="e.g., Net 30" /></div>
-            </div>
-          </div>
+        <Form
+          initialValues={initialValues}
+          onSubmit={handleSubmit}
+          validate={validateForm}
+          className={styles.form}
+        >
+          <Form.Section title="Basic Information" columns={2}>
+            <Form.Field name="vendorCode" label="Vendor Code">
+              <Form.Input
+                name="vendorCode"
+                placeholder="Auto-generated if empty"
+                disabled={isSaving}
+              />
+            </Form.Field>
+            <Form.Field name="vendorName" label="Vendor Name" required>
+              <Form.Input name="vendorName" disabled={isSaving} />
+            </Form.Field>
+            <Form.Field name="vendorType" label="Type">
+              <Form.Select
+                name="vendorType"
+                options={[
+                  { value: '', label: 'Select...' },
+                  ...VENDOR_TYPES.map((type) => ({
+                    value: type.value,
+                    label: type.label,
+                  })),
+                ]}
+                placeholder="Select..."
+                disabled={isSaving}
+              />
+            </Form.Field>
+            {isEditing && (
+              <Form.Field name="rating" label="Rating">
+                <Form.Select
+                  name="rating"
+                  options={[
+                    { value: '', label: 'Not Rated' },
+                    ...VENDOR_RATINGS.map((rating) => ({
+                      value: rating.value,
+                      label: rating.label,
+                    })),
+                  ]}
+                  placeholder="Not Rated"
+                  disabled={isSaving}
+                />
+              </Form.Field>
+            )}
+          </Form.Section>
+
+          <Form.Section title="Contact" columns={2}>
+            <Form.Field name="contactName" label="Contact Name">
+              <Form.Input name="contactName" disabled={isSaving} />
+            </Form.Field>
+            <Form.Field name="contactEmail" label="Email">
+              <Form.Input name="contactEmail" type="email" disabled={isSaving} />
+            </Form.Field>
+            <Form.Field name="contactPhone" label="Phone">
+              <Form.Input name="contactPhone" type="tel" disabled={isSaving} />
+            </Form.Field>
+            <Form.Field name="paymentTerms" label="Payment Terms">
+              <Form.Input
+                name="paymentTerms"
+                placeholder="e.g., Net 30"
+                disabled={isSaving}
+              />
+            </Form.Field>
+          </Form.Section>
 
           {isEditing && (
             <div className={styles.formSection}>
@@ -384,11 +427,16 @@ export function VendorForm() {
               </div>
             </div>
           )}
-          <div className={styles.formActions}>
-            <button type="button" className={styles.secondaryButton} onClick={() => navigate('/admin/vendors')} disabled={isSaving}>Cancel</button>
-            <button type="submit" className={styles.primaryButton} disabled={isSaving}>{isSaving ? 'Saving...' : 'Save'}</button>
-          </div>
-        </form>
+
+          <Form.Actions>
+            <Form.Submit
+              label={isSaving ? 'Saving...' : 'Save'}
+              cancelLabel="Cancel"
+              onCancel={() => navigate('/admin/vendors')}
+              disableUntilDirty
+            />
+          </Form.Actions>
+        </Form>
       </div>
     </div>
   );

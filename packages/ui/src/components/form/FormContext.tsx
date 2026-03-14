@@ -5,11 +5,13 @@ export interface FormContextValue {
   errors: Record<string, string>;
   touched: Record<string, boolean>;
   dirty: boolean;
+  isSubmitting: boolean;
   setValue: (name: string, value: any) => void;
   setError: (name: string, error: string) => void;
   setTouched: (name: string) => void;
+  registerDependency: (name: string, dependsOn?: string) => () => void;
   validate: () => boolean;
-  submit: () => void;
+  submit: () => Promise<void>;
 }
 
 export const FormContext = createContext<FormContextValue>({
@@ -17,11 +19,13 @@ export const FormContext = createContext<FormContextValue>({
   errors: {},
   touched: {},
   dirty: false,
+  isSubmitting: false,
   setValue: () => {},
   setError: () => {},
   setTouched: () => {},
+  registerDependency: () => () => {},
   validate: () => true,
-  submit: () => {},
+  submit: async () => {},
 });
 
 export function useFormContext(): FormContextValue {

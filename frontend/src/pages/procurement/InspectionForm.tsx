@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
+import { Form } from '@ams/ui';
 import { receivingApi } from '../../services/receiving-api';
 import type { InspectionRecord, InspectionResult as ApiInspectionResult } from '../../services/receiving-api';
 import { formatDate, formatStatus } from '../../utils/formatters';
@@ -225,8 +226,8 @@ export function InspectionForm() {
   /**
    * Submit inspection result via API
    */
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
+    if (isSaving) return;
 
     if (!validateForm() || !inspectionId || !result) return;
 
@@ -361,7 +362,12 @@ export function InspectionForm() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit}>
+      <Form
+        initialValues={{}}
+        onSubmit={handleSubmit}
+        className={styles.form}
+        showSubmitError={false}
+      >
         {/* Inspection Checklist */}
         <div className={styles.formSection} style={{ marginBottom: 'var(--spacing-6)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-4)' }}>
@@ -568,27 +574,16 @@ export function InspectionForm() {
         </div>
 
         {/* Form Actions */}
-        <div className={styles.formActions}>
-          <button
-            type="button"
-            className={styles.secondaryButton}
-            onClick={() => navigate('/procurement/receiving')}
-            disabled={isSaving}
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className={styles.primaryButton}
+        <Form.Actions>
+          <Form.Submit
+            label={`Submit ${result ? formatStatus(result) : 'Result'}`}
+            submittingLabel="Submitting..."
+            cancelLabel="Cancel"
+            onCancel={() => navigate('/procurement/receiving')}
             disabled={isSaving || !result}
-            style={{
-              backgroundColor: result ? getResultColor(result) : undefined,
-            }}
-          >
-            {isSaving ? 'Submitting...' : `Submit ${result ? formatStatus(result) : 'Result'}`}
-          </button>
-        </div>
-      </form>
+          />
+        </Form.Actions>
+      </Form>
     </div>
   );
 }

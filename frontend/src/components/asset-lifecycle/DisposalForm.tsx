@@ -52,6 +52,10 @@ export interface DisposalFormProps {
   onSubmit: (data: DisposalFormData) => void;
   /** Callback when form is cancelled */
   onCancel: () => void;
+  /** Whether parent dialog is currently submitting */
+  isSubmitting?: boolean;
+  /** Error message from parent submission */
+  error?: string | null;
 }
 
 /**
@@ -64,6 +68,8 @@ export function DisposalForm({
   transition,
   onSubmit,
   onCancel,
+  isSubmitting = false,
+  error = null,
 }: DisposalFormProps) {
   // Form state
   const [disposalDate, setDisposalDate] = useState(
@@ -104,6 +110,7 @@ export function DisposalForm({
   // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
 
     const selectedVendor = vendors.find(v => v.id === disposalVendorId);
     const selectedApprover = approvers.find(a => a.id === approvedBy);
@@ -158,6 +165,7 @@ export function DisposalForm({
           className={styles.closeButton}
           onClick={onCancel}
           aria-label="Close form"
+          disabled={isSubmitting}
         >
           <span className="material-icons">close</span>
         </button>
@@ -167,6 +175,12 @@ export function DisposalForm({
         <p className={styles.description}>
           {transition.description}
         </p>
+        {error && (
+          <div className={styles.errorMessage}>
+            <span className="material-icons">error</span>
+            <span>{error}</span>
+          </div>
+        )}
 
         <div className={styles.assetDetails}>
           <div className={styles.assetDetail}>
@@ -476,6 +490,7 @@ export function DisposalForm({
           type="button"
           className={styles.cancelButton}
           onClick={onCancel}
+          disabled={isSubmitting}
         >
           Cancel
         </button>
@@ -483,8 +498,9 @@ export function DisposalForm({
           type="submit"
           className={styles.confirmButton}
           style={{ backgroundColor: transition.color }}
+          disabled={isSubmitting}
         >
-          Dispose Asset
+          {isSubmitting ? 'Processing...' : 'Dispose Asset'}
         </button>
       </div>
     </form>
