@@ -151,9 +151,6 @@ export function DisposalForm({
 
   // Determine if environmentalCompliance should be checked by default
   // based on selected vendor's certification
-  const selectedVendor = vendors.find(v => v.id === disposalVendorId);
-  const vendorHasEnvCert = selectedVendor?.environmentalCertification ?? false;
-
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
       <div className={styles.header} style={{ borderColor: transition.color }}>
@@ -231,7 +228,11 @@ export function DisposalForm({
                 id="disposalMethod"
                 className={styles.select}
                 value={disposalMethod}
-                onChange={(e) => setDisposalMethod(e.target.value as any)}
+                onChange={(e) =>
+                  setDisposalMethod(
+                    e.target.value as 'RECYCLING' | 'DONATION' | 'SALE' | 'DESTRUCTION' | 'RETURN_TO_VENDOR' | 'OTHER'
+                  )
+                }
                 required
               >
                 <option value="RECYCLING">Recycling</option>

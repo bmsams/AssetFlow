@@ -29,7 +29,7 @@ export interface StateTransitionDialogProps {
   FormComponent?: React.ComponentType<{
     asset: AnyAssetDetail;
     transition: TransitionAction;
-    onSubmit: (data: TransitionFormData) => void;
+    onSubmit: (data: TransitionFormData) => void | Promise<void>;
     onCancel: () => void;
     isSubmitting?: boolean;
     error?: string | null;
@@ -45,7 +45,7 @@ export interface TransitionFormData {
   assetId: string;
   fromStatus: AssetStatus;
   toStatus: AssetStatus;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 /**
@@ -94,7 +94,7 @@ export function StateTransitionDialog({
     <DefaultTransitionForm
       asset={asset}
       transition={transition}
-      onSubmit={handleSubmit}
+      onSubmit={(data) => { void handleSubmit(data); }}
       onCancel={onClose}
       isSubmitting={isSubmitting}
       error={error}
@@ -114,7 +114,7 @@ export function StateTransitionDialog({
           <FormComponent
             asset={asset}
             transition={transition}
-            onSubmit={handleSubmit}
+            onSubmit={(data) => { void handleSubmit(data); }}
             onCancel={onClose}
             isSubmitting={isSubmitting}
             error={error}
@@ -130,7 +130,7 @@ export function StateTransitionDialog({
 interface DefaultTransitionFormProps {
   asset: AnyAssetDetail;
   transition: TransitionAction;
-  onSubmit: (data: TransitionFormData) => void;
+  onSubmit: (data: TransitionFormData) => void | Promise<void>;
   onCancel: () => void;
   isSubmitting: boolean;
   error: string | null;
@@ -152,7 +152,7 @@ function DefaultTransitionForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({
+    void onSubmit({
       notes,
       reason,
       assetId: asset.assetId,

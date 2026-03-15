@@ -148,7 +148,7 @@ export function InspectionForm() {
   }, [inspectionId, mapInspectionRecord]);
 
   useEffect(() => {
-    loadInspectionItem();
+    void loadInspectionItem();
   }, [loadInspectionItem]);
 
   /**

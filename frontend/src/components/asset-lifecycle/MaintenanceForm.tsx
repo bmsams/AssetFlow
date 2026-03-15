@@ -199,7 +199,11 @@ export function MaintenanceForm({
                 id="maintenanceType"
                 className={styles.select}
                 value={maintenanceType}
-                onChange={(e) => setMaintenanceType(e.target.value as any)}
+                onChange={(e) =>
+                  setMaintenanceType(
+                    e.target.value as 'REPAIR' | 'PREVENTIVE' | 'UPGRADE' | 'INSPECTION'
+                  )
+                }
                 required
               >
                 <option value="REPAIR">Repair</option>
@@ -217,7 +221,7 @@ export function MaintenanceForm({
                 id="priority"
                 className={styles.select}
                 value={priority}
-                onChange={(e) => setPriority(e.target.value as any)}
+                onChange={(e) => setPriority(e.target.value as 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL')}
                 required
               >
                 <option value="LOW">Low</option>

@@ -68,9 +68,7 @@ export function ReturnForm({
     new Date().toISOString().split('T')[0]
   );
   const [receivedByUserId, setReceivedByUserId] = useState('');
-  const [receivedByName, setReceivedByName] = useState('');
   const [stockroomId, setStockroomId] = useState('');
-  const [stockroomName, setStockroomName] = useState('');
   const [conditionRating, setConditionRating] = useState<'EXCELLENT' | 'GOOD' | 'FAIR' | 'POOR' | 'DAMAGED'>('GOOD');
   const [conditionNotes, setConditionNotes] = useState('');
   const [needsMaintenance, setNeedsMaintenance] = useState(false);
@@ -243,7 +241,9 @@ export function ReturnForm({
               id="conditionRating"
               className={styles.select}
               value={conditionRating}
-              onChange={(e) => setConditionRating(e.target.value as any)}
+              onChange={(e) =>
+                setConditionRating(e.target.value as 'EXCELLENT' | 'GOOD' | 'FAIR' | 'POOR' | 'DAMAGED')
+              }
               required
             >
               <option value="EXCELLENT">Excellent - Like new</option>

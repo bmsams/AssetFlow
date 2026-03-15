@@ -94,21 +94,21 @@ export function DeploymentForm({
 
   // Mock data for dropdown options
   // In a real implementation, these would be fetched from an API
-  const [departments, setDepartments] = useState<DepartmentOption[]>([
+  const [departments] = useState<DepartmentOption[]>([
     { id: 'dept-1', name: 'IT Department' },
     { id: 'dept-2', name: 'Finance Department' },
     { id: 'dept-3', name: 'Operations Department' },
     { id: 'dept-4', name: 'Marketing Department' },
     { id: 'dept-5', name: 'Human Resources' },
   ]);
-  const [locations, setLocations] = useState<LocationOption[]>([
+  const [locations] = useState<LocationOption[]>([
     { id: 'loc-1', name: 'Headquarters - Floor 1', type: 'FLOOR' },
     { id: 'loc-2', name: 'Headquarters - Floor 2', type: 'FLOOR' },
     { id: 'loc-3', name: 'Headquarters - Server Room', type: 'ROOM' },
     { id: 'loc-4', name: 'Headquarters - Conference Room A', type: 'ROOM' },
     { id: 'loc-5', name: 'East Branch Office', type: 'BUILDING' },
   ]);
-  const [users, setUsers] = useState<UserOption[]>([
+  const [users] = useState<UserOption[]>([
     { id: 'user-1', name: 'John Smith', email: 'john.smith@example.com', departmentId: 'dept-1' },
     { id: 'user-2', name: 'Emily Johnson', email: 'emily.johnson@example.com', departmentId: 'dept-2' },
     { id: 'user-3', name: 'Michael Davis', email: 'michael.davis@example.com', departmentId: 'dept-3' },
@@ -242,7 +242,7 @@ export function DeploymentForm({
                 id="deploymentType"
                 className={styles.select}
                 value={deploymentType}
-                onChange={(e) => setDeploymentType(e.target.value as any)}
+                onChange={(e) => setDeploymentType(e.target.value as 'PERMANENT' | 'TEMPORARY' | 'PROJECT')}
                 required
               >
                 <option value="PERMANENT">Permanent</option>

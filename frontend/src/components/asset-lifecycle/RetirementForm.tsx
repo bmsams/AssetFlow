@@ -221,7 +221,11 @@ export function RetirementForm({
                 id="retirementType"
                 className={styles.select}
                 value={retirementType}
-                onChange={(e) => setRetirementType(e.target.value as any)}
+                onChange={(e) =>
+                  setRetirementType(
+                    e.target.value as 'END_OF_LIFE' | 'OBSOLETE' | 'DAMAGED' | 'LOST' | 'STOLEN' | 'OTHER'
+                  )
+                }
                 required
               >
                 <option value="END_OF_LIFE">End of Life</option>

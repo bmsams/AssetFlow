@@ -230,7 +230,7 @@ export function ReceivingForm() {
   }, [receivingIdParam, poIdParam, loadReceivingRecord, createReceivingFromPO, initializeLineStates]);
 
   useEffect(() => {
-    loadReceivingItem();
+    void loadReceivingItem();
   }, [loadReceivingItem]);
 
   /**
@@ -666,15 +666,15 @@ export function ReceivingForm() {
                     placeholder="Enter or scan serial number..."
                     value={serialInput}
                     onChange={(e) => setSerialInput(e.target.value)}
-                    onKeyDown={(e) => handleSerialKeyDown(e, line.lineId)}
+                    onKeyDown={(e) => { void handleSerialKeyDown(e, line.lineId); }}
                     disabled={isSaving || isScanning || line.serialNumbers.length >= line.pendingQuantity}
                     autoFocus
                   />
                   <button
                     type="button"
                     className={styles.primaryButton}
-                    onClick={async () => {
-                      await addSerialNumber(line.lineId, serialInput);
+                    onClick={() => {
+                      void addSerialNumber(line.lineId, serialInput);
                       setSerialInput('');
                     }}
                     disabled={!serialInput.trim() || isSaving || isScanning || line.serialNumbers.length >= line.pendingQuantity}
@@ -701,8 +701,8 @@ export function ReceivingForm() {
                 <button
                   type="button"
                   className={styles.primaryButton}
-                  onClick={async () => {
-                    await addBulkSerialNumbers(line.lineId, bulkSerialInput);
+                  onClick={() => {
+                    void addBulkSerialNumbers(line.lineId, bulkSerialInput);
                     setBulkSerialInput('');
                   }}
                   disabled={!bulkSerialInput.trim() || isSaving || isScanning}
@@ -783,7 +783,7 @@ export function ReceivingForm() {
                 <input
                   type="checkbox"
                   checked={line.inspectionRequired}
-                  onChange={() => toggleInspection(line.lineId)}
+                  onChange={() => { void toggleInspection(line.lineId); }}
                   disabled={isSaving}
                 />
                 <span>Mark for quality inspection</span>

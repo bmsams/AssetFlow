@@ -158,12 +158,12 @@ export function PurchaseOrderForm() {
   }, [poId]);
 
   useEffect(() => {
-    loadDropdownData();
+    void loadDropdownData();
   }, [loadDropdownData]);
 
   useEffect(() => {
     if (isEditing) {
-      loadPurchaseOrder();
+      void loadPurchaseOrder();
     }
   }, [isEditing, loadPurchaseOrder]);
 
@@ -193,7 +193,7 @@ export function PurchaseOrderForm() {
       }
     };
 
-    loadVendorPrices();
+    void loadVendorPrices();
 
     return () => {
       isMounted = false;

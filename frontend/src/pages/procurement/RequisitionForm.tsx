@@ -134,7 +134,8 @@ export function RequisitionForm() {
     }
 
     for (let index = 0; index < lines.length; index++) {
-      const line = lines[index]!;
+      const line = lines[index];
+      if (!line) continue;
       const currentLineErrors: LineValidationErrors = {};
 
       if (!line.productDescription.trim()) {
@@ -474,7 +475,7 @@ export function RequisitionForm() {
           <Button variant="secondary" onClick={() => navigate('/procurement/requisitions')}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={handleSubmit} isLoading={isSubmitting}>
+          <Button variant="primary" onClick={() => { void handleSubmit(); }} isLoading={isSubmitting}>
             Create requisition
           </Button>
         </div>

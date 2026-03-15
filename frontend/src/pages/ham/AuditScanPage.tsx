@@ -9,6 +9,11 @@ import {
 } from '../../services/ham-api';
 import styles from '../Page.module.css';
 
+interface AuditScanFormValues {
+  assetTag: string;
+  locationId: string;
+}
+
 export function AuditScanPage() {
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -16,21 +21,28 @@ export function AuditScanPage() {
   const [scanResult, setScanResult] = useState<string | null>(null);
   const [recentScans, setRecentScans] = useState<AuditScan[]>([]);
 
-  const validateScanForm = (values: Record<string, any>) => {
+  const toAuditScanValues = (values: Record<string, unknown>): AuditScanFormValues => ({
+    assetTag: typeof values.assetTag === 'string' ? values.assetTag : '',
+    locationId: typeof values.locationId === 'string' ? values.locationId : '',
+  });
+
+  const validateScanForm = (values: Record<string, unknown>) => {
+    const parsed = toAuditScanValues(values);
     const errors: Record<string, string> = {};
-    if (!values.assetTag?.trim()) errors.assetTag = 'Asset Tag is required';
-    if (!values.locationId?.trim()) errors.locationId = 'Location ID is required';
+    if (!parsed.assetTag.trim()) errors.assetTag = 'Asset Tag is required';
+    if (!parsed.locationId.trim()) errors.locationId = 'Location ID is required';
     return errors;
   };
 
-  const handleScan = async (values: Record<string, any>) => {
+  const handleScan = async (values: Record<string, unknown>) => {
+    const parsed = toAuditScanValues(values);
     try {
       setIsSaving(true);
       setScanResult(null);
       setError(null);
       const scan = await recordAuditScan({
-        assetTag: values.assetTag.trim(),
-        locationId: values.locationId.trim(),
+        assetTag: parsed.assetTag.trim(),
+        locationId: parsed.locationId.trim(),
       });
       setScanResult(scan.matched ? 'Match confirmed' : 'Mismatch detected');
       setRecentScans((prev) => [scan, ...prev]);
