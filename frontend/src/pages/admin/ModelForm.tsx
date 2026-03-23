@@ -29,6 +29,20 @@ export function ModelForm() {
     manufacturerId: '', modelName: '', modelNumber: '', sku: '', category: '', status: 'ACTIVE' as ModelStatus,
   });
 
+  type ModelFormValues = {
+    manufacturerId: string;
+    modelName: string;
+    modelNumber: string;
+    sku: string;
+    category: string;
+    status: string;
+  };
+
+  const getValue = (values: Record<string, unknown>, key: keyof ModelFormValues): string => {
+    const value = values[key];
+    return typeof value === 'string' ? value : '';
+  };
+
   useEffect(() => {
     adminApi.manufacturers.list({ isActive: true }, { pageSize: 100 })
       .then(res => setManufacturers(res.items)).catch(() => {});
@@ -42,32 +56,48 @@ export function ModelForm() {
           manufacturerId: m.manufacturerId, modelName: m.modelName, modelNumber: m.modelNumber || '',
           sku: m.sku || '', category: m.category || '', status: m.status,
         }))
-        .catch(err => setError(err.message))
+        .catch((err: unknown) => setError(err instanceof Error ? err.message : 'Failed to load model'))
         .finally(() => setIsLoading(false));
     }
   }, [modelId, isEditing]);
 
-  const validateForm = (values: Record<string, any>) => {
+  const validateForm = (values: Record<string, unknown>) => {
     const errors: Record<string, string> = {};
-    if (!values.manufacturerId) errors.manufacturerId = 'Manufacturer is required';
-    if (!values.modelName?.trim()) errors.modelName = 'Model name is required';
+    const manufacturerId = getValue(values, 'manufacturerId').trim();
+    const modelName = getValue(values, 'modelName').trim();
+
+    if (!manufacturerId) errors.manufacturerId = 'Manufacturer is required';
+    if (!modelName) errors.modelName = 'Model name is required';
     return errors;
   };
 
-  const handleSubmit = async (values: Record<string, any>) => {
+  const handleSubmit = async (values: Record<string, unknown>) => {
+    const manufacturerId = getValue(values, 'manufacturerId').trim();
+    const modelName = getValue(values, 'modelName').trim();
+    const modelNumber = getValue(values, 'modelNumber').trim();
+    const sku = getValue(values, 'sku').trim();
+    const category = getValue(values, 'category').trim();
+    const status = getValue(values, 'status').trim() as ModelStatus;
+
     try {
       setIsSaving(true);
       setError(null);
       if (isEditing && modelId) {
         const data: UpdateModelRequest = {
-          modelName: values.modelName, modelNumber: values.modelNumber || undefined,
-          sku: values.sku || undefined, category: values.category || undefined, status: values.status,
+          modelName,
+          modelNumber: modelNumber || undefined,
+          sku: sku || undefined,
+          category: category || undefined,
+          status,
         };
         await adminApi.models.update(modelId, data);
       } else {
         const data: CreateModelRequest = {
-          manufacturerId: values.manufacturerId, modelName: values.modelName,
-          modelNumber: values.modelNumber || undefined, sku: values.sku || undefined, category: values.category || undefined,
+          manufacturerId,
+          modelName,
+          modelNumber: modelNumber || undefined,
+          sku: sku || undefined,
+          category: category || undefined,
         };
         await adminApi.models.create(data);
       }

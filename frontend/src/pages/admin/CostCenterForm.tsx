@@ -27,6 +27,19 @@ export function CostCenterForm() {
     fiscalYear: new Date().getFullYear().toString(),
   });
 
+  type CostCenterFormValues = {
+    code: string;
+    name: string;
+    departmentId: string;
+    budgetAmount: string;
+    fiscalYear: string;
+  };
+
+  const getValue = (values: Record<string, unknown>, key: keyof CostCenterFormValues): string => {
+    const value = values[key];
+    return typeof value === 'string' ? value : '';
+  };
+
   useEffect(() => {
     adminApi.departments.list(isEditing ? undefined : { isActive: true }, { pageSize: 100 })
       .then(res => setDepartments(res.items)).catch(() => {});
@@ -45,29 +58,40 @@ export function CostCenterForm() {
             fiscalYear: String(cc.fiscalYear),
           });
         })
-        .catch(err => setError(err.message))
+        .catch((err: unknown) => setError(err instanceof Error ? err.message : 'Failed to load cost center'))
         .finally(() => setIsLoading(false));
     }
   }, [costCenterId, isEditing]);
 
-  const validateForm = (values: Record<string, any>) => {
+  const validateForm = (values: Record<string, unknown>) => {
     const errors: Record<string, string> = {};
-    if (!values.code?.trim()) errors.code = 'Code is required';
-    if (!values.name?.trim()) errors.name = 'Name is required';
-    if (!values.budgetAmount || Number(values.budgetAmount) < 0) errors.budgetAmount = 'Valid budget is required';
-    if (!values.fiscalYear) errors.fiscalYear = 'Fiscal year is required';
+    const code = getValue(values, 'code').trim();
+    const name = getValue(values, 'name').trim();
+    const budgetAmount = getValue(values, 'budgetAmount').trim();
+    const fiscalYear = getValue(values, 'fiscalYear').trim();
+
+    if (!code) errors.code = 'Code is required';
+    if (!name) errors.name = 'Name is required';
+    if (!budgetAmount || Number(budgetAmount) < 0) errors.budgetAmount = 'Valid budget is required';
+    if (!fiscalYear) errors.fiscalYear = 'Fiscal year is required';
     return errors;
   };
 
-  const handleSubmit = async (values: Record<string, any>) => {
+  const handleSubmit = async (values: Record<string, unknown>) => {
+    const code = getValue(values, 'code').trim();
+    const name = getValue(values, 'name').trim();
+    const departmentId = getValue(values, 'departmentId').trim();
+    const budgetAmount = Number(getValue(values, 'budgetAmount'));
+    const fiscalYear = Number(getValue(values, 'fiscalYear'));
+
     try {
       setIsSaving(true);
       setError(null);
       if (isEditing && costCenterId) {
-        const data: UpdateCostCenterRequest = { name: values.name, departmentId: values.departmentId || undefined, budgetAmount: Number(values.budgetAmount) };
+        const data: UpdateCostCenterRequest = { name, departmentId: departmentId || undefined, budgetAmount };
         await adminApi.costCenters.update(costCenterId, data);
       } else {
-        const data: CreateCostCenterRequest = { code: values.code, name: values.name, departmentId: values.departmentId || undefined, budgetAmount: Number(values.budgetAmount), fiscalYear: Number(values.fiscalYear) };
+        const data: CreateCostCenterRequest = { code, name, departmentId: departmentId || undefined, budgetAmount, fiscalYear };
         await adminApi.costCenters.create(data);
       }
       navigate('/admin/cost-centers');

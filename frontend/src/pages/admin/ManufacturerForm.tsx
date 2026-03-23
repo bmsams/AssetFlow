@@ -19,32 +19,48 @@ export function ManufacturerForm() {
   const [error, setError] = useState<string | null>(null);
   const [initialValues, setInitialValues] = useState({ name: '', website: '' });
 
+  type ManufacturerFormValues = {
+    name: string;
+    website: string;
+  };
+
+  const getValue = (values: Record<string, unknown>, key: keyof ManufacturerFormValues): string => {
+    const value = values[key];
+    return typeof value === 'string' ? value : '';
+  };
+
   useEffect(() => {
     if (isEditing && manufacturerId) {
       setIsLoading(true);
       adminApi.manufacturers.get(manufacturerId)
         .then(m => setInitialValues({ name: m.name, website: m.website || '' }))
-        .catch(err => setError(err.message))
+        .catch((err: unknown) => setError(err instanceof Error ? err.message : 'Failed to load manufacturer'))
         .finally(() => setIsLoading(false));
     }
   }, [manufacturerId, isEditing]);
 
-  const validateForm = (values: Record<string, any>) => {
+  const validateForm = (values: Record<string, unknown>) => {
     const errors: Record<string, string> = {};
-    if (!values.name?.trim()) errors.name = 'Name is required';
-    if (values.website && !/^https?:\/\//.test(values.website)) errors.website = 'Invalid URL (must start with http:// or https://)';
+    const name = getValue(values, 'name').trim();
+    const website = getValue(values, 'website').trim();
+
+    if (!name) errors.name = 'Name is required';
+    if (website && !/^https?:\/\//.test(website)) errors.website = 'Invalid URL (must start with http:// or https://)';
     return errors;
   };
 
-  const handleSubmit = async (values: Record<string, any>) => {
+  const handleSubmit = async (values: Record<string, unknown>) => {
+    const name = getValue(values, 'name').trim();
+    const website = getValue(values, 'website').trim();
+
     try {
       setIsSaving(true);
       setError(null);
       if (isEditing && manufacturerId) {
-        const data: UpdateManufacturerRequest = { name: values.name, website: values.website || undefined };
+        const data: UpdateManufacturerRequest = { name, website: website || undefined };
         await adminApi.manufacturers.update(manufacturerId, data);
       } else {
-        const data: CreateManufacturerRequest = { name: values.name, website: values.website || undefined };
+        const data: CreateManufacturerRequest = { name, website: website || undefined };
         await adminApi.manufacturers.create(data);
       }
       navigate('/admin/manufacturers');

@@ -25,6 +25,17 @@ export function DepartmentForm() {
     parentDepartmentId: '',
   });
 
+  type DepartmentFormValues = {
+    code: string;
+    name: string;
+    parentDepartmentId: string;
+  };
+
+  const getValue = (values: Record<string, unknown>, key: keyof DepartmentFormValues): string => {
+    const value = values[key];
+    return typeof value === 'string' ? value : '';
+  };
+
   useEffect(() => {
     adminApi.departments.list({ isActive: true }, { pageSize: 100 })
       .then(res => setDepartments(res.items.filter(d => d.departmentId !== departmentId)))
@@ -42,33 +53,40 @@ export function DepartmentForm() {
             parentDepartmentId: dept.parentDepartmentId || '',
           });
         })
-        .catch(err => setError(err.message))
+        .catch((err: unknown) => setError(err instanceof Error ? err.message : 'Failed to load department'))
         .finally(() => setIsLoading(false));
     }
   }, [departmentId, isEditing]);
 
-  const validateForm = (values: Record<string, any>) => {
+  const validateForm = (values: Record<string, unknown>) => {
     const errors: Record<string, string> = {};
-    if (!values.code?.trim()) errors.code = 'Code is required';
-    if (!values.name?.trim()) errors.name = 'Name is required';
+    const code = getValue(values, 'code').trim();
+    const name = getValue(values, 'name').trim();
+
+    if (!code) errors.code = 'Code is required';
+    if (!name) errors.name = 'Name is required';
     return errors;
   };
 
-  const handleSubmit = async (values: Record<string, any>) => {
+  const handleSubmit = async (values: Record<string, unknown>) => {
+    const name = getValue(values, 'name').trim();
+    const parentDepartmentId = getValue(values, 'parentDepartmentId').trim();
+    const code = getValue(values, 'code').trim();
+
     try {
       setIsSaving(true);
       setError(null);
       if (isEditing && departmentId) {
         const data: UpdateDepartmentRequest = {
-          name: values.name,
-          parentDepartmentId: values.parentDepartmentId || undefined,
+          name,
+          parentDepartmentId: parentDepartmentId || undefined,
         };
         await adminApi.departments.update(departmentId, data);
       } else {
         const data: CreateDepartmentRequest = {
-          code: values.code,
-          name: values.name,
-          parentDepartmentId: values.parentDepartmentId || undefined,
+          code,
+          name,
+          parentDepartmentId: parentDepartmentId || undefined,
         };
         await adminApi.departments.create(data);
       }

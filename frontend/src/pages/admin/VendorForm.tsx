@@ -59,6 +59,22 @@ export function VendorForm() {
     vendorSku: '',
   });
 
+  type VendorFormValues = {
+    vendorCode: string;
+    vendorName: string;
+    vendorType: string;
+    contactName: string;
+    contactEmail: string;
+    contactPhone: string;
+    paymentTerms: string;
+    rating: string;
+  };
+
+  const getValue = (values: Record<string, unknown>, key: keyof VendorFormValues): string => {
+    const value = values[key];
+    return typeof value === 'string' ? value : '';
+  };
+
   useEffect(() => {
     if (isEditing && vendorId) {
       setIsLoading(true);
@@ -73,7 +89,7 @@ export function VendorForm() {
           paymentTerms: v.paymentTerms || '',
           rating: v.rating || '',
         }))
-        .catch(err => setError(err.message))
+        .catch((err: unknown) => setError(err instanceof Error ? err.message : 'Failed to load vendor'))
         .finally(() => setIsLoading(false));
     }
   }, [vendorId, isEditing]);
@@ -96,37 +112,49 @@ export function VendorForm() {
       .finally(() => setIsPricingLoading(false));
   }, [isEditing, vendorId]);
 
-  const validateForm = (values: Record<string, any>) => {
+  const validateForm = (values: Record<string, unknown>) => {
     const errors: Record<string, string> = {};
-    if (!values.vendorName?.trim()) errors.vendorName = 'Vendor name is required';
-    if (values.contactEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.contactEmail)) errors.contactEmail = 'Invalid email';
+    const vendorName = getValue(values, 'vendorName').trim();
+    const contactEmail = getValue(values, 'contactEmail').trim();
+
+    if (!vendorName) errors.vendorName = 'Vendor name is required';
+    if (contactEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) errors.contactEmail = 'Invalid email';
     return errors;
   };
 
-  const handleSubmit = async (values: Record<string, any>) => {
+  const handleSubmit = async (values: Record<string, unknown>) => {
+    const vendorCode = getValue(values, 'vendorCode').trim();
+    const vendorName = getValue(values, 'vendorName').trim();
+    const vendorType = getValue(values, 'vendorType').trim();
+    const contactName = getValue(values, 'contactName').trim();
+    const contactEmail = getValue(values, 'contactEmail').trim();
+    const contactPhone = getValue(values, 'contactPhone').trim();
+    const paymentTerms = getValue(values, 'paymentTerms').trim();
+    const rating = getValue(values, 'rating').trim();
+
     try {
       setIsSaving(true);
       setError(null);
       if (isEditing && vendorId) {
         const data: UpdateVendorRequest = {
-          vendorName: values.vendorName,
-          vendorType: values.vendorType || undefined,
-          contactName: values.contactName || undefined,
-          contactEmail: values.contactEmail || undefined,
-          contactPhone: values.contactPhone || undefined,
-          paymentTerms: values.paymentTerms || undefined,
-          rating: values.rating || undefined,
+          vendorName,
+          vendorType: vendorType ? (vendorType as VendorType) : undefined,
+          contactName: contactName || undefined,
+          contactEmail: contactEmail || undefined,
+          contactPhone: contactPhone || undefined,
+          paymentTerms: paymentTerms || undefined,
+          rating: rating ? (rating as VendorRating) : undefined,
         };
         await adminApi.vendors.update(vendorId, data);
       } else {
         const data: CreateVendorRequest = {
-          vendorCode: values.vendorCode || undefined,
-          vendorName: values.vendorName,
-          vendorType: values.vendorType || undefined,
-          contactName: values.contactName || undefined,
-          contactEmail: values.contactEmail || undefined,
-          contactPhone: values.contactPhone || undefined,
-          paymentTerms: values.paymentTerms || undefined,
+          vendorCode: vendorCode || undefined,
+          vendorName,
+          vendorType: vendorType ? (vendorType as VendorType) : undefined,
+          contactName: contactName || undefined,
+          contactEmail: contactEmail || undefined,
+          contactPhone: contactPhone || undefined,
+          paymentTerms: paymentTerms || undefined,
         };
         await adminApi.vendors.create(data);
       }
