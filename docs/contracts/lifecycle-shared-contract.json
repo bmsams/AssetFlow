@@ -1,0 +1,282 @@
+{
+  "contractVersion": "2026-03-07",
+  "module": "lifecycle",
+  "scope": "Receiving, inspection, deployment, retirement, and request lifecycle handoff contract.",
+  "sharedEntities": [
+    "assets",
+    "purchase_orders",
+    "purchase_order_lines",
+    "stockrooms",
+    "users",
+    "vendors"
+  ],
+  "enums": {
+    "receivingStatus": [
+      "PENDING",
+      "IN_PROGRESS",
+      "COMPLETED",
+      "CANCELLED"
+    ],
+    "inspectionResult": [
+      "PASSED",
+      "FAILED"
+    ],
+    "inspectionStatus": [
+      "PENDING",
+      "IN_PROGRESS",
+      "PASSED",
+      "FAILED"
+    ]
+  },
+  "entities": {
+    "receivingRecords": {
+      "table": "receiving_records",
+      "requiredColumns": [
+        "receiving_id",
+        "receiving_number",
+        "po_id",
+        "stockroom_id",
+        "received_by",
+        "status"
+      ]
+    },
+    "receivingLines": {
+      "table": "receiving_lines",
+      "requiredColumns": [
+        "line_id",
+        "receiving_id",
+        "po_line_id",
+        "product_id",
+        "quantity_expected",
+        "quantity_received",
+        "status"
+      ]
+    },
+    "inspectionRecords": {
+      "table": "inspection_records",
+      "requiredColumns": [
+        "inspection_id",
+        "receiving_line_id",
+        "inspection_status",
+        "result",
+        "routed_to_return"
+      ]
+    },
+    "deploymentRecords": {
+      "table": "deployment_records",
+      "requiredColumns": [
+        "deployment_id",
+        "asset_id",
+        "assigned_to_user_id",
+        "deployment_date",
+        "status"
+      ]
+    },
+    "retirementWorkflows": {
+      "table": "retirement_workflows",
+      "requiredColumns": [
+        "workflow_id",
+        "asset_id",
+        "status",
+        "retirement_reason",
+        "initiated_by"
+      ]
+    },
+    "retirementTasks": {
+      "table": "retirement_tasks",
+      "requiredColumns": [
+        "task_id",
+        "workflow_id",
+        "task_type",
+        "status",
+        "sequence"
+      ]
+    },
+    "requests": {
+      "table": "requests",
+      "requiredColumns": [
+        "request_id",
+        "requester_id",
+        "status",
+        "request_type",
+        "cost_center_id"
+      ]
+    },
+    "requestLines": {
+      "table": "request_lines",
+      "requiredColumns": [
+        "line_id",
+        "request_id",
+        "line_number",
+        "quantity",
+        "purchase_order_id",
+        "purchase_order_line_id"
+      ]
+    }
+  },
+  "enumTargets": [
+    {
+      "enum": "receivingStatus",
+      "files": [
+        "backend/packages/types/src/lifecycle.ts",
+        "frontend/src/services/receiving-api.ts"
+      ]
+    },
+    {
+      "enum": "inspectionResult",
+      "files": [
+        "backend/packages/types/src/lifecycle.ts",
+        "frontend/src/services/receiving-api.ts"
+      ]
+    },
+    {
+      "enum": "inspectionStatus",
+      "files": [
+        "backend/packages/services/lifecycle-service/src/receiving/receiving-repository.ts",
+        "frontend/src/services/receiving-api.ts"
+      ]
+    }
+  ],
+  "fileChecks": [
+    {
+      "path": "backend/packages/services/lifecycle-service/src/receiving/receiving-service.ts",
+      "tokens": [
+        "recordReceivingFromPO",
+        "completeReceiving",
+        "markForInspection",
+        "recordInspectionResult"
+      ]
+    },
+    {
+      "path": "backend/packages/services/lifecycle-service/src/receiving/receiving-repository.ts",
+      "tokens": [
+        "resolveEffectiveVendor",
+        "createReceivingLineFromPO",
+        "getReceivingReconciliation"
+      ]
+    },
+    {
+      "path": "frontend/src/services/receiving-api.ts",
+      "tokens": [
+        "/lifecycle/receiving/from-po",
+        "/lifecycle/receiving/${receivingId}/scan",
+        "/lifecycle/inspection/${inspectionId}/result"
+      ]
+    },
+    {
+      "path": "frontend/src/services/lifecycle-api.ts",
+      "tokens": [
+        "/lifecycle/deploy",
+        "/lifecycle/retirement",
+        "/lifecycle/disposal/${assetId}/complete"
+      ]
+    }
+  ],
+  "requiredRuntimeRoutes": [
+    {
+      "path": "/lifecycle/receiving/from-po",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/lifecycle/receiving/{receivingId}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/lifecycle/receiving/{receivingId}/scan",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/lifecycle/receiving/{receivingId}/complete",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/lifecycle/receiving/{receivingId}/cancel",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/lifecycle/inspection",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/lifecycle/inspection/{inspectionId}/result",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/lifecycle/deploy",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/lifecycle/retirement",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/lifecycle/disposal/{assetId}/complete",
+      "methods": [
+        "POST"
+      ]
+    }
+  ],
+  "requiredOpenApiRoutes": [
+    {
+      "path": "/lifecycle/receiving/from-po",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/lifecycle/receiving/{receivingId}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/lifecycle/receiving/{receivingId}/scan",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/lifecycle/receiving/{receivingId}/complete",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/lifecycle/receiving/{receivingId}/cancel",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/lifecycle/inspection",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/lifecycle/inspection/{inspectionId}/result",
+      "methods": [
+        "POST"
+      ]
+    }
+  ]
+}
+

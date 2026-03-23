@@ -1,0 +1,243 @@
+{
+  "contractVersion": "2026-03-07",
+  "module": "integration",
+  "scope": "Discovery, ERP, and vendor feed integration contract covering ingestion and system linkage tables.",
+  "sharedEntities": [
+    "assets",
+    "vendors",
+    "cost_centers",
+    "purchase_orders",
+    "users"
+  ],
+  "enums": {
+    "discoverySourceType": [
+      "SCCM",
+      "JAMF",
+      "TANIUM"
+    ],
+    "erpSystemType": [
+      "SAP",
+      "ORACLE",
+      "WORKDAY"
+    ],
+    "integrationVendorType": [
+      "CDW",
+      "INSIGHT",
+      "SHI",
+      "DELL_DIRECT",
+      "HP_DIRECT",
+      "OTHER"
+    ]
+  },
+  "entities": {
+    "discoveryRecords": {
+      "table": "discovery_records",
+      "requiredColumns": [
+        "discovery_record_id",
+        "source_type",
+        "source_id",
+        "source_name",
+        "status",
+        "matched_asset_id",
+        "created_asset_id"
+      ]
+    },
+    "vendorCatalogItems": {
+      "table": "vendor_catalog_items",
+      "requiredColumns": [
+        "catalog_item_id",
+        "vendor_type",
+        "vendor_part_number",
+        "manufacturer",
+        "model",
+        "unit_price",
+        "availability"
+      ]
+    },
+    "vendorAsns": {
+      "table": "vendor_asns",
+      "requiredColumns": [
+        "asn_id",
+        "vendor_type",
+        "vendor_asn_number",
+        "purchase_order_number",
+        "status",
+        "total_items"
+      ]
+    },
+    "vendorAsnLines": {
+      "table": "vendor_asn_lines",
+      "requiredColumns": [
+        "line_id",
+        "asn_id",
+        "line_number",
+        "vendor_part_number",
+        "quantity",
+        "status"
+      ]
+    },
+    "erpPurchaseOrders": {
+      "table": "erp_purchase_orders",
+      "requiredColumns": [
+        "erp_purchase_order_id",
+        "erp_system",
+        "po_number",
+        "vendor_id",
+        "status",
+        "total_amount",
+        "local_po_id"
+      ]
+    },
+    "erpCostCenters": {
+      "table": "erp_cost_centers",
+      "requiredColumns": [
+        "erp_cost_center_id",
+        "erp_system",
+        "cost_center_code",
+        "name",
+        "status",
+        "local_cost_center_id"
+      ]
+    }
+  },
+  "enumTargets": [
+    {
+      "enum": "discoverySourceType",
+      "files": [
+        "backend/packages/types/src/integration.ts",
+        "backend/packages/services/integration-service/src/discovery/discovery-types.ts"
+      ]
+    },
+    {
+      "enum": "erpSystemType",
+      "files": [
+        "backend/packages/types/src/integration.ts",
+        "backend/packages/services/integration-service/src/erp/erp-types.ts"
+      ]
+    },
+    {
+      "enum": "integrationVendorType",
+      "files": [
+        "backend/packages/types/src/integration.ts",
+        "backend/packages/services/integration-service/src/vendor/vendor-types.ts"
+      ]
+    }
+  ],
+  "fileChecks": [
+    {
+      "path": "backend/packages/services/integration-service/src/handlers/ingest-sccm-data.ts",
+      "tokens": [
+        "ingestSCCMData",
+        "validateSCCMPayload"
+      ]
+    },
+    {
+      "path": "backend/packages/services/integration-service/src/handlers/sync-purchase-orders.ts",
+      "tokens": [
+        "syncPurchaseOrders",
+        "erpSystem"
+      ]
+    },
+    {
+      "path": "backend/packages/services/integration-service/src/handlers/get-vendor-catalog.ts",
+      "tokens": [
+        "getVendorCatalog",
+        "vendorType"
+      ]
+    }
+  ],
+  "requiredRuntimeRoutes": [
+    {
+      "path": "/integrations/vendor-catalog",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/integrations/vendor-catalog/{vendorType}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/integrations/erp/sync-purchase-orders",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/integrations/erp/sync-cost-centers",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/integrations/erp/process-asn",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/integrations/discovery/sccm",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/integrations/discovery/jamf",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/integrations/discovery/tanium",
+      "methods": [
+        "POST"
+      ]
+    }
+  ],
+  "requiredOpenApiRoutes": [
+    {
+      "path": "/integrations/discovery",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/integrations/discovery/sources",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/integrations/erp",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/integrations/erp/purchase-orders",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/integrations/vendor",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/integrations/vendor/asn",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/integrations/vendor/catalog",
+      "methods": [
+        "GET"
+      ]
+    }
+  ]
+}

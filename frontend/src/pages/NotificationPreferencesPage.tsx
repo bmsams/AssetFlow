@@ -34,7 +34,7 @@ export function NotificationPreferencesPage() {
   }, []);
 
   useEffect(() => {
-    fetchPrefs();
+    void fetchPrefs();
   }, [fetchPrefs]);
 
   const handleToggle = async (key: 'emailEnabled' | 'pushEnabled') => {

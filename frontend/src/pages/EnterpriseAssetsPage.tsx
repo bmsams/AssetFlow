@@ -106,7 +106,7 @@ export function EnterpriseAssetsPage() {
   }, [fetchAssets]);
 
   useEffect(() => {
-    fetchAssets();
+    void fetchAssets();
   }, [fetchAssets]);
 
   useEffect(() => {

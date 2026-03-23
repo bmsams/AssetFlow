@@ -119,7 +119,7 @@ export function WorkOrdersPage() {
   }, [loadBuildings]);
 
   useEffect(() => {
-    fetchWorkOrders();
+    void fetchWorkOrders();
   }, [fetchWorkOrders]);
 
   useEffect(() => {

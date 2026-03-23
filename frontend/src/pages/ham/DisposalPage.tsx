@@ -32,7 +32,7 @@ export function DisposalPage() {
   }, [statusFilter]);
 
   useEffect(() => {
-    fetchDisposals();
+    void fetchDisposals();
   }, [fetchDisposals]);
 
   const handleRecordDestruction = async (disposalId: string) => {

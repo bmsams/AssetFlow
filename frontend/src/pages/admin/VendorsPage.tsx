@@ -46,7 +46,7 @@ export function VendorsPage() {
     }
   }, [showInactive, searchQuery, vendorTypeFilter]);
 
-  useEffect(() => { fetchVendors(); }, [fetchVendors]);
+  useEffect(() => { void fetchVendors(); }, [fetchVendors]);
 
   const handleRetry = useCallback(async () => {
     setIsRetrying(true);
@@ -79,7 +79,7 @@ export function VendorsPage() {
     if (!window.confirm(`Deactivate vendor "${vendor.vendorName}"?`)) return;
     try {
       await adminApi.vendors.deactivate(vendor.vendorId);
-      fetchVendors();
+      void fetchVendors();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to deactivate');
     }

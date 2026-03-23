@@ -18,6 +18,11 @@ import * as repository from '../discovery/discovery-repository';
 // Mock the repository module
 jest.mock('../discovery/discovery-repository');
 
+// Mock event publishing to keep tests isolated from AWS SDK runtime
+jest.mock('@ams/events', () => ({
+  publishEvent: jest.fn().mockResolvedValue(undefined),
+}));
+
 // Mock the logger
 jest.mock('@ams/utils', () => ({
   createLogger: () => ({

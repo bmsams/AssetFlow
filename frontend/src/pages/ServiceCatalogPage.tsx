@@ -61,7 +61,7 @@ export function ServiceCatalogPage() {
       }
     }
 
-    fetchCatalogItems();
+    void fetchCatalogItems();
 
     return () => {
       isMounted = false;

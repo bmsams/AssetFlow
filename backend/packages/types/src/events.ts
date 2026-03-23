@@ -321,6 +321,21 @@ export interface TransferOrderCancelledEvent extends BaseEvent {
   readonly payload: { readonly transferId: UUID; readonly transferNumber: string; readonly cancelledBy: UUID; readonly reason: string };
 }
 
+export interface TransferLineReceivedEvent extends BaseEvent {
+  readonly eventType: 'TRANSFER_LINE_RECEIVED';
+  readonly payload: {
+    readonly transferId: UUID;
+    readonly lineId: UUID;
+    readonly lineNumber: number;
+    readonly receivedBy: UUID;
+    readonly receivedQuantity: number;
+    readonly damagedQuantity: number;
+    readonly conditionReceived?: string | null;
+    readonly conditionNotes?: string | null;
+    readonly timestamp: ISODateString;
+  };
+}
+
 export interface StockLevelAlertEvent extends BaseEvent {
   readonly eventType: 'STOCK_LEVEL_ALERT';
   readonly payload: { readonly stockroomId: UUID; readonly stockroomName: string; readonly productId: UUID; readonly productName: string; readonly currentQuantity: number; readonly reorderPoint: number; readonly reorderQuantity: number };
@@ -832,6 +847,28 @@ export interface DiscoveryDataReceivedEvent extends BaseEvent {
   readonly payload: { readonly sourceId: UUID; readonly sourceName: string; readonly sourceType: 'SCCM' | 'JAMF' | 'TANIUM' | 'CUSTOM'; readonly recordCount: number; readonly newAssetsCreated: number; readonly existingAssetsUpdated: number };
 }
 
+export interface DiscoveryDataIngestedEvent extends BaseEvent {
+  readonly eventType: 'DISCOVERY_DATA_INGESTED';
+  readonly payload: {
+    readonly sourceType: 'SCCM' | 'JAMF' | 'TANIUM' | 'CUSTOM';
+    readonly sourceName: string;
+    readonly totalRecords: number;
+    readonly matchedCount: number;
+    readonly createdCount: number;
+  };
+}
+
+export interface ERPDataSyncedEvent extends BaseEvent {
+  readonly eventType: 'ERP_DATA_SYNCED';
+  readonly payload: {
+    readonly erpSystem: string;
+    readonly syncType: string;
+    readonly totalRecords: number;
+    readonly createdCount: number;
+    readonly updatedCount: number;
+  };
+}
+
 export interface ASNReceivedEvent extends BaseEvent {
   readonly eventType: 'ASN_RECEIVED';
   readonly payload: { readonly asnId: UUID; readonly vendorId: UUID; readonly vendorName: string; readonly purchaseOrderId?: UUID; readonly expectedDeliveryDate: ISODateString; readonly itemCount: number };
@@ -840,6 +877,35 @@ export interface ASNReceivedEvent extends BaseEvent {
 export interface IntegrationErrorEvent extends BaseEvent {
   readonly eventType: 'INTEGRATION_ERROR';
   readonly payload: { readonly integrationId: UUID; readonly integrationType: string; readonly errorCode: string; readonly errorMessage: string; readonly retryCount: number; readonly willRetry: boolean };
+}
+
+// ============================================================================
+// Notification Events
+// ============================================================================
+
+export interface NotificationSentEvent extends BaseEvent {
+  readonly eventType: 'NOTIFICATION_SENT';
+  readonly payload: {
+    readonly notificationId: UUID;
+    readonly channel: string;
+    readonly status: string;
+    readonly recipientId: UUID;
+  };
+}
+
+export interface NotificationReadEvent extends BaseEvent {
+  readonly eventType: 'NOTIFICATION_READ';
+  readonly payload: { readonly notificationId: UUID };
+}
+
+export interface NotificationsAllReadEvent extends BaseEvent {
+  readonly eventType: 'NOTIFICATIONS_ALL_READ';
+  readonly payload: { readonly recipientId: UUID; readonly channel?: string; readonly count: number };
+}
+
+export interface NotificationPreferencesUpdatedEvent extends BaseEvent {
+  readonly eventType: 'NOTIFICATION_PREFERENCES_UPDATED';
+  readonly payload: { readonly userId: UUID };
 }
 
 // ============================================================================
@@ -1087,7 +1153,7 @@ export type DomainEvent =
   | PublisherCalculationCompletedEvent | ComplianceReportGeneratedEvent | ComplianceReportExportedEvent
   // HAM events
   | TransferOrderCreatedEvent | TransferOrderCompletedEvent | TransferOrderApprovedEvent
-  | TransferOrderRejectedEvent | TransferOrderShippedEvent | TransferOrderCancelledEvent
+  | TransferOrderRejectedEvent | TransferOrderShippedEvent | TransferOrderCancelledEvent | TransferLineReceivedEvent
   | StockLevelAlertEvent | InventoryCreatedEvent | InventoryUpdatedEvent | InventoryAdjustedEvent
   | InventoryReservedEvent | InventoryReservationReleasedEvent | ReplenishmentAlertEvent
   | LoanerCheckoutEvent | LoanerReturnedEvent | LoanerOverdueEvent
@@ -1125,7 +1191,9 @@ export type DomainEvent =
   | RetirementTaskUpdatedEvent | RetirementWorkflowCancelledEvent
   | CMDBRelationshipCreatedEvent | DiscoveryCorrelatedEvent | DiscoveryAutoCorrelatedEvent | DeploymentCancelledEvent
   // Integration events
-  | DiscoveryDataReceivedEvent | ASNReceivedEvent | IntegrationErrorEvent
+  | DiscoveryDataReceivedEvent | DiscoveryDataIngestedEvent | ERPDataSyncedEvent | ASNReceivedEvent | IntegrationErrorEvent
+  // Notification events
+  | NotificationSentEvent | NotificationReadEvent | NotificationsAllReadEvent | NotificationPreferencesUpdatedEvent
   // Admin events
   | BuildingCreatedEvent | BuildingUpdatedEvent | BuildingDeactivatedEvent
   | FloorCreatedEvent | FloorUpdatedEvent | FloorDeactivatedEvent
@@ -1170,7 +1238,7 @@ export const ALL_EVENT_TYPES: readonly EventType[] = [
   'PUBLISHER_CALCULATION_COMPLETED', 'COMPLIANCE_REPORT_GENERATED', 'COMPLIANCE_REPORT_EXPORTED',
   // HAM events
   'TRANSFER_ORDER_CREATED', 'TRANSFER_ORDER_COMPLETED', 'TRANSFER_ORDER_APPROVED',
-  'TRANSFER_ORDER_REJECTED', 'TRANSFER_ORDER_SHIPPED', 'TRANSFER_ORDER_CANCELLED',
+  'TRANSFER_ORDER_REJECTED', 'TRANSFER_ORDER_SHIPPED', 'TRANSFER_ORDER_CANCELLED', 'TRANSFER_LINE_RECEIVED',
   'STOCK_LEVEL_ALERT', 'INVENTORY_CREATED', 'INVENTORY_UPDATED', 'INVENTORY_ADJUSTED',
   'INVENTORY_RESERVED', 'INVENTORY_RESERVATION_RELEASED', 'REPLENISHMENT_ALERT',
   'LOANER_CHECKOUT', 'LOANER_RETURNED', 'LOANER_OVERDUE',
@@ -1208,7 +1276,9 @@ export const ALL_EVENT_TYPES: readonly EventType[] = [
   'RETIREMENT_TASK_UPDATED', 'RETIREMENT_WORKFLOW_CANCELLED',
   'CMDB_RELATIONSHIP_CREATED', 'DISCOVERY_CORRELATED', 'DISCOVERY_AUTO_CORRELATED', 'DEPLOYMENT_CANCELLED',
   // Integration events
-  'DISCOVERY_DATA_RECEIVED', 'ASN_RECEIVED', 'INTEGRATION_ERROR',
+  'DISCOVERY_DATA_RECEIVED', 'DISCOVERY_DATA_INGESTED', 'ERP_DATA_SYNCED', 'ASN_RECEIVED', 'INTEGRATION_ERROR',
+  // Notification events
+  'NOTIFICATION_SENT', 'NOTIFICATION_READ', 'NOTIFICATIONS_ALL_READ', 'NOTIFICATION_PREFERENCES_UPDATED',
   // Admin events
   'BUILDING_CREATED', 'BUILDING_UPDATED', 'BUILDING_DEACTIVATED',
   'FLOOR_CREATED', 'FLOOR_UPDATED', 'FLOOR_DEACTIVATED',
@@ -1254,7 +1324,7 @@ export const EVENT_CATEGORIES: Record<EventType, EventCategory> = {
   PUBLISHER_CALCULATION_COMPLETED: 'SAM', COMPLIANCE_REPORT_GENERATED: 'SAM', COMPLIANCE_REPORT_EXPORTED: 'SAM',
   // HAM events
   TRANSFER_ORDER_CREATED: 'HAM', TRANSFER_ORDER_COMPLETED: 'HAM', TRANSFER_ORDER_APPROVED: 'HAM',
-  TRANSFER_ORDER_REJECTED: 'HAM', TRANSFER_ORDER_SHIPPED: 'HAM', TRANSFER_ORDER_CANCELLED: 'HAM',
+  TRANSFER_ORDER_REJECTED: 'HAM', TRANSFER_ORDER_SHIPPED: 'HAM', TRANSFER_ORDER_CANCELLED: 'HAM', TRANSFER_LINE_RECEIVED: 'HAM',
   STOCK_LEVEL_ALERT: 'HAM', INVENTORY_CREATED: 'HAM', INVENTORY_UPDATED: 'HAM', INVENTORY_ADJUSTED: 'HAM',
   INVENTORY_RESERVED: 'HAM', INVENTORY_RESERVATION_RELEASED: 'HAM', REPLENISHMENT_ALERT: 'HAM',
   LOANER_CHECKOUT: 'HAM', LOANER_RETURNED: 'HAM', LOANER_OVERDUE: 'HAM',
@@ -1292,7 +1362,9 @@ export const EVENT_CATEGORIES: Record<EventType, EventCategory> = {
   RETIREMENT_TASK_UPDATED: 'LIFECYCLE', RETIREMENT_WORKFLOW_CANCELLED: 'LIFECYCLE',
   CMDB_RELATIONSHIP_CREATED: 'LIFECYCLE', DISCOVERY_CORRELATED: 'LIFECYCLE', DISCOVERY_AUTO_CORRELATED: 'LIFECYCLE', DEPLOYMENT_CANCELLED: 'LIFECYCLE',
   // Integration events
-  DISCOVERY_DATA_RECEIVED: 'INTEGRATION', ASN_RECEIVED: 'INTEGRATION', INTEGRATION_ERROR: 'INTEGRATION',
+  DISCOVERY_DATA_RECEIVED: 'INTEGRATION', DISCOVERY_DATA_INGESTED: 'INTEGRATION', ERP_DATA_SYNCED: 'INTEGRATION', ASN_RECEIVED: 'INTEGRATION', INTEGRATION_ERROR: 'INTEGRATION',
+  // Notification events
+  NOTIFICATION_SENT: 'ADMIN', NOTIFICATION_READ: 'ADMIN', NOTIFICATIONS_ALL_READ: 'ADMIN', NOTIFICATION_PREFERENCES_UPDATED: 'ADMIN',
   // Admin events
   BUILDING_CREATED: 'ADMIN', BUILDING_UPDATED: 'ADMIN', BUILDING_DEACTIVATED: 'ADMIN',
   FLOOR_CREATED: 'ADMIN', FLOOR_UPDATED: 'ADMIN', FLOOR_DEACTIVATED: 'ADMIN',

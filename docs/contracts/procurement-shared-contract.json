@@ -1,0 +1,215 @@
+{
+  "contractVersion": "2026-03-07",
+  "module": "procurement",
+  "scope": "Requisition, purchase order, and receipt-accounting lineage contract across DB, API, and frontend.",
+  "sharedEntities": [
+    "vendors",
+    "users",
+    "cost_centers",
+    "stockrooms",
+    "assets"
+  ],
+  "enums": {
+    "poStatus": [
+      "DRAFT",
+      "PENDING_APPROVAL",
+      "APPROVED",
+      "REJECTED",
+      "SENT",
+      "ACKNOWLEDGED",
+      "PARTIALLY_RECEIVED",
+      "RECEIVED",
+      "CLOSED",
+      "INVOICED",
+      "PAID",
+      "ON_HOLD",
+      "CANCELLED"
+    ],
+    "requisitionStatus": [
+      "DRAFT",
+      "PENDING_APPROVAL",
+      "APPROVED",
+      "REJECTED",
+      "PARTIALLY_CONVERTED",
+      "CONVERTED",
+      "CANCELLED"
+    ]
+  },
+  "entities": {
+    "purchaseOrders": {
+      "table": "purchase_orders",
+      "requiredColumns": [
+        "po_id",
+        "po_number",
+        "vendor_id",
+        "status",
+        "requested_by",
+        "approved_by",
+        "total_amount"
+      ]
+    },
+    "purchaseOrderLines": {
+      "table": "purchase_order_lines",
+      "requiredColumns": [
+        "line_id",
+        "po_id",
+        "line_number",
+        "quantity",
+        "received_quantity",
+        "status",
+        "vendor_id",
+        "cost_center_id"
+      ]
+    },
+    "requests": {
+      "table": "requests",
+      "requiredColumns": [
+        "request_id",
+        "request_number",
+        "requester_id",
+        "status",
+        "cost_center_id"
+      ]
+    },
+    "requestLines": {
+      "table": "request_lines",
+      "requiredColumns": [
+        "line_id",
+        "request_id",
+        "line_number",
+        "quantity",
+        "purchase_order_id",
+        "purchase_order_line_id"
+      ]
+    },
+    "vendorModelPrices": {
+      "table": "vendor_model_prices",
+      "requiredColumns": [
+        "vendor_id",
+        "model_id",
+        "unit_price",
+        "currency",
+        "is_active"
+      ]
+    }
+  },
+  "enumTargets": [
+    {
+      "enum": "poStatus",
+      "files": [
+        "backend/packages/types/src/purchase-order.ts",
+        "frontend/src/types/procurement.ts",
+        "frontend/src/services/procurement-api.ts"
+      ]
+    },
+    {
+      "enum": "requisitionStatus",
+      "files": [
+        "frontend/src/types/procurement.ts",
+        "frontend/src/services/procurement-api.ts"
+      ]
+    }
+  ],
+  "fileChecks": [
+    {
+      "path": "backend/scripts/procurement-model-contract-check.js",
+      "tokens": [
+        "V026__requisition_workflow.sql",
+        "COALESCE(pol.vendor_id, po.vendor_id)",
+        "contract:procurement:model"
+      ]
+    },
+    {
+      "path": "frontend/src/services/procurement-api.ts",
+      "tokens": [
+        "/procurement/purchase-orders",
+        "/procurement/requisitions",
+        "effectiveVendorId",
+        "effectiveCostCenterId"
+      ]
+    }
+  ],
+  "requiredRuntimeRoutes": [
+    {
+      "path": "/procurement/purchase-orders",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/procurement/purchase-orders/{poId}",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "path": "/procurement/purchase-orders/{poId}/lines",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/procurement/purchase-orders/{poId}/submit",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/procurement/requisitions",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/procurement/requisitions/{requisitionId}/convert",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/procurement/pending-approvals",
+      "methods": [
+        "GET"
+      ]
+    }
+  ],
+  "requiredOpenApiRoutes": [
+    {
+      "path": "/procurement/purchase-orders",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/procurement/purchase-orders/{poId}",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "path": "/procurement/requisitions",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/procurement/requisitions/{requisitionId}/convert",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/procurement/pending-approvals",
+      "methods": [
+        "GET"
+      ]
+    }
+  ]
+}

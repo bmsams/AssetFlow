@@ -22,6 +22,15 @@ jest.mock('@ams/cache', () => ({
   del: jest.fn().mockResolvedValue(undefined),
   get: jest.fn().mockResolvedValue(null),
   set: jest.fn().mockResolvedValue(undefined),
+  entityKey: jest.fn((entityType: string, id: string) => `${entityType}:${id}`),
+  CACHE_ENTITY_TYPES: {
+    NOTIFICATION_PREFERENCES: 'notification-prefs',
+    NOTIFICATION: 'notification',
+    REPORT: 'report',
+  },
+  DEFAULT_TTL: {
+    MEDIUM: 300,
+  },
 }));
 
 jest.mock('@ams/events', () => ({

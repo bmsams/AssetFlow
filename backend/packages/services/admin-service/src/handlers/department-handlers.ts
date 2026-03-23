@@ -22,7 +22,6 @@ import type {
   CreateDepartmentRequest,
   DepartmentListFilters,
   UpdateDepartmentRequest,
-  UUID,
 } from '@ams/types';
 import {
   API_ERROR_CODES,

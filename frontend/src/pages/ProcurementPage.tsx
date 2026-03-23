@@ -95,7 +95,7 @@ export function ProcurementPage() {
   }, []);
 
   useEffect(() => {
-    fetchProcurementData();
+    void fetchProcurementData();
   }, [fetchProcurementData]);
 
   // Announce loading completion to screen readers
@@ -111,7 +111,7 @@ export function ProcurementPage() {
   // Handle retry
   const handleRetry = useCallback(() => {
     setIsRetrying(true);
-    fetchProcurementData();
+    void fetchProcurementData();
   }, [fetchProcurementData]);
 
   // Handle dismiss error

@@ -1,0 +1,99 @@
+{
+  "contractVersion": "2026-03-06",
+  "scope": "Cross-module Asset contract shared by HAM, SAM, and EAM",
+  "enums": {
+    "assetType": ["HARDWARE", "SOFTWARE", "ENTERPRISE"],
+    "assetStatus": [
+      "ORDERED",
+      "RECEIVED",
+      "IN_STOCK",
+      "RESERVED",
+      "DEPLOYED",
+      "IN_MAINTENANCE",
+      "RETIRED",
+      "DISPOSED"
+    ],
+    "assetRelationType": [
+      "PARENT_CHILD",
+      "DEPENDENCY",
+      "CONNECTED_TO",
+      "INSTALLED_ON",
+      "RUNS_ON",
+      "LOCATION",
+      "COMPONENT"
+    ]
+  },
+  "entities": {
+    "assetCore": {
+      "table": "assets",
+      "requiredColumns": [
+        "asset_id",
+        "asset_tag",
+        "asset_type",
+        "display_name",
+        "status",
+        "substatus",
+        "created_at",
+        "updated_at",
+        "created_by",
+        "updated_by"
+      ],
+      "requiredApiFields": [
+        "assetId",
+        "assetTag",
+        "assetType",
+        "displayName",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ],
+      "requiredFrontendFields": [
+        "assetId",
+        "assetTag",
+        "assetType",
+        "displayName",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "assetRelationship": {
+      "table": "asset_relationships",
+      "requiredColumns": [
+        "relationship_id",
+        "source_asset_id",
+        "target_asset_id",
+        "relation_type",
+        "metadata",
+        "created_at",
+        "created_by"
+      ],
+      "requiredApiFields": [
+        "relationshipId",
+        "sourceAssetId",
+        "targetAssetId",
+        "relationType",
+        "createdAt"
+      ],
+      "requiredFrontendFields": [
+        "relationshipId",
+        "sourceAssetId",
+        "targetAssetId",
+        "relationType",
+        "createdAt"
+      ]
+    },
+    "hamProjection": {
+      "table": "hardware_assets",
+      "requiredColumns": ["asset_id", "stockroom_id", "building"]
+    },
+    "samProjection": {
+      "table": "software_assets",
+      "requiredColumns": ["asset_id", "software_product_id", "purchase_cost"]
+    },
+    "eamProjection": {
+      "table": "enterprise_assets",
+      "requiredColumns": ["asset_id", "facility_id", "building", "operating_hours"]
+    }
+  }
+}

@@ -12,7 +12,7 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
-    project: ['./tsconfig.json'],
+    project: ['./tsconfig.eslint.json'],
     tsconfigRootDir: __dirname,
   },
   plugins: ['react-refresh', '@typescript-eslint'],
@@ -33,5 +33,34 @@ module.exports = {
     'no-console': ['warn', { allow: ['warn', 'error'] }],
     'prefer-const': 'error',
     'no-var': 'error',
+    '@typescript-eslint/no-misused-promises': [
+      'error',
+      { checksVoidReturn: { attributes: false, properties: false } },
+    ],
   },
+  overrides: [
+    {
+      files: [
+        '**/*.test.ts',
+        '**/*.test.tsx',
+        '**/__tests__/**/*.ts',
+        '**/__tests__/**/*.tsx',
+        'src/test/**/*.ts',
+        'src/test/**/*.tsx',
+      ],
+      rules: {
+        '@typescript-eslint/no-unsafe-assignment': 'off',
+        '@typescript-eslint/no-unsafe-call': 'off',
+        '@typescript-eslint/no-unsafe-member-access': 'off',
+        '@typescript-eslint/no-unsafe-argument': 'off',
+        '@typescript-eslint/no-unsafe-return': 'off',
+        '@typescript-eslint/no-unnecessary-type-assertion': 'off',
+        '@typescript-eslint/no-non-null-assertion': 'off',
+        '@typescript-eslint/no-floating-promises': 'off',
+        '@typescript-eslint/no-unused-vars': 'off',
+        '@typescript-eslint/require-await': 'off',
+        '@typescript-eslint/unbound-method': 'off',
+      },
+    },
+  ],
 };

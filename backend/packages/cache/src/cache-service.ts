@@ -89,6 +89,19 @@ export const ENTITY_TTL: Record<CacheEntityType, number> = {
   // Configuration - very long TTL
   [CACHE_ENTITY_TYPES.CONFIG]: DEFAULT_TTL.VERY_LONG,
   [CACHE_ENTITY_TYPES.FEATURE_FLAG]: DEFAULT_TTL.LONG,
+
+  // Notifications - short/medium TTL
+  [CACHE_ENTITY_TYPES.NOTIFICATION]: DEFAULT_TTL.SHORT,
+  [CACHE_ENTITY_TYPES.NOTIFICATION_PREFERENCES]: DEFAULT_TTL.MEDIUM,
+
+  // Integration - short/medium TTL
+  [CACHE_ENTITY_TYPES.DISCOVERY]: DEFAULT_TTL.SHORT,
+  [CACHE_ENTITY_TYPES.ERP_SYNC]: DEFAULT_TTL.SHORT,
+  [CACHE_ENTITY_TYPES.VENDOR_CATALOG]: DEFAULT_TTL.MEDIUM,
+
+  // Reports and dashboards - short TTL for freshness
+  [CACHE_ENTITY_TYPES.DASHBOARD]: DEFAULT_TTL.SHORT,
+  [CACHE_ENTITY_TYPES.REPORT]: DEFAULT_TTL.SHORT,
 };
 
 /**
@@ -117,6 +130,16 @@ export interface CacheOptions {
   readonly ttl?: number;
   /** Skip cache lookup and always fetch from source */
   readonly skipCache?: boolean;
+  /** Entity type for automatic TTL selection */
+  readonly entityType?: CacheEntityType;
+}
+
+/**
+ * Options supported by set operation
+ */
+export interface CacheSetOptions {
+  /** TTL in seconds (overrides entity-based TTL) */
+  readonly ttl?: number;
   /** Entity type for automatic TTL selection */
   readonly entityType?: CacheEntityType;
 }
@@ -257,9 +280,16 @@ export async function getWithMeta<T>(key: string): Promise<CacheResult<T>> {
 export async function set<T>(
   key: string,
   value: T,
-  ttlSeconds: number = DEFAULT_TTL.MEDIUM
+  ttlOrOptions: number | CacheSetOptions = DEFAULT_TTL.MEDIUM
 ): Promise<boolean> {
   try {
+    const ttlSeconds =
+      typeof ttlOrOptions === 'number'
+        ? ttlOrOptions
+        : resolveTTL({
+            ttl: ttlOrOptions.ttl,
+            entityType: ttlOrOptions.entityType,
+          });
     const client = getRedisClient();
     const serialized = JSON.stringify(value);
     await client.setex(key, ttlSeconds, serialized);
@@ -349,6 +379,15 @@ export async function delPattern(pattern: string): Promise<number> {
     logger.error('Cache pattern delete error', error as Error, { pattern });
     return 0;
   }
+}
+
+/**
+ * Backward-compatible alias for deleting keys by pattern.
+ * Accepts both prefixed (ams:...) and unprefixed patterns.
+ */
+export async function deletePattern(pattern: string): Promise<number> {
+  const normalizedPattern = pattern.replace(/^ams:/, '');
+  return delPattern(normalizedPattern);
 }
 
 /**

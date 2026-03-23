@@ -51,7 +51,7 @@ export function useEntityOptions<T>(
   }, [fetchFn, labelFn, valueFn]);
 
   useEffect(() => {
-    load();
+    void load();
   }, [load]);
 
   return { options, isLoading, error, refetch: load };

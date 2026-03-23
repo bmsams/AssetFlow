@@ -132,7 +132,7 @@ export function LocationsPage() {
   }, [showInactive, searchQuery]);
 
   useEffect(() => {
-    fetchBuildings();
+    void fetchBuildings();
   }, [fetchBuildings]);
 
   // Announce filter results to screen readers when count changes
@@ -304,7 +304,7 @@ export function LocationsPage() {
           success('Building created');
           announce('Building created successfully', 'polite');
         }
-        fetchBuildings();
+        void fetchBuildings();
       } else if (modal.mode === 'floor' && modal.parentId) {
         if (modal.isEdit && modal.editItem) {
           await adminApi.floors.update((modal.editItem as Floor).floorId, {
@@ -381,7 +381,7 @@ export function LocationsPage() {
     try {
       if (type === 'building') {
         await adminApi.buildings.deactivate(id);
-        fetchBuildings();
+        void fetchBuildings();
       } else if (type === 'floor') {
         await adminApi.floors.deactivate(id);
         // Refresh parent building's floors

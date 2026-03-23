@@ -21,7 +21,6 @@ import type {
   CreateRackRequest,
   RackListFilters,
   UpdateRackRequest,
-  UUID,
 } from '@ams/types';
 import {
   API_ERROR_CODES,

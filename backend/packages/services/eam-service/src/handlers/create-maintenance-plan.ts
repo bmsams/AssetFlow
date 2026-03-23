@@ -102,7 +102,7 @@ function validateRequest(body: unknown): { valid: true; data: CreateMaintenanceP
     .result();
 
   if (!result.isValid) {
-    errors.push(...result.errors.map(e => e.message));
+    errors.push(...result.errors.map((e: { message: string }) => e.message));
   }
 
   if (errors.length > 0) {
@@ -134,7 +134,7 @@ function validateRequest(body: unknown): { valid: true; data: CreateMaintenanceP
 }
 
 
-async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
+export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   const requestId = event.requestContext.requestId;
   const userId = event.requestContext.authorizer?.['claims']?.['sub'] as string | undefined;
 

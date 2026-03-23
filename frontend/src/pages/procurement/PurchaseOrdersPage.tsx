@@ -86,20 +86,20 @@ export function PurchaseOrdersPage() {
     }
   }, [currentPage, searchQuery, statusFilter, fromDate, toDate]);
 
-  useEffect(() => { fetchPurchaseOrders(); }, [fetchPurchaseOrders]);
+  useEffect(() => { void fetchPurchaseOrders(); }, [fetchPurchaseOrders]);
   const handleSearchChange = useCallback((value: string) => { setSearchQuery(value); }, []);
-  const handleSearchSubmit = useCallback(() => { setCurrentPage(1); fetchPurchaseOrders(); }, [fetchPurchaseOrders]);
+  const handleSearchSubmit = useCallback(() => { setCurrentPage(1); void fetchPurchaseOrders(); }, [fetchPurchaseOrders]);
   const handlePOClick = (po: PurchaseOrder) => { navigate(`/procurement/purchase-orders/${po.poId}`); };
   const handleCreatePO = () => { navigate('/procurement/purchase-orders/new'); };
-  const handleClearFilters = () => { setSearchQuery(''); setStatusFilter(''); setFromDate(''); setToDate(''); setCurrentPage(1); fetchPurchaseOrders(); };
+  const handleClearFilters = () => { setSearchQuery(''); setStatusFilter(''); setFromDate(''); setToDate(''); setCurrentPage(1); void fetchPurchaseOrders(); };
   const handleFilterChange = (id: string, value: unknown) => {
     if (id === 'status') setStatusFilter(value as PurchaseOrderStatus | '');
     else if (id === 'fromDate') setFromDate(value as string);
     else if (id === 'toDate') setToDate(value as string);
     setCurrentPage(1);
-    fetchPurchaseOrders();
+    void fetchPurchaseOrders();
   };
-  const handleRetry = () => { setIsRetrying(true); fetchPurchaseOrders(); };
+  const handleRetry = () => { setIsRetrying(true); void fetchPurchaseOrders(); };
   const handleDismissError = () => { setError(null); };
   const filterValues = { status: statusFilter, fromDate: fromDate, toDate: toDate };
   const hasActiveFilters = Boolean(searchQuery || statusFilter || fromDate || toDate);
@@ -142,4 +142,3 @@ export function PurchaseOrdersPage() {
 }
 
 export default PurchaseOrdersPage;
-

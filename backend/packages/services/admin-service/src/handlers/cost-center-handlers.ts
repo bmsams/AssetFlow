@@ -20,7 +20,6 @@ import type {
   CostCenterListFilters,
   CreateCostCenterRequest,
   UpdateCostCenterRequest,
-  UUID,
 } from '@ams/types';
 import {
   API_ERROR_CODES,

@@ -33,7 +33,7 @@ export function MaintenanceComplianceReport() {
   }, [filters]);
 
   useEffect(() => {
-    fetchReport();
+    void fetchReport();
   }, [fetchReport]);
 
   const getComplianceBadge = (rate: number) => {
@@ -88,7 +88,7 @@ export function MaintenanceComplianceReport() {
           </svg>
           <h3 className={styles.errorTitle}>Failed to Load Report</h3>
           <p className={styles.errorMessage}>{error}</p>
-          <button type="button" className={styles.primaryButton} onClick={fetchReport}>
+          <button type="button" className={styles.primaryButton} onClick={() => { void fetchReport(); }}>
             Try Again
           </button>
         </div>
@@ -114,7 +114,7 @@ export function MaintenanceComplianceReport() {
           </p>
         </div>
         <div className={styles.reportActions}>
-          <button type="button" className={styles.secondaryButton} onClick={fetchReport}>
+          <button type="button" className={styles.secondaryButton} onClick={() => { void fetchReport(); }}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={styles.buttonIcon}>
               <polyline points="23 4 23 10 17 10" />
               <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
@@ -338,3 +338,4 @@ export function MaintenanceComplianceReport() {
 }
 
 export default MaintenanceComplianceReport;
+

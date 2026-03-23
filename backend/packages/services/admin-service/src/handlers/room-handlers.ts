@@ -21,7 +21,6 @@ import type {
   RoomListFilters,
   RoomType,
   UpdateRoomRequest,
-  UUID,
 } from '@ams/types';
 import {
   API_ERROR_CODES,

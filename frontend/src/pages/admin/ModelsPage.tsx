@@ -131,7 +131,7 @@ export function ModelsPage() {
   }, [showInactive, searchQuery, selectedMfrId]);
 
   useEffect(() => {
-    fetchModels();
+    void fetchModels();
   }, [fetchModels]);
 
   // Announce filter results to screen readers when count changes
@@ -171,7 +171,7 @@ export function ModelsPage() {
     if (!window.confirm(`Deactivate model "${model.modelName}"?`)) return;
     try {
       await adminApi.models.deactivate(model.modelId);
-      fetchModels();
+      void fetchModels();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to deactivate');
     }

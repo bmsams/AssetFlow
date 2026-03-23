@@ -188,7 +188,7 @@ export function EvidenceCapture({
   // Initialize camera when active
   useEffect(() => {
     if (isActive) {
-      initializeCamera();
+      void initializeCamera();
     } else {
       stopCamera();
       setStatus('idle');

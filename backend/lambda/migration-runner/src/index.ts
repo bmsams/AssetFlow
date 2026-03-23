@@ -676,17 +676,44 @@ async function seedPurchaseOrders(
     const poId = poResult.rows[0]!.po_id;
     poCount++;
 
-    // Insert line items into po_lines (V010 table used by procurement service)
+    // Insert line items into purchase_order_lines (po_lines is removed by V022)
     for (const line of po.lines) {
       const lineTotal = line.quantity * line.unitPrice;
       const quantityReceived = ['RECEIVED', 'INVOICED', 'PAID'].includes(po.status) ? line.quantity :
                                po.status === 'PARTIALLY_RECEIVED' ? Math.floor(line.quantity / 2) : 0;
+      const lineStatus = quantityReceived >= line.quantity
+        ? 'RECEIVED'
+        : quantityReceived > 0
+          ? 'PARTIALLY_RECEIVED'
+          : 'PENDING';
+      const productType =
+        line.productType === 'HARDWARE_MODEL'
+          ? 'HARDWARE'
+          : line.productType === 'SOFTWARE_PRODUCT'
+            ? 'SOFTWARE'
+            : line.productType;
 
       await pool.query(
-        `INSERT INTO po_lines (po_id, line_number, product_type, product_description, quantity, unit_price, line_total, quantity_received)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-         ON CONFLICT (po_id, line_number) DO UPDATE SET product_description = EXCLUDED.product_description`,
-        [poId, line.lineNumber, line.productType, line.productDescription, line.quantity, line.unitPrice, lineTotal, quantityReceived]
+        `INSERT INTO purchase_order_lines (
+            po_id,
+            line_number,
+            product_type,
+            product_description,
+            quantity,
+            unit_price,
+            total_price,
+            received_quantity,
+            status
+         )
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+         ON CONFLICT (po_id, line_number) DO UPDATE SET
+            product_description = EXCLUDED.product_description,
+            quantity = EXCLUDED.quantity,
+            unit_price = EXCLUDED.unit_price,
+            total_price = EXCLUDED.total_price,
+            received_quantity = EXCLUDED.received_quantity,
+            status = EXCLUDED.status`,
+        [poId, line.lineNumber, productType, line.productDescription, line.quantity, line.unitPrice, lineTotal, quantityReceived, lineStatus]
       );
       lineCount++;
     }

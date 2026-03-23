@@ -131,7 +131,7 @@ export function useNotifications(
 
     // Initialize if auto-initialize is enabled
     if (autoInitialize) {
-      serviceRef.current.initialize();
+      void serviceRef.current.initialize();
     }
 
     return () => {

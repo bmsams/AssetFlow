@@ -1,0 +1,222 @@
+{
+  "contractVersion": "2026-03-07",
+  "module": "report",
+  "scope": "Reporting and dashboard contract across aggregation views, report handlers, and frontend report clients.",
+  "sharedEntities": [
+    "assets",
+    "purchase_orders",
+    "work_orders",
+    "maintenance_plans",
+    "stockroom_inventory",
+    "reconciliation_results"
+  ],
+  "enums": {
+    "reportFormat": [
+      "JSON",
+      "CSV",
+      "EXCEL",
+      "PDF"
+    ]
+  },
+  "entities": {
+    "assets": {
+      "table": "assets",
+      "requiredColumns": [
+        "asset_id",
+        "asset_type",
+        "status",
+        "created_at"
+      ]
+    },
+    "workOrders": {
+      "table": "work_orders",
+      "requiredColumns": [
+        "work_order_id",
+        "status",
+        "priority",
+        "created_at"
+      ]
+    },
+    "maintenancePlans": {
+      "table": "maintenance_plans",
+      "requiredColumns": [
+        "plan_id",
+        "next_due_date",
+        "is_active",
+        "created_at"
+      ]
+    },
+    "purchaseOrders": {
+      "table": "purchase_orders",
+      "requiredColumns": [
+        "po_id",
+        "po_number",
+        "status",
+        "total_amount"
+      ]
+    },
+    "stockroomInventory": {
+      "table": "stockroom_inventory",
+      "requiredColumns": [
+        "inventory_id",
+        "stockroom_id",
+        "quantity_on_hand",
+        "total_value"
+      ]
+    },
+    "reconciliationResults": {
+      "table": "reconciliation_results",
+      "requiredColumns": [
+        "result_id",
+        "software_product_id",
+        "compliance_position",
+        "last_reconciled_at"
+      ]
+    }
+  },
+  "requiredViews": [
+    "VIEW:v_asset_summary",
+    "VIEW:v_work_order_metrics",
+    "VIEW:v_stockroom_summary",
+    "VIEW:v_license_compliance"
+  ],
+  "enumTargets": [
+    {
+      "enum": "reportFormat",
+      "files": [
+        "backend/packages/types/src/report.ts",
+        "frontend/src/types/report.ts",
+        "frontend/src/services/report-api.ts"
+      ]
+    }
+  ],
+  "fileChecks": [
+    {
+      "path": "backend/packages/services/report-service/src/handlers/report-handlers.ts",
+      "tokens": [
+        "/reports/asset-summary",
+        "/reports/work-order-summary",
+        "/reports/{reportType}/export"
+      ]
+    },
+    {
+      "path": "backend/packages/services/report-service/src/handlers/dashboard-handlers.ts",
+      "tokens": [
+        "getDashboardSummaryHandler",
+        "getLeaseExpirationsHandler",
+        "getComplianceIndicatorsHandler"
+      ]
+    },
+    {
+      "path": "frontend/src/services/report-api.ts",
+      "tokens": [
+        "/reports/asset-summary",
+        "/reports/procurement-spending",
+        "/reports/work-order-summary",
+        "/reports/${reportType}/export"
+      ]
+    },
+    {
+      "path": "frontend/src/services/dashboard-api.ts",
+      "tokens": [
+        "/dashboard/summary",
+        "/dashboard/lease-expirations",
+        "/dashboard/compliance"
+      ]
+    }
+  ],
+  "requiredRuntimeRoutes": [
+    {
+      "path": "/reports/{reportType}/export",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/dashboard/summary",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/dashboard/lease-expirations",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/dashboard/compliance",
+      "methods": [
+        "GET"
+      ]
+    }
+  ],
+  "requiredOpenApiRoutes": [
+    {
+      "path": "/reports/asset-summary",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/reports/asset-aging",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/reports/assets-by-location",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/reports/assets-by-department",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/reports/cost-center-utilization",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/reports/procurement-spending",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/reports/work-order-summary",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/reports/maintenance-compliance",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/dashboard/summary",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/dashboard/lease-expirations",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/dashboard/compliance",
+      "methods": [
+        "GET"
+      ]
+    }
+  ]
+}

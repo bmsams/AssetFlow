@@ -64,7 +64,7 @@ export function UserEditPage() {
   }, [userId]);
 
   useEffect(() => {
-    loadUser();
+    void loadUser();
   }, [loadUser]);
 
   const validateForm = useCallback((values: Record<string, any>): Record<string, string> => {

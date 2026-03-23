@@ -110,7 +110,7 @@ export function CostCentersPage() {
   }, [showInactive, selectedDeptId]);
 
   useEffect(() => {
-    fetchCostCenters();
+    void fetchCostCenters();
   }, [fetchCostCenters]);
 
   // Announce filter results to screen readers when count changes
@@ -150,7 +150,7 @@ export function CostCentersPage() {
     if (!window.confirm(`Deactivate cost center "${cc.name}"?`)) return;
     try {
       await adminApi.costCenters.deactivate(cc.costCenterId);
-      fetchCostCenters();
+      void fetchCostCenters();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to deactivate');
     }

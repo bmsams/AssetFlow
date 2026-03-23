@@ -125,7 +125,7 @@ export function StoragePage() {
   }, [showInactive, searchQuery]);
 
   useEffect(() => {
-    fetchStockrooms();
+    void fetchStockrooms();
   }, [fetchStockrooms]);
 
   // Announce filter results to screen readers when count changes
@@ -242,7 +242,7 @@ export function StoragePage() {
           success('Stockroom created');
           announce('Stockroom created successfully', 'polite');
         }
-        fetchStockrooms();
+        void fetchStockrooms();
       } else if (modal.mode === 'bin' && modal.parentId) {
         if (modal.isEdit && modal.editItem) {
           await adminApi.binLocations.update((modal.editItem as BinLocation).binId, {
@@ -282,7 +282,7 @@ export function StoragePage() {
     try {
       if (type === 'stockroom') {
         await adminApi.stockrooms.deactivate(id);
-        fetchStockrooms();
+        void fetchStockrooms();
       } else if (type === 'bin') {
         await adminApi.binLocations.deactivate(id);
         const bin = Object.values(binsMap).flat().find(b => b.binId === id);

@@ -21,6 +21,9 @@ jest.mock('@ams/cache', () => ({
   del: jest.fn().mockResolvedValue(undefined),
   get: jest.fn().mockResolvedValue(null),
   set: jest.fn().mockResolvedValue(undefined),
+  CACHE_ENTITY_TYPES: {
+    REPORT: 'report',
+  },
 }));
 
 jest.mock('@ams/events', () => ({

@@ -52,15 +52,14 @@ export function NotificationBell() {
   // Initial fetch + adaptive polling for Requirement 9.5
   useEffect(() => {
     if (!isAuthenticated) return;
-    fetchNotifications();
+    void fetchNotifications();
 
     let timeoutId: ReturnType<typeof setTimeout>;
     function schedulePoll() {
       // Stop polling entirely after too many consecutive errors
       if (consecutiveErrors.current > MAX_CONSECUTIVE_ERRORS) return;
-      timeoutId = setTimeout(async () => {
-        await fetchNotifications();
-        schedulePoll();
+      timeoutId = setTimeout(() => {
+        void fetchNotifications().finally(schedulePoll);
       }, currentInterval.current);
     }
     schedulePoll();

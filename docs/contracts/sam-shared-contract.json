@@ -1,0 +1,220 @@
+{
+  "contractVersion": "2026-03-07",
+  "module": "sam",
+  "scope": "Software compliance and reclamation contract for reconciliation, publisher packs, and SaaS telemetry.",
+  "sharedEntities": [
+    "assets",
+    "users",
+    "software_products",
+    "entitlements"
+  ],
+  "enums": {
+    "compliancePosition": [
+      "COMPLIANT",
+      "OVER_LICENSED",
+      "UNDER_LICENSED"
+    ],
+    "reclamationStatus": [
+      "IDENTIFIED",
+      "PENDING_NOTIFICATION",
+      "USER_NOTIFIED",
+      "PENDING_APPROVAL",
+      "APPROVED",
+      "REJECTED",
+      "IN_PROGRESS",
+      "COMPLETED",
+      "CANCELLED",
+      "DEFERRED"
+    ]
+  },
+  "entities": {
+    "reconciliationResults": {
+      "table": "reconciliation_results",
+      "requiredColumns": [
+        "result_id",
+        "software_product_id",
+        "entitlements_owned",
+        "installations_found",
+        "compliance_position",
+        "last_reconciled_at"
+      ]
+    },
+    "reclamationCandidates": {
+      "table": "reclamation_candidates",
+      "requiredColumns": [
+        "candidate_id",
+        "installation_id",
+        "reclamation_rule_id",
+        "status",
+        "identified_at"
+      ]
+    },
+    "reclamationRules": {
+      "table": "reclamation_rules",
+      "requiredColumns": [
+        "rule_id",
+        "rule_name",
+        "days_since_last_use",
+        "is_active",
+        "require_approval"
+      ]
+    },
+    "publisherPacks": {
+      "table": "publisher_packs",
+      "requiredColumns": [
+        "pack_id",
+        "publisher",
+        "pack_name",
+        "pack_version",
+        "is_active"
+      ]
+    },
+    "saasSubscriptions": {
+      "table": "saas_subscriptions",
+      "requiredColumns": [
+        "subscription_id",
+        "software_product_id",
+        "total_licenses",
+        "assigned_licenses",
+        "renewal_date",
+        "status"
+      ]
+    },
+    "saasUsageRecords": {
+      "table": "saas_usage_records",
+      "requiredColumns": [
+        "usage_id",
+        "subscription_id",
+        "user_id",
+        "last_active_date",
+        "is_active"
+      ]
+    },
+    "shadowItDetections": {
+      "table": "shadow_it_detections",
+      "requiredColumns": [
+        "detection_id",
+        "application_name",
+        "risk_level",
+        "users_affected",
+        "status"
+      ]
+    }
+  },
+  "enumTargets": [
+    {
+      "enum": "compliancePosition",
+      "files": [
+        "backend/packages/types/src/software-asset.ts",
+        "frontend/src/types/license.ts"
+      ]
+    },
+    {
+      "enum": "reclamationStatus",
+      "files": [
+        "backend/packages/types/src/software-asset.ts"
+      ]
+    }
+  ],
+  "fileChecks": [
+    {
+      "path": "backend/packages/services/sam-service/src/reconciliation/reconciliation-service.ts",
+      "tokens": [
+        "calculateComplianceStatus",
+        "runReconciliation",
+        "getCompliancePositions"
+      ]
+    },
+    {
+      "path": "backend/packages/services/sam-service/src/reclamation/reclamation-service.ts",
+      "tokens": [
+        "identifyReclamationCandidates",
+        "initiateReclamation",
+        "getReclamationSummary"
+      ]
+    },
+    {
+      "path": "frontend/src/services/sam-api.ts",
+      "tokens": [
+        "/reconciliation/compliance",
+        "/reclamation/candidates",
+        "/sam/workbench/summary",
+        "/reconciliation/run",
+        "/reclamation/initiate",
+        "/shadow-it/analyze",
+        "/reconciliation/compliance-report",
+        "/saas/sync-usage",
+        "/publisher-packs/apply"
+      ]
+    }
+  ],
+  "requiredRuntimeRoutes": [
+    {
+      "path": "/reconciliation/compliance",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/reconciliation/compliance/{productId}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/reconciliation/run",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/reconciliation/compliance-report",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/reclamation/candidates",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/reclamation/initiate",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/reclamation/unused-subscriptions",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/shadow-it/analyze",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/publisher-packs/apply",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/saas/sync-usage",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/sam/workbench/summary",
+      "methods": [
+        "GET"
+      ]
+    }
+  ],
+  "requiredOpenApiRoutes": []
+}

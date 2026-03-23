@@ -43,7 +43,7 @@ export function AssetEditPage() {
       }
     }
 
-    fetchAsset();
+    void fetchAsset();
 
     return () => {
       isMounted = false;

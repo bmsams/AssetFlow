@@ -39,7 +39,7 @@ export function MaintenancePlansPage() {
   }, [statusFilter]);
 
   useEffect(() => {
-    fetchPlans();
+    void fetchPlans();
   }, [fetchPlans]);
 
   const handlePause = async (planId: string) => {

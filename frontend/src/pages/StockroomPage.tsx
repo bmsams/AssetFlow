@@ -130,7 +130,7 @@ export function StockroomPage() {
       }
     };
     
-    loadData();
+    void loadData();
 
     return () => {
       isMounted = false;

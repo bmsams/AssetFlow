@@ -95,7 +95,7 @@ export function DashboardPage() {
   // Initial fetch
   useEffect(() => {
     isMountedRef.current = true;
-    fetchDashboardData();
+    void fetchDashboardData();
 
     return () => {
       isMountedRef.current = false;
@@ -113,7 +113,7 @@ export function DashboardPage() {
 
   // Retry handler
   const handleRetry = useCallback(() => {
-    fetchDashboardData();
+    void fetchDashboardData();
   }, [fetchDashboardData]);
 
   // Handle lease expiration item click - drill-down to asset detail

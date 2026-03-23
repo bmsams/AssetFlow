@@ -4,6 +4,8 @@
 
 export type AssetType = 'HARDWARE' | 'SOFTWARE' | 'ENTERPRISE';
 
+export const ASSET_TYPES = ['HARDWARE', 'SOFTWARE', 'ENTERPRISE'] as const;
+
 export type AssetStatus =
   | 'ORDERED'
   | 'RECEIVED'
@@ -13,6 +15,17 @@ export type AssetStatus =
   | 'IN_MAINTENANCE'
   | 'RETIRED'
   | 'DISPOSED';
+
+export const ASSET_STATUSES = [
+  'ORDERED',
+  'RECEIVED',
+  'IN_STOCK',
+  'RESERVED',
+  'DEPLOYED',
+  'IN_MAINTENANCE',
+  'RETIRED',
+  'DISPOSED',
+] as const;
 
 export interface Asset {
   assetId: string;
@@ -75,13 +88,31 @@ export type AnyAsset = HardwareAsset | SoftwareAsset | EnterpriseAsset;
  * Asset relationship types for CMDB
  * Implements Requirement 2.3: Asset relationships (parent-child, dependencies)
  */
-export type RelationshipType = 'PARENT_CHILD' | 'DEPENDENCY' | 'LOCATION' | 'COMPONENT';
+export type RelationshipType =
+  | 'PARENT_CHILD'
+  | 'DEPENDENCY'
+  | 'CONNECTED_TO'
+  | 'INSTALLED_ON'
+  | 'RUNS_ON'
+  | 'LOCATION'
+  | 'COMPONENT';
+
+export const RELATIONSHIP_TYPES = [
+  'PARENT_CHILD',
+  'DEPENDENCY',
+  'CONNECTED_TO',
+  'INSTALLED_ON',
+  'RUNS_ON',
+  'LOCATION',
+  'COMPONENT',
+] as const;
 
 export interface AssetRelationship {
   relationshipId: string;
   sourceAssetId: string;
   targetAssetId: string;
-  relationshipType: RelationshipType;
+  relationType: RelationshipType;
+  relationshipType?: RelationshipType;
   description?: string;
   createdAt: string;
   createdBy?: string;

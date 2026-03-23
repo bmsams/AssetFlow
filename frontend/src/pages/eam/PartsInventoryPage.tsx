@@ -29,7 +29,7 @@ export function PartsInventoryPage() {
   }, []);
 
   useEffect(() => {
-    fetchParts();
+    void fetchParts();
   }, [fetchParts]);
 
   const handleReserve = async (partId: string) => {

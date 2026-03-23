@@ -397,7 +397,9 @@ export async function completeTransfer(
   }
 
   // Validate status allows completion
-  const validStatuses: TransferOrderStatus[] = ['IN_TRANSIT', 'PARTIALLY_RECEIVED'];
+  // UI supports approve -> complete without an explicit ship step.
+  // Accept APPROVED here so transfer completion remains a single flow.
+  const validStatuses: TransferOrderStatus[] = ['APPROVED', 'IN_TRANSIT', 'PARTIALLY_RECEIVED'];
   if (!validStatuses.includes(transfer.status)) {
     throw new Error(`Cannot complete transfer in status: ${transfer.status}`);
   }

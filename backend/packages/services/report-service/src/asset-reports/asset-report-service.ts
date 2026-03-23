@@ -14,8 +14,6 @@
  */
 
 import type { UUID } from '@ams/types';
-import * as cache from '@ams/cache';
-import { CACHE_ENTITY_TYPES } from '@ams/cache';
 import { createLogger } from '@ams/utils';
 
 import { generateUUID } from '../utils/report-utils';

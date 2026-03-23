@@ -18,8 +18,19 @@ jest.mock('@ams/database', () => ({
 
 jest.mock('@ams/cache', () => ({
   del: jest.fn().mockResolvedValue(undefined),
+  deletePattern: jest.fn().mockResolvedValue(undefined),
   get: jest.fn().mockResolvedValue(null),
+  getOrSet: jest.fn(async (_key: string, fetchFn: () => Promise<unknown>) => fetchFn()),
   set: jest.fn().mockResolvedValue(undefined),
+  entityKey: jest.fn((entityType: string, id: string) => `${entityType}:${id}`),
+  CACHE_ENTITY_TYPES: {
+    NOTIFICATION: 'notification',
+    NOTIFICATION_PREFERENCES: 'notification-prefs',
+    REPORT: 'report',
+  },
+  DEFAULT_TTL: {
+    MEDIUM: 300,
+  },
 }));
 
 jest.mock('@ams/events', () => ({

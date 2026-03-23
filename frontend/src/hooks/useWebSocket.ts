@@ -241,7 +241,7 @@ export function useDashboardRefresh(
       const now = Date.now();
       if (now - lastRefreshRef.current >= debounceMs) {
         lastRefreshRef.current = now;
-        refreshRef.current();
+        void refreshRef.current();
       }
     };
 
@@ -289,7 +289,7 @@ export function useConnectionRecovery(
       connectionState === 'connected' &&
       (previousState === 'reconnecting' || previousState === 'error')
     ) {
-      refreshRef.current();
+      void refreshRef.current();
     }
   }, [connectionState]);
 }

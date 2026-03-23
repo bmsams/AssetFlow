@@ -188,6 +188,15 @@ describe('StockroomPage', () => {
       ).toBeInTheDocument();
     });
   });
+
+  it('shows non-zero inventory quantities on dashboard cards and stockroom rows', async () => {
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.getByText('700 items')).toBeInTheDocument();
+      expect(screen.getByText('450 items')).toBeInTheDocument();
+    });
+  });
 });
 
 describe('StockroomPage - Requirements Validation', () => {

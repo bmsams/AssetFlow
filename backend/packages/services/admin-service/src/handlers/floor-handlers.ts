@@ -20,7 +20,6 @@ import type {
   CreateFloorRequest,
   FloorListFilters,
   UpdateFloorRequest,
-  UUID,
 } from '@ams/types';
 import {
   API_ERROR_CODES,

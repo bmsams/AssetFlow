@@ -18,7 +18,6 @@ import type {
   CreateManufacturerRequest,
   ManufacturerListFilters,
   UpdateManufacturerRequest,
-  UUID,
 } from '@ams/types';
 import {
   API_ERROR_CODES,

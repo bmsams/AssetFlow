@@ -1,0 +1,345 @@
+{
+  "contractVersion": "2026-03-07",
+  "module": "admin",
+  "scope": "Master-data entities and hierarchy wiring across DB, backend, API, and frontend.",
+  "sharedEntities": [
+    "users",
+    "buildings",
+    "stockrooms",
+    "cost_centers",
+    "vendors"
+  ],
+  "enums": {
+    "roomType": [
+      "OFFICE",
+      "SERVER_ROOM",
+      "STORAGE",
+      "CONFERENCE",
+      "LAB",
+      "UTILITY",
+      "OTHER"
+    ],
+    "vendorType": [
+      "MANUFACTURER",
+      "RESELLER",
+      "DISTRIBUTOR",
+      "SERVICE_PROVIDER",
+      "CONSULTANT",
+      "CONTRACTOR",
+      "LESSOR",
+      "OTHER"
+    ],
+    "vendorRating": [
+      "PREFERRED",
+      "APPROVED",
+      "CONDITIONAL",
+      "PROBATION",
+      "SUSPENDED",
+      "BLACKLISTED"
+    ],
+    "modelStatus": [
+      "ACTIVE",
+      "DEPRECATED",
+      "END_OF_LIFE"
+    ],
+    "stockroomType": [
+      "STANDARD",
+      "LOANER",
+      "REPAIR",
+      "DISPOSAL",
+      "QUARANTINE",
+      "MAIN",
+      "SATELLITE",
+      "VIRTUAL",
+      "RECEIVING",
+      "SPARE_PARTS",
+      "OTHER"
+    ]
+  },
+  "entities": {
+    "buildings": {
+      "table": "buildings",
+      "requiredColumns": [
+        "building_id",
+        "building_code",
+        "name",
+        "is_active"
+      ]
+    },
+    "floors": {
+      "table": "floors",
+      "requiredColumns": [
+        "floor_id",
+        "building_id",
+        "floor_number",
+        "name"
+      ]
+    },
+    "rooms": {
+      "table": "rooms",
+      "requiredColumns": [
+        "room_id",
+        "floor_id",
+        "room_number",
+        "room_type"
+      ]
+    },
+    "racks": {
+      "table": "racks",
+      "requiredColumns": [
+        "rack_id",
+        "room_id",
+        "rack_name",
+        "total_units",
+        "used_units"
+      ]
+    },
+    "stockrooms": {
+      "table": "stockrooms",
+      "requiredColumns": [
+        "stockroom_id",
+        "name",
+        "stockroom_type",
+        "building_id",
+        "cost_center_id",
+        "is_active"
+      ]
+    },
+    "costCenters": {
+      "table": "cost_centers",
+      "requiredColumns": [
+        "cost_center_id",
+        "code",
+        "name",
+        "department_id",
+        "is_active"
+      ]
+    },
+    "vendors": {
+      "table": "vendors",
+      "requiredColumns": [
+        "vendor_id",
+        "vendor_name",
+        "vendor_type",
+        "is_active"
+      ]
+    },
+    "manufacturers": {
+      "table": "manufacturers",
+      "requiredColumns": [
+        "manufacturer_id",
+        "name",
+        "is_active"
+      ]
+    },
+    "models": {
+      "table": "models",
+      "requiredColumns": [
+        "model_id",
+        "manufacturer_id",
+        "model_name",
+        "status",
+        "is_active"
+      ]
+    },
+    "users": {
+      "table": "users",
+      "requiredColumns": [
+        "user_id",
+        "email",
+        "department_id",
+        "is_active"
+      ]
+    },
+    "roles": {
+      "table": "roles",
+      "requiredColumns": [
+        "role_id",
+        "role_name"
+      ]
+    },
+    "userRoles": {
+      "table": "user_roles",
+      "requiredColumns": [
+        "user_id",
+        "role_id"
+      ]
+    }
+  },
+  "enumTargets": [
+    {
+      "enum": "roomType",
+      "files": [
+        "backend/packages/types/src/location.ts",
+        "frontend/src/types/admin.ts"
+      ]
+    },
+    {
+      "enum": "vendorType",
+      "files": [
+        "backend/packages/types/src/reference-data.ts",
+        "frontend/src/types/admin.ts"
+      ]
+    },
+    {
+      "enum": "vendorRating",
+      "files": [
+        "backend/packages/types/src/reference-data.ts",
+        "frontend/src/types/admin.ts"
+      ]
+    },
+    {
+      "enum": "modelStatus",
+      "files": [
+        "backend/packages/types/src/reference-data.ts",
+        "frontend/src/types/admin.ts"
+      ]
+    },
+    {
+      "enum": "stockroomType",
+      "files": [
+        "backend/packages/types/src/stockroom.ts",
+        "frontend/src/types/admin.ts"
+      ]
+    }
+  ],
+  "fileChecks": [
+    {
+      "path": "backend/packages/services/admin-service/src/handlers/building-handlers.ts",
+      "tokens": [
+        "/admin/buildings",
+        "createBuildingHandler",
+        "listBuildingsHandler"
+      ]
+    },
+    {
+      "path": "backend/packages/services/admin-service/src/handlers/vendor-handlers.ts",
+      "tokens": [
+        "/admin/vendors",
+        "createVendorHandler"
+      ]
+    },
+    {
+      "path": "frontend/src/services/admin-api.ts",
+      "tokens": [
+        "/admin/buildings",
+        "/admin/floors",
+        "/admin/rooms",
+        "/admin/racks",
+        "/admin/stockrooms",
+        "/admin/cost-centers",
+        "/admin/vendors",
+        "/admin/models",
+        "/admin/users"
+      ]
+    }
+  ],
+  "requiredRuntimeRoutes": [
+    {
+      "path": "/admin/buildings",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/admin/floors",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/admin/rooms",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/admin/racks",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/admin/stockrooms",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/admin/cost-centers",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/admin/vendors",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/admin/users",
+      "methods": [
+        "GET"
+      ]
+    }
+  ],
+  "requiredOpenApiRoutes": [
+    {
+      "path": "/admin/buildings",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/admin/floors",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/admin/rooms",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/admin/racks",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/admin/stockrooms",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/admin/vendors",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/admin/users",
+      "methods": [
+        "GET"
+      ]
+    }
+  ]
+}
+

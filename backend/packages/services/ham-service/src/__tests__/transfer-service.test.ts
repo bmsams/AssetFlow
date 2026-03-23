@@ -349,6 +349,52 @@ describe('Transfer Service', () => {
       expect(mockPublishEvent).toHaveBeenCalledWith('TRANSFER_ORDER_COMPLETED', expect.any(Object));
     });
 
+    it('should complete an approved transfer without an explicit ship step', async () => {
+      const approvedTransfer = {
+        ...mockTransfer,
+        status: 'APPROVED' as const,
+      };
+      const unshippedLine = {
+        ...mockLines[0],
+        shippedQuantity: 0,
+        status: 'PENDING' as const,
+      };
+      const unshippedLineId = unshippedLine.lineId as string;
+
+      mockTransferRepository.getTransferById.mockResolvedValue(approvedTransfer as any);
+      mockTransferRepository.getTransferLines.mockResolvedValue([unshippedLine] as any);
+      mockTransferRepository.updateTransferLine.mockResolvedValue({
+        ...unshippedLine,
+        receivedQuantity: 5,
+        status: 'RECEIVED',
+      } as any);
+      mockTransferRepository.updateTransferStatus.mockResolvedValue({
+        ...approvedTransfer,
+        status: 'COMPLETED',
+        receivedQuantity: 5,
+        completedDate: '2024-01-15T10:00:00.000Z',
+      } as any);
+
+      mockStockroomRepository.getInventoryByProduct.mockResolvedValue({
+        inventoryId: 'inv-1',
+        quantityOnHand: 10,
+      } as any);
+      mockStockroomRepository.adjustInventoryQuantity.mockResolvedValue({} as any);
+
+      const result = await transferService.completeTransfer(approvedTransfer.transferId, {
+        receivedBy: '123e4567-e89b-12d3-a456-426614174000',
+        lineReceipts: [
+          {
+            lineId: unshippedLineId,
+            receivedQuantity: 5,
+          },
+        ],
+      });
+
+      expect(result.transfer.status).toBe('COMPLETED');
+      expect(result.inventoryUpdated).toBe(true);
+    });
+
     it('should throw error when transfer not found', async () => {
       mockTransferRepository.getTransferById.mockResolvedValue(null);
 

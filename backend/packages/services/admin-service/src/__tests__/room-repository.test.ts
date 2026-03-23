@@ -44,6 +44,17 @@ const mockQueryMany = jest.mocked(queryMany);
 describe('Location Repository - Room CRUD', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockQueryMany.mockImplementation(async (sql: string) => {
+      if (sql.includes('information_schema.columns') && sql.includes('hardware_assets')) {
+        return [
+          { column_name: 'building' },
+          { column_name: 'floor' },
+          { column_name: 'room' },
+          { column_name: 'rack' },
+        ];
+      }
+      return [];
+    });
   });
 
   // ============================================================================

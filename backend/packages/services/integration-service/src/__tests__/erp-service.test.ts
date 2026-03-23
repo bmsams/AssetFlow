@@ -14,6 +14,11 @@ import type {
   SyncPurchaseOrdersRequest,
 } from '../erp/erp-types';
 
+// Mock event publishing to keep tests isolated from AWS SDK runtime
+jest.mock('@ams/events', () => ({
+  publishEvent: jest.fn().mockResolvedValue(undefined),
+}));
+
 // Mock the repository module
 jest.mock('../erp/erp-repository', () => ({
   createERPSyncAuditLog: jest.fn().mockResolvedValue('audit-log-id-123'),

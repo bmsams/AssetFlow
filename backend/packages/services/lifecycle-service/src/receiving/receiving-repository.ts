@@ -692,22 +692,22 @@ export async function createReceivingLineFromPO(
     // Get PO line details with vendor info from both line and header
     const poLine = await ctx.queryOne<PurchaseOrderLineRow>(
       `SELECT
-         pol.line_id,
-         pol.po_id,
-         pol.product_id,
-         pol.product_type,
-         pol.product_description as product_name,
-         pol.quantity,
-         pol.received_quantity,
-         pol.vendor_id,
-         COALESCE(line_vendor.vendor_name, pol.vendor_name) AS vendor_name,
+         po_line.line_id,
+         po_line.po_id,
+         po_line.product_id,
+         po_line.product_type,
+         po_line.product_description as product_name,
+         po_line.quantity,
+         po_line.received_quantity,
+         po_line.vendor_id,
+         COALESCE(line_vendor.vendor_name, po_line.vendor_name) AS vendor_name,
          po.vendor_id AS header_vendor_id,
          header_vendor.vendor_name AS header_vendor_name
-       FROM purchase_order_lines pol
-        JOIN purchase_orders po ON pol.po_id = po.po_id
-        LEFT JOIN vendors line_vendor ON pol.vendor_id = line_vendor.vendor_id
+       FROM purchase_order_lines po_line
+        JOIN purchase_orders po ON po_line.po_id = po.po_id
+        LEFT JOIN vendors line_vendor ON po_line.vendor_id = line_vendor.vendor_id
         LEFT JOIN vendors header_vendor ON po.vendor_id = header_vendor.vendor_id
-        WHERE pol.line_id = $1`,
+        WHERE po_line.line_id = $1`,
       [poLineId]
     );
 

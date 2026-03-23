@@ -17,6 +17,9 @@ const getRelationshipTypeLabel = (type: RelationshipType): string => {
   const labels: Record<RelationshipType, string> = {
     PARENT_CHILD: 'Parent/Child',
     DEPENDENCY: 'Dependency',
+    CONNECTED_TO: 'Connected To',
+    INSTALLED_ON: 'Installed On',
+    RUNS_ON: 'Runs On',
     LOCATION: 'Location',
     COMPONENT: 'Component',
   };
@@ -42,6 +45,30 @@ const getRelationshipIcon = (type: RelationshipType): React.ReactNode => {
           <circle cx="18" cy="12" r="3" />
           <path d="M9 12h6" />
           <path d="M12 9l3 3-3 3" />
+        </svg>
+      );
+    case 'CONNECTED_TO':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+          <circle cx="6" cy="12" r="2.5" />
+          <circle cx="18" cy="12" r="2.5" />
+          <path d="M8.5 10.5h7M8.5 13.5h7" />
+        </svg>
+      );
+    case 'INSTALLED_ON':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+          <rect x="4" y="5" width="16" height="6" rx="1" />
+          <path d="M12 11v8" />
+          <path d="M8 19h8" />
+        </svg>
+      );
+    case 'RUNS_ON':
+      return (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+          <rect x="3" y="4" width="18" height="12" rx="1" />
+          <path d="M8 20h8" />
+          <path d="M12 16v4" />
         </svg>
       );
     case 'LOCATION':
@@ -82,6 +109,9 @@ const formatDate = (dateString: string): string => {
   });
 };
 
+const getRelationshipType = (relationship: { relationType?: RelationshipType; relationshipType?: RelationshipType }): RelationshipType =>
+  relationship.relationType ?? relationship.relationshipType ?? 'DEPENDENCY';
+
 /**
  * AssetRelationships component displays asset relationships in the CMDB
  * Shows parent-child, dependency, location, and component relationships
@@ -109,7 +139,7 @@ export function AssetRelationships({
   // Group relationships by type
   const groupedRelationships = relationships.reduce(
     (acc, rel) => {
-      const type = rel.relationship.relationshipType;
+      const type = getRelationshipType(rel.relationship);
       if (!acc[type]) {
         acc[type] = [];
       }

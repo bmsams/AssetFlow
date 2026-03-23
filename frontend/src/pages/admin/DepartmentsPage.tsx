@@ -97,7 +97,7 @@ export function DepartmentsPage() {
   }, [showInactive, searchQuery]);
 
   useEffect(() => {
-    fetchDepartments();
+    void fetchDepartments();
   }, [fetchDepartments]);
 
   // Announce filter results to screen readers when count changes
@@ -137,7 +137,7 @@ export function DepartmentsPage() {
     if (!window.confirm(`Deactivate department "${dept.name}"? This will also affect child departments.`)) return;
     try {
       await adminApi.departments.deactivate(dept.departmentId);
-      fetchDepartments();
+      void fetchDepartments();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to deactivate department');
     }

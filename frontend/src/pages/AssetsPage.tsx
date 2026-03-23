@@ -202,7 +202,7 @@ export function AssetsPage() {
       }
     };
     
-    loadData();
+    void loadData();
 
     return () => {
       isMounted = false;

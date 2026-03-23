@@ -106,7 +106,7 @@ export function SoftwareAssetsPage() {
   }, [fetchAssets]);
 
   useEffect(() => {
-    fetchAssets();
+    void fetchAssets();
   }, [fetchAssets]);
 
   useEffect(() => {

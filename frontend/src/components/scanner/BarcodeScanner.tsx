@@ -190,7 +190,7 @@ export function BarcodeScanner({
    */
   const handleMockScan = useCallback(() => {
     if (mockMode && mockBarcodeValue) {
-      processBarcode(mockBarcodeValue, 'QR_CODE');
+      void processBarcode(mockBarcodeValue, 'QR_CODE');
     }
   }, [mockMode, mockBarcodeValue, processBarcode]);
 
@@ -199,7 +199,7 @@ export function BarcodeScanner({
    */
   const triggerScan = useCallback(
     (barcodeValue: string, barcodeFormat: BarcodeFormat = 'QR_CODE') => {
-      processBarcode(barcodeValue, barcodeFormat);
+      void processBarcode(barcodeValue, barcodeFormat);
     },
     [processBarcode]
   );
@@ -207,7 +207,7 @@ export function BarcodeScanner({
   // Initialize camera when active
   useEffect(() => {
     if (isActive) {
-      initializeCamera();
+      void initializeCamera();
     } else {
       stopCamera();
     }

@@ -74,7 +74,7 @@ export function AssetDetailPage({
       }
     }
 
-    fetchAsset();
+    void fetchAsset();
 
     return () => {
       isMounted = false;

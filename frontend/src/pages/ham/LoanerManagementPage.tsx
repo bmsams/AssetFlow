@@ -33,7 +33,7 @@ export function LoanerManagementPage() {
   }, [activeTab]);
 
   useEffect(() => {
-    fetchLoaners();
+    void fetchLoaners();
   }, [fetchLoaners]);
 
   const handleReturn = async (loanId: string) => {

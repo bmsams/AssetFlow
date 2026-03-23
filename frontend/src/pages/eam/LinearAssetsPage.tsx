@@ -30,7 +30,7 @@ export function LinearAssetsPage() {
   }, []);
 
   useEffect(() => {
-    fetchAssets();
+    void fetchAssets();
   }, [fetchAssets]);
 
   const selectedAsset = assets.find((a) => a.linearAssetId === selectedAssetId);

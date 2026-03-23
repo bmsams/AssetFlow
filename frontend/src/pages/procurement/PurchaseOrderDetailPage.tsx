@@ -157,7 +157,7 @@ export function PurchaseOrderDetailPage() {
   }, [poId, refreshCloseGuard]);
 
   useEffect(() => {
-    loadPurchaseOrder();
+    void loadPurchaseOrder();
   }, [loadPurchaseOrder]);
 
   /**

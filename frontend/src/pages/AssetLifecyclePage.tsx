@@ -86,7 +86,7 @@ export function AssetLifecyclePage() {
       }
     }
 
-    loadAsset();
+    void loadAsset();
 
     return () => {
       isMounted = false;

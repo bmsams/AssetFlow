@@ -22,7 +22,6 @@ import type {
   ModelListFilters,
   ModelStatus,
   UpdateModelRequest,
-  UUID,
 } from '@ams/types';
 import {
   API_ERROR_CODES,

@@ -298,7 +298,7 @@ export function ApprovalWorkflow({
   }, [poId, totalAmount]);
 
   useEffect(() => {
-    loadApprovalData();
+    void loadApprovalData();
   }, [loadApprovalData]);
 
   /**

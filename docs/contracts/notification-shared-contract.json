@@ -1,0 +1,136 @@
+{
+  "contractVersion": "2026-03-07",
+  "module": "notification",
+  "scope": "Notification preference, delivery, and tracking contract including user-level API integration points.",
+  "sharedEntities": [
+    "users",
+    "assets",
+    "work_orders",
+    "reconciliation_results"
+  ],
+  "enums": {
+    "notificationChannel": [
+      "EMAIL",
+      "IN_APP",
+      "SMS",
+      "PUSH"
+    ],
+    "notificationEventType": [
+      "CONTRACT_EXPIRING",
+      "LOANER_OVERDUE",
+      "STOCK_LOW",
+      "COMPLIANCE_ALERT",
+      "ASSET_STATE_CHANGED",
+      "REQUEST_APPROVED",
+      "REQUEST_REJECTED",
+      "WORK_ORDER_ASSIGNED",
+      "MAINTENANCE_DUE",
+      "APPROVAL_REQUIRED",
+      "SYSTEM_ALERT",
+      "CUSTOM"
+    ]
+  },
+  "entities": {
+    "renewalNotifications": {
+      "table": "renewal_notifications",
+      "requiredColumns": [
+        "notification_id",
+        "subscription_id",
+        "notification_type",
+        "status",
+        "sent_at"
+      ]
+    },
+    "auditLog": {
+      "table": "audit_log",
+      "requiredColumns": [
+        "log_id",
+        "user_id",
+        "action_type",
+        "resource_type",
+        "timestamp"
+      ]
+    },
+    "users": {
+      "table": "users",
+      "requiredColumns": [
+        "user_id",
+        "email",
+        "is_active"
+      ]
+    }
+  },
+  "enumTargets": [
+    {
+      "enum": "notificationChannel",
+      "files": [
+        "backend/packages/types/src/notification.ts",
+        "backend/packages/services/notification-service/src/notification/notification-types.ts"
+      ]
+    },
+    {
+      "enum": "notificationEventType",
+      "files": [
+        "backend/packages/types/src/notification.ts",
+        "backend/packages/services/notification-service/src/notification/notification-types.ts"
+      ]
+    }
+  ],
+  "fileChecks": [
+    {
+      "path": "backend/packages/services/notification-service/src/notification/notification-service.ts",
+      "tokens": [
+        "sendNotification(",
+        "getNotification(",
+        "markAsRead("
+      ]
+    },
+    {
+      "path": "backend/packages/services/notification-service/src/preferences/preferences-service.ts",
+      "tokens": [
+        "getUserPreferences(",
+        "updatePreferences(",
+        "queueForBatch("
+      ]
+    },
+    {
+      "path": "backend/packages/services/notification-service/src/tracking/tracking-service.ts",
+      "tokens": [
+        "queryNotificationHistory(",
+        "recordReadReceipt(",
+        "processRetryAttempt("
+      ]
+    },
+    {
+      "path": "frontend/src/services/notification-api.ts",
+      "tokens": [
+        "/notifications/history",
+        "/notifications/${notificationId}/read",
+        "/users/${userId}/notification-preferences"
+      ]
+    }
+  ],
+  "requiredRuntimeRoutes": [
+    {
+      "path": "/notifications/history",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/notifications/{notificationId}/read",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/users/{userId}/notification-preferences",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    }
+  ],
+  "requiredOpenApiRoutes": []
+}
+

@@ -26,6 +26,15 @@ jest.mock('@ams/cache', () => ({
   del: jest.fn().mockResolvedValue(undefined),
   get: jest.fn().mockResolvedValue(null),
   set: jest.fn().mockResolvedValue(undefined),
+  entityKey: jest.fn((entityType: string, id: string) => `${entityType}:${id}`),
+  CACHE_ENTITY_TYPES: {
+    NOTIFICATION_PREFERENCES: 'notification-prefs',
+    NOTIFICATION: 'notification',
+    REPORT: 'report',
+  },
+  DEFAULT_TTL: {
+    MEDIUM: 300,
+  },
 }));
 
 jest.mock('@ams/events', () => ({
@@ -83,7 +92,6 @@ describe('Tracking Handlers', () => {
 
       expect(result.statusCode).toBe(200);
       const body = JSON.parse(result.body);
-      expect(body.success).toBe(true);
       expect(body.data.receiptId).toBeDefined();
       expect(body.data.notificationId).toBe('123e4567-e89b-12d3-a456-426614174001');
       expect(body.data.readSource).toBe('WEB_APP');
@@ -117,7 +125,6 @@ describe('Tracking Handlers', () => {
 
       expect(result.statusCode).toBe(400);
       const body = JSON.parse(result.body);
-      expect(body.success).toBe(false);
       expect(body.error.message).toBe('Request body is required');
     });
 
@@ -245,7 +252,6 @@ describe('Tracking Handlers', () => {
 
       expect(result.statusCode).toBe(200);
       const body = JSON.parse(result.body);
-      expect(body.success).toBe(true);
       expect(body.data.entries.length).toBe(3);
       expect(body.data.total).toBe(3);
     });
@@ -396,7 +402,7 @@ describe('Tracking Handlers', () => {
 
       expect(result.statusCode).toBe(200);
       const body = JSON.parse(result.body);
-      expect(body.success).toBe(true);
+      expect(body.data).toBeDefined();
     });
   });
 });

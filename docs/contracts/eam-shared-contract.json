@@ -1,0 +1,211 @@
+{
+  "contractVersion": "2026-03-07",
+  "module": "eam",
+  "scope": "Enterprise asset maintenance contract covering work orders, plans, linear assets, and parts.",
+  "sharedEntities": [
+    "assets",
+    "buildings",
+    "stockrooms",
+    "users"
+  ],
+  "enums": {
+    "workOrderStatus": [
+      "OPEN",
+      "ASSIGNED",
+      "IN_PROGRESS",
+      "ON_HOLD",
+      "PENDING_PARTS",
+      "PENDING_APPROVAL",
+      "COMPLETED",
+      "CANCELLED",
+      "CLOSED"
+    ],
+    "workOrderPriority": [
+      "CRITICAL",
+      "HIGH",
+      "MEDIUM",
+      "LOW"
+    ],
+    "workOrderType": [
+      "PREVENTIVE",
+      "CORRECTIVE",
+      "EMERGENCY",
+      "INSPECTION",
+      "CALIBRATION",
+      "INSTALLATION",
+      "MODIFICATION",
+      "DECOMMISSION",
+      "PROJECT",
+      "OTHER"
+    ]
+  },
+  "entities": {
+    "workOrders": {
+      "table": "work_orders",
+      "requiredColumns": [
+        "work_order_id",
+        "work_order_number",
+        "asset_id",
+        "work_type",
+        "priority",
+        "status",
+        "assigned_to"
+      ]
+    },
+    "maintenancePlans": {
+      "table": "maintenance_plans",
+      "requiredColumns": [
+        "plan_id",
+        "asset_id",
+        "plan_name",
+        "maintenance_type",
+        "schedule_type",
+        "next_due_date",
+        "is_active"
+      ]
+    },
+    "workOrderParts": {
+      "table": "work_order_parts",
+      "requiredColumns": [
+        "id",
+        "work_order_id",
+        "part_id",
+        "quantity_required",
+        "quantity_used"
+      ]
+    },
+    "linearAssets": {
+      "table": "linear_assets",
+      "requiredColumns": [
+        "linear_asset_id",
+        "asset_id",
+        "total_length",
+        "segment_count",
+        "linear_unit_of_measure"
+      ]
+    },
+    "linearAssetSegments": {
+      "table": "linear_asset_segments",
+      "requiredColumns": [
+        "segment_id",
+        "linear_asset_id",
+        "sequence_number",
+        "segment_length",
+        "condition_rating"
+      ]
+    },
+    "stockroomInventory": {
+      "table": "stockroom_inventory",
+      "requiredColumns": [
+        "inventory_id",
+        "stockroom_id",
+        "product_id",
+        "quantity_on_hand",
+        "quantity_reserved"
+      ]
+    }
+  },
+  "enumTargets": [
+    {
+      "enum": "workOrderStatus",
+      "files": [
+        "backend/packages/services/eam-service/src/work-order/work-order-repository.ts"
+      ]
+    },
+    {
+      "enum": "workOrderPriority",
+      "files": [
+        "backend/packages/services/eam-service/src/work-order/work-order-repository.ts"
+      ]
+    },
+    {
+      "enum": "workOrderType",
+      "files": [
+        "backend/packages/services/eam-service/src/work-order/work-order-repository.ts"
+      ]
+    }
+  ],
+  "fileChecks": [
+    {
+      "path": "backend/packages/services/eam-service/src/work-order/work-order-service.ts",
+      "tokens": [
+        "VALID_STATE_TRANSITIONS",
+        "createWorkOrder(",
+        "assignWorkOrder(",
+        "completeWorkOrder("
+      ]
+    },
+    {
+      "path": "backend/packages/services/eam-service/src/handlers/work-order-handlers.ts",
+      "tokens": [
+        "/eam/work-orders",
+        "listWorkOrdersHandler"
+      ]
+    },
+    {
+      "path": "frontend/src/services/eam-api.ts",
+      "tokens": [
+        "/eam/work-orders",
+        "/eam/maintenance-plans",
+        "/eam/parts/levels",
+        "/eam/parts/reserve",
+        "/eam/parts/consume",
+        "STATUS_UI_TO_API"
+      ]
+    }
+  ],
+  "requiredRuntimeRoutes": [
+    {
+      "path": "/eam/work-orders",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/eam/work-orders/{workOrderId}/complete",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/eam/work-orders/{workOrderId}/assign",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/eam/maintenance-plans",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "path": "/eam/maintenance-plans/check-due",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/eam/parts/levels",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/eam/parts/reserve",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/eam/parts/consume",
+      "methods": [
+        "POST"
+      ]
+    }
+  ],
+  "requiredOpenApiRoutes": []
+}
+

@@ -116,7 +116,7 @@ export function UsersPage() {
   }, [showInactive, searchQuery, selectedDeptId]);
 
   useEffect(() => {
-    fetchUsers();
+    void fetchUsers();
   }, [fetchUsers]);
 
   // Announce filter results to screen readers when count changes
@@ -156,7 +156,7 @@ export function UsersPage() {
     if (!window.confirm(`Deactivate user "${user.email}"?`)) return;
     try {
       await adminApi.users.deactivate(user.userId);
-      fetchUsers();
+      void fetchUsers();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to deactivate');
     }
@@ -166,7 +166,7 @@ export function UsersPage() {
     e.stopPropagation();
     try {
       await adminApi.users.reactivate(user.userId);
-      fetchUsers();
+      void fetchUsers();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to reactivate');
     }

@@ -7,6 +7,7 @@
 
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 
+import { ensureUserIdFromAuthClaims, resolveUserIdFromAuthId } from '@ams/database';
 import { API_ERROR_CODES, createApiResponse, createErrorResponse, createLambdaResponse, HTTP_STATUS } from '@ams/types';
 import { createLogger, validateUUID } from '@ams/utils';
 
@@ -167,7 +168,16 @@ export async function handler(
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> {
   const requestId = event.requestContext.requestId;
-  const userId = event.requestContext.authorizer?.['claims']?.['sub'] as string | undefined;
+  const claims = event.requestContext.authorizer?.['claims'] as Record<string, string> | undefined;
+  const authSub = claims?.['sub'];
+  const userId =
+    (await resolveUserIdFromAuthId(authSub)) ??
+    (await ensureUserIdFromAuthClaims({
+      sub: authSub ?? '',
+      email: claims?.['email'],
+      givenName: claims?.['given_name'],
+      familyName: claims?.['family_name'],
+    }));
 
   // Get transferId from path parameters
   const transferId = event.pathParameters?.['transferId'];
@@ -175,11 +185,17 @@ export async function handler(
   logger.info('Complete transfer request received', { requestId, transferId });
 
   try {
-    // Validate user ID
-    if (!userId) {
+    if (!authSub) {
       return createLambdaResponse(
         HTTP_STATUS.UNAUTHORIZED,
         createErrorResponse(API_ERROR_CODES.UNAUTHORIZED, 'User authentication required', requestId)
+      );
+    }
+
+    if (!userId) {
+      return createLambdaResponse(
+        HTTP_STATUS.FORBIDDEN,
+        createErrorResponse(API_ERROR_CODES.USER_NOT_PROVISIONED, 'User is not provisioned in the application', requestId)
       );
     }
 

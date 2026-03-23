@@ -18,6 +18,7 @@ import type {
   AuditAction,
   RelationshipType,
 } from '../types/asset';
+import { RELATIONSHIP_TYPES } from '../types/asset';
 
 /**
  * Pagination parameters
@@ -156,12 +157,7 @@ function buildQueryString(params: Record<string, unknown>): string {
   return queryString ? `?${queryString}` : '';
 }
 
-const VALID_RELATIONSHIP_TYPES: RelationshipType[] = [
-  'PARENT_CHILD',
-  'DEPENDENCY',
-  'LOCATION',
-  'COMPONENT',
-];
+const VALID_RELATIONSHIP_TYPES: readonly RelationshipType[] = RELATIONSHIP_TYPES;
 
 function mapRelationshipType(value: string): RelationshipType {
   return VALID_RELATIONSHIP_TYPES.includes(value as RelationshipType)
@@ -170,6 +166,7 @@ function mapRelationshipType(value: string): RelationshipType {
 }
 
 function mapRelatedAsset(raw: RelatedAssetRaw): RelatedAsset {
+  const relationType = mapRelationshipType(raw.relationship.relationType);
   return {
     asset: raw.asset,
     direction: raw.direction,
@@ -177,7 +174,8 @@ function mapRelatedAsset(raw: RelatedAssetRaw): RelatedAsset {
       relationshipId: raw.relationship.relationshipId,
       sourceAssetId: raw.relationship.sourceAssetId,
       targetAssetId: raw.relationship.targetAssetId,
-      relationshipType: mapRelationshipType(raw.relationship.relationType),
+      relationType,
+      relationshipType: relationType,
       description: raw.relationship.metadata?.['description'] as string | undefined,
       createdAt: raw.relationship.createdAt,
       createdBy: raw.relationship.createdBy,

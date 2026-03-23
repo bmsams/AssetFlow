@@ -19,7 +19,6 @@ import type {
   BuildingListFilters,
   CreateBuildingRequest,
   UpdateBuildingRequest,
-  UUID,
 } from '@ams/types';
 import {
   API_ERROR_CODES,

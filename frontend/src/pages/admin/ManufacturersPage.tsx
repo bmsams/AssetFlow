@@ -93,7 +93,7 @@ export function ManufacturersPage() {
   }, [showInactive, searchQuery]);
 
   useEffect(() => {
-    fetchManufacturers();
+    void fetchManufacturers();
   }, [fetchManufacturers]);
 
   // Announce filter results to screen readers when count changes
@@ -133,7 +133,7 @@ export function ManufacturersPage() {
     if (!window.confirm(`Deactivate manufacturer "${mfr.name}"?`)) return;
     try {
       await adminApi.manufacturers.deactivate(mfr.manufacturerId);
-      fetchManufacturers();
+      void fetchManufacturers();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to deactivate');
     }
