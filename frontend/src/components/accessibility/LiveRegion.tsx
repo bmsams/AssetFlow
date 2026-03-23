@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, type ReactNode } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 
 export type Politeness = 'polite' | 'assertive' | 'off';
 
@@ -115,11 +115,11 @@ export function Announcer({ id = 'global-announcer' }: AnnouncerProps) {
 
   return (
     <>
-      <LiveRegion politeness="polite" role="status" aria-label="Notifications">
+      <LiveRegion politeness="polite" role="status" aria-label="Notifications" className={`${id}-polite`}>
         {politeMessage}
       </LiveRegion>
       {assertiveMessage && (
-        <LiveRegion politeness="assertive" role="alert" aria-label="Alerts">
+        <LiveRegion politeness="assertive" role="alert" aria-label="Alerts" className={`${id}-assertive`}>
           {assertiveMessage}
         </LiveRegion>
       )}

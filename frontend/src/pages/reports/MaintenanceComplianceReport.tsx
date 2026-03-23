@@ -6,6 +6,8 @@ import { formatDateTime, formatDate, getComplianceColor } from '../../types/repo
 import { ReportExportButton } from './ReportExportButton';
 import styles from './ReportsPage.module.css';
 
+const EMPTY_REPORT_FILTERS: ReportFilters = {};
+
 /**
  * Maintenance Compliance Report Component
  * Implements Task 18.1.9: Create MaintenanceComplianceReport.tsx
@@ -16,21 +18,21 @@ export function MaintenanceComplianceReport() {
   const [report, setReport] = useState<MaintenanceComplianceReportType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filters, setFilters] = useState<ReportFilters>({});
+  const filters = EMPTY_REPORT_FILTERS;
   const [activeTab, setActiveTab] = useState<'overdue' | 'upcoming'>('overdue');
 
   const fetchReport = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
-      const data = await reportApi.maintenanceCompliance(filters);
+      const data = await reportApi.maintenanceCompliance(EMPTY_REPORT_FILTERS);
       setReport(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load report');
     } finally {
       setIsLoading(false);
     }
-  }, [filters]);
+  }, []);
 
   useEffect(() => {
     void fetchReport();

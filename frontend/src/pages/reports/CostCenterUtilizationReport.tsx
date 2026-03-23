@@ -36,13 +36,6 @@ export function CostCenterUtilizationReport() {
     void fetchReport();
   }, [fetchReport]);
 
-  const handleFilterChange = (key: keyof ReportFilters, value: string) => {
-    setFilters((prev) => ({
-      ...prev,
-      [key]: value || undefined,
-    }));
-  };
-
   const getUtilizationBadge = (percentage: number) => {
     if (percentage >= 90) {
       return <span className={`${styles.statusBadge} ${styles.statusError}`}>Critical</span>;
