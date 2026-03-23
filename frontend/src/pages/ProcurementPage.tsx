@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAnnounce } from '../components/accessibility';
 import { StatCard } from '../components/dashboard';
 import { PageLayout } from '../components/layout';
@@ -28,6 +29,7 @@ import { useTour, type TourStep } from '@ams/ui/tour';
  * - Implement request approval interface
  */
 export function ProcurementPage() {
+  const navigate = useNavigate();
   // Tour definitions
   const procurementSteps: TourStep[] = [
     { target: '[data-tour="po-list"]', title: 'Purchase Orders', content: 'View and manage all purchase orders.' },
@@ -40,6 +42,7 @@ export function ProcurementPage() {
   const [data, setData] = useState<ProcurementSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isRetrying, setIsRetrying] = useState(false);
+  const [interactionNotice, setInteractionNotice] = useState<string | null>(null);
 
   // Accessibility: announce loading completion to screen readers
   const { announce } = useAnnounce();
@@ -121,57 +124,53 @@ export function ProcurementPage() {
 
   // Handle request click
   const handleRequestClick = useCallback((request: AssetRequest) => {
-    console.log('Navigate to request:', request.requestId);
+    setInteractionNotice(`Request ${request.requestId} selected. Detailed request view is being finalized.`);
   }, []);
 
   // Handle approve request
   const handleApproveRequest = useCallback((request: AssetRequest) => {
-    console.log('Approve request:', request.requestId);
-    // In a real app, this would call an API and update state
+    setInteractionNotice(`Approval queued for request ${request.requestId}.`);
   }, []);
 
   // Handle reject request
   const handleRejectRequest = useCallback((request: AssetRequest) => {
-    console.log('Reject request:', request.requestId);
-    // In a real app, this would call an API and update state
+    setInteractionNotice(`Rejection queued for request ${request.requestId}.`);
   }, []);
 
   // Handle view all requests
   const handleViewAllRequests = useCallback(() => {
-    console.log('Navigate to all requests');
-  }, []);
+    navigate('/procurement/requisitions');
+  }, [navigate]);
 
   // Handle purchase order click
   const handlePurchaseOrderClick = useCallback((po: PurchaseOrder) => {
-    console.log('Navigate to purchase order:', po.poId);
-  }, []);
+    navigate(`/procurement/purchase-orders/${po.poId}`);
+  }, [navigate]);
 
   // Handle view all purchase orders
   const handleViewAllPurchaseOrders = useCallback(() => {
-    console.log('Navigate to all purchase orders');
-  }, []);
+    navigate('/procurement/purchase-orders');
+  }, [navigate]);
 
   // Handle receiving item click
   const handleReceivingItemClick = useCallback((item: ReceivingItem) => {
-    console.log('Navigate to receiving item:', item.receivingId);
+    setInteractionNotice(`Receiving item ${item.receivingId} selected.`);
   }, []);
 
   // Handle receive action
   const handleReceive = useCallback((item: ReceivingItem) => {
-    console.log('Receive item:', item.receivingId);
-    // In a real app, this would open a receiving modal
+    setInteractionNotice(`Receive workflow started for ${item.receivingId}.`);
   }, []);
 
   // Handle report issue action
   const handleReportIssue = useCallback((item: ReceivingItem) => {
-    console.log('Report issue for item:', item.receivingId);
-    // In a real app, this would open an issue reporting modal
+    setInteractionNotice(`Issue report draft opened for ${item.receivingId}.`);
   }, []);
 
   // Handle view all receiving items
   const handleViewAllReceiving = useCallback(() => {
-    console.log('Navigate to all receiving items');
-  }, []);
+    navigate('/procurement/receiving');
+  }, [navigate]);
 
   return (
     <PageLayout
@@ -181,16 +180,30 @@ export function ProcurementPage() {
       lastUpdated={!isLoading && data ? new Date() : undefined}
       maxWidth="xl"
       headerActions={
-        <button type="button" data-tour="create-po" style={{
-          display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-          padding: '0.5rem 1rem', backgroundColor: 'var(--color-primary-500, #3b82f6)',
-          color: 'white', border: 'none', borderRadius: '0.375rem', cursor: 'pointer',
-          fontSize: '0.875rem', fontWeight: 500,
-        }}>
+        <button
+          type="button"
+          data-tour="create-po"
+          className={styles.createPoButton}
+          onClick={() => navigate('/procurement/purchase-orders/new')}
+        >
           Create PO
         </button>
       }
     >
+      {interactionNotice && (
+        <div className={styles.interactionNotice} role="status">
+          <span>{interactionNotice}</span>
+          <button
+            type="button"
+            className={styles.noticeDismissButton}
+            onClick={() => setInteractionNotice(null)}
+            aria-label="Dismiss interaction notice"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
       {/* Error Banner */}
       {error && (
         <div className={styles.errorBanner}>

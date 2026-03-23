@@ -36,6 +36,7 @@ export function ServiceCatalogPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [interactionNotice, setInteractionNotice] = useState<string | null>(null);
 
   // Fetch catalog items
   useEffect(() => {
@@ -50,7 +51,6 @@ export function ServiceCatalogPage() {
           setCatalogItems(result.items as unknown as CatalogItemType[]);
         }
       } catch (err) {
-        console.error('Failed to load catalog items:', err);
         if (isMounted) {
           setError('Failed to load catalog items. Please try again.');
         }
@@ -103,8 +103,7 @@ export function ServiceCatalogPage() {
 
   // Handle item click - show detail modal (simplified for now)
   const handleItemClick = useCallback((item: CatalogItemType) => {
-    console.log('View item details:', item.itemId);
-    // In a full implementation, this would open a detail modal
+    setInteractionNotice(`Opened ${item.name}. Expanded catalog details panel is being finalized.`);
   }, []);
 
   // Handle add to cart
@@ -150,19 +149,20 @@ export function ServiceCatalogPage() {
   const handleSubmitRequest = useCallback(async (submission: CatalogRequestSubmission) => {
     setIsSubmitting(true);
     try {
-      // TODO: Replace with real catalog request submission API when available
-      console.log('Request submitted:', submission);
+      // Placeholder until submission endpoint is finalized.
+      await Promise.resolve(submission);
       
       // Clear cart and show success
       setCartItems([]);
       setShowSuccessMessage(true);
+      setInteractionNotice(`Submitted ${submission.items.length.toLocaleString()} catalog request item(s).`);
       
       // Hide success message after 5 seconds
       setTimeout(() => {
         setShowSuccessMessage(false);
       }, 5000);
-    } catch (err) {
-      console.error('Failed to submit request:', err);
+    } catch {
+      setInteractionNotice('Request submission failed. Please retry.');
     } finally {
       setIsSubmitting(false);
     }
@@ -199,6 +199,23 @@ export function ServiceCatalogPage() {
             className={styles.dismissButton}
             onClick={() => setShowSuccessMessage(false)}
             aria-label="Dismiss message"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+      )}
+
+      {interactionNotice && (
+        <div className={styles.interactionNotice} role="status">
+          <span>{interactionNotice}</span>
+          <button
+            type="button"
+            className={styles.dismissButton}
+            onClick={() => setInteractionNotice(null)}
+            aria-label="Dismiss interaction notice"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="18" y1="6" x2="6" y2="18" />

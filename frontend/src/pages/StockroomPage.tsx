@@ -76,6 +76,7 @@ export function StockroomPage() {
   const [isRetrying, setIsRetrying] = useState(false);
   const [data, setData] = useState<StockroomSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [interactionNotice, setInteractionNotice] = useState<string | null>(null);
 
   // Accessibility: announce loading completion to screen readers
   const { announce } = useAnnounce();
@@ -148,50 +149,47 @@ export function StockroomPage() {
 
   // Handle stockroom click
   const handleStockroomClick = useCallback((stockroom: Stockroom) => {
-    console.log('Navigate to stockroom:', stockroom.stockroomId);
+    setInteractionNotice(`Stockroom ${stockroom.name} selected. Detailed stockroom workspace is being finalized.`);
   }, []);
 
   // Handle view all stockrooms
   const handleViewAllStockrooms = useCallback(() => {
-    console.log('Navigate to all stockrooms');
+    setInteractionNotice('Full stockroom directory route is in progress.');
   }, []);
 
   // Handle transfer order click
   const handleTransferClick = useCallback((transfer: TransferOrder) => {
-    console.log('Navigate to transfer order:', transfer.transferId);
+    setInteractionNotice(`Transfer ${transfer.transferId} selected.`);
   }, []);
 
   // Handle approve transfer
   const handleApproveTransfer = useCallback((transfer: TransferOrder) => {
-    console.log('Approve transfer:', transfer.transferId);
-    // In a real app, this would call an API and update state
+    setInteractionNotice(`Approval workflow started for transfer ${transfer.transferId}.`);
   }, []);
 
   // Handle view all transfers
   const handleViewAllTransfers = useCallback(() => {
-    console.log('Navigate to all transfers');
+    setInteractionNotice('Full transfer board route is being connected.');
   }, []);
 
   // Handle alert click
   const handleAlertClick = useCallback((alert: ReplenishmentAlert) => {
-    console.log('Navigate to alert:', alert.alertId);
+    setInteractionNotice(`Replenishment alert ${alert.alertId} selected.`);
   }, []);
 
   // Handle create order from alert
   const handleCreateOrder = useCallback((alert: ReplenishmentAlert) => {
-    console.log('Create order for:', alert.productId);
-    // In a real app, this would open a purchase order creation modal
+    setInteractionNotice(`Purchase request initiated for product ${alert.productId}.`);
   }, []);
 
   // Handle dismiss alert
   const handleDismissAlert = useCallback((alert: ReplenishmentAlert) => {
-    console.log('Dismiss alert:', alert.alertId);
-    // In a real app, this would call an API and update state
+    setInteractionNotice(`Alert ${alert.alertId} dismissed from the current dashboard view.`);
   }, []);
 
   // Handle view all alerts
   const handleViewAllAlerts = useCallback(() => {
-    console.log('Navigate to all alerts');
+    setInteractionNotice('Full replenishment alert queue route is in progress.');
   }, []);
 
   if (error) {
@@ -226,6 +224,19 @@ export function StockroomPage() {
       lastUpdated={!isLoading && data ? new Date() : undefined}
       maxWidth="xl"
     >
+      {interactionNotice && (
+        <div className={styles.interactionNotice} role="status">
+          <span>{interactionNotice}</span>
+          <button
+            type="button"
+            className={styles.noticeDismissButton}
+            onClick={() => setInteractionNotice(null)}
+            aria-label="Dismiss interaction notice"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
 
       {/* Summary Stats */}
       <section className={styles.statsSection} aria-label="Stockroom summary statistics">

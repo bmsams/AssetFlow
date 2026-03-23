@@ -31,6 +31,22 @@
   font-size: var(--font-size-sm);
 }
 
+.interactionNotice {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-4);
+  background-color: rgba(37, 99, 235, 0.08);
+  border: 1px solid rgba(37, 99, 235, 0.24);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-primary);
+}
+
+.interactionNotice span {
+  flex: 1;
+  font-size: var(--font-size-sm);
+}
+
 .dismissButton {
   display: flex;
   align-items: center;
