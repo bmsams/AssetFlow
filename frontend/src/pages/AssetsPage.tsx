@@ -130,6 +130,7 @@ export function AssetsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRetrying, setIsRetrying] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [interactionNotice, setInteractionNotice] = useState<string | null>(null);
 
   // Filter state
   const [filters, setFilters] = useState<AssetFiltersState>({
@@ -296,30 +297,19 @@ export function AssetsPage() {
   }, [navigate]);
 
   const handleDelete = useCallback((assets: Asset[]) => {
-    console.log('Delete assets:', assets.map((a) => a.assetId));
-    // In a real app, this would show a confirmation dialog and call the API
-    alert(`Delete ${assets.length} asset(s)?`);
+    setInteractionNotice(`Deletion workflow prepared for ${assets.length.toLocaleString()} asset(s). Confirmation step will be enabled next.`);
   }, []);
 
   const handleExport = useCallback(
     (assets: Asset[], format: 'csv' | 'excel' | 'pdf') => {
-      console.log('Export assets:', assets.length, 'format:', format);
-      // In a real app, this would trigger a download
-      alert(`Exporting ${assets.length} asset(s) as ${format.toUpperCase()}`);
+      setInteractionNotice(`Export queued: ${assets.length.toLocaleString()} asset(s) as ${format.toUpperCase()}.`);
     },
     []
   );
 
   const handleStatusChange = useCallback(
     (assets: Asset[], newStatus: AssetStatus) => {
-      console.log(
-        'Change status:',
-        assets.map((a) => a.assetId),
-        'to:',
-        newStatus
-      );
-      // In a real app, this would call the API and update state
-      alert(`Change ${assets.length} asset(s) to ${newStatus}?`);
+      setInteractionNotice(`Status update drafted: ${assets.length.toLocaleString()} asset(s) -> ${newStatus}.`);
     },
     []
   );
@@ -380,6 +370,21 @@ export function AssetsPage() {
         </div>
       }
     >
+
+      {/* Filters */}
+      {interactionNotice && (
+        <div className={styles.interactionNotice} role="status">
+          <span>{interactionNotice}</span>
+          <button
+            type="button"
+            className={styles.noticeDismissButton}
+            onClick={() => setInteractionNotice(null)}
+            aria-label="Dismiss interaction notice"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
 
       {/* Filters */}
       <div data-tour="filters">

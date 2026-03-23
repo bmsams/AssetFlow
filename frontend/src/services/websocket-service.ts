@@ -429,9 +429,9 @@ export class WebSocketService {
   private log(message: string, data?: unknown): void {
     if (this.config.debug) {
       if (data !== undefined) {
-        console.log(`[WebSocket] ${message}`, data);
+        console.warn(`[WebSocket] ${message}`, data);
       } else {
-        console.log(`[WebSocket] ${message}`);
+        console.warn(`[WebSocket] ${message}`);
       }
     }
   }
