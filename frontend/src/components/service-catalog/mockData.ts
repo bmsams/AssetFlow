@@ -4,7 +4,7 @@
  * Implements Requirements 6B.1, 6B.2: Service catalog with items and categories
  */
 
-import type { CatalogItem, CategoryInfo, CatalogCategory } from '../../types/service-catalog';
+import type { CatalogItem, CategoryInfo } from '../../types/service-catalog';
 
 /**
  * Mock catalog items

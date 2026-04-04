@@ -81,6 +81,16 @@ export function useWebSocket(
   options: UseWebSocketOptions = {}
 ): UseWebSocketResult {
   const { autoConnect = true, onConnectionChange } = options;
+  const {
+    url,
+    autoReconnect,
+    maxReconnectAttempts,
+    reconnectDelay,
+    maxReconnectDelay,
+    heartbeatInterval,
+    heartbeatTimeout,
+    debug,
+  } = config;
 
   const [connectionState, setConnectionState] = useState<ConnectionState>('disconnected');
   const [lastHeartbeat, setLastHeartbeat] = useState<Date | null>(null);
@@ -91,7 +101,16 @@ export function useWebSocket(
 
   // Initialize service
   useEffect(() => {
-    serviceRef.current = new WebSocketService(config);
+    serviceRef.current = new WebSocketService({
+      url,
+      autoReconnect,
+      maxReconnectAttempts,
+      reconnectDelay,
+      maxReconnectDelay,
+      heartbeatInterval,
+      heartbeatTimeout,
+      debug,
+    });
 
     // Subscribe to connection state changes
     const unsubscribe = serviceRef.current.onConnectionStateChange((state, err) => {
@@ -116,7 +135,18 @@ export function useWebSocket(
       serviceRef.current?.disconnect();
       serviceRef.current = null;
     };
-  }, [config.url]); // Only recreate on URL change
+  }, [
+    url,
+    autoReconnect,
+    maxReconnectAttempts,
+    reconnectDelay,
+    maxReconnectDelay,
+    heartbeatInterval,
+    heartbeatTimeout,
+    debug,
+    autoConnect,
+    onConnectionChange,
+  ]);
 
   // Connect function
   const connect = useCallback(() => {
@@ -253,7 +283,7 @@ export function useDashboardRefresh(
     return () => {
       unsubscribers.forEach((unsub) => unsub());
     };
-  }, [subscribe, eventTypes.join(',')]);
+  }, [subscribe, eventTypes]);
 }
 
 /**

@@ -68,10 +68,8 @@ export function ScanHistory({
         key = date.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' });
       }
       
-      if (!groups[key]) {
-        groups[key] = [];
-      }
-      groups[key]!.push(entry);
+      const group = groups[key] ?? (groups[key] = []);
+      group.push(entry);
     });
     
     return groups;
@@ -158,7 +156,7 @@ export function ScanHistory({
               <button
                 type="button"
                 className={styles.actionButton}
-                onClick={() => onViewAsset(entry.asset!.assetId)}
+                onClick={() => onViewAsset(entry.asset.assetId)}
                 aria-label={`View details for ${entry.asset.displayName}`}
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">

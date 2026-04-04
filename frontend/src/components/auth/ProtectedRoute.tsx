@@ -39,7 +39,7 @@ export function ProtectedRoute({
   }
 
   // Check if user has at least one of the required roles
-  const hasRequiredRole = user?.roles?.some(role => requiredRoles.includes(role as UserRole));
+  const hasRequiredRole = user?.roles?.some(role => requiredRoles.includes(role));
 
   if (!hasRequiredRole) {
     return <AccessDeniedPage requiredRoles={requiredRoles} />;

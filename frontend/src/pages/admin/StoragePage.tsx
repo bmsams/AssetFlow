@@ -244,6 +244,7 @@ export function StoragePage() {
         }
         void fetchStockrooms();
       } else if (modal.mode === 'bin' && modal.parentId) {
+        const parentId = modal.parentId;
         if (modal.isEdit && modal.editItem) {
           await adminApi.binLocations.update((modal.editItem as BinLocation).binId, {
             description: formData.description,
@@ -253,7 +254,7 @@ export function StoragePage() {
           announce('Bin location updated successfully', 'polite');
         } else {
           await adminApi.binLocations.create({
-            stockroomId: modal.parentId,
+            stockroomId: parentId,
             binCode: formData.binCode,
             aisle: formData.aisle,
             shelf: formData.shelf,
@@ -264,8 +265,8 @@ export function StoragePage() {
           success('Bin location created');
           announce('Bin location created successfully', 'polite');
         }
-        setBinsMap(prev => ({ ...prev, [modal.parentId!]: undefined as unknown as BinLocation[] }));
-        await loadBins(modal.parentId);
+        setBinsMap(prev => ({ ...prev, [parentId]: undefined as unknown as BinLocation[] }));
+        await loadBins(parentId);
       }
 
       closeModal();

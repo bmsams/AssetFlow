@@ -117,9 +117,12 @@ export function FocusTrap({
 
   // Restore focus when trap deactivates
   useEffect(() => {
+    const returnFocusElement = returnFocusTo?.current;
+    const previousElement = previousActiveElement.current;
+
     return () => {
       if (restoreFocus) {
-        const elementToRestore = returnFocusTo?.current || previousActiveElement.current;
+        const elementToRestore = returnFocusElement || previousElement;
         elementToRestore?.focus();
       }
     };

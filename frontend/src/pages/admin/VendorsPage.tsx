@@ -9,6 +9,17 @@ import type { Vendor, VendorType } from '../../types/admin';
 import { getVendorTypeLabel, getVendorRatingBadgeColors } from '../../types/admin';
 import styles from './AdminPage.module.css';
 
+const VENDOR_TYPES: VendorType[] = [
+  'MANUFACTURER',
+  'RESELLER',
+  'DISTRIBUTOR',
+  'SERVICE_PROVIDER',
+  'CONSULTANT',
+  'CONTRACTOR',
+  'LESSOR',
+  'OTHER',
+];
+
 /**
  * Vendors Administration Page
  * Implements Task 16.3.5: Create VendorsPage.tsx with search and filters
@@ -85,8 +96,6 @@ export function VendorsPage() {
     }
   };
 
-  const vendorTypes: VendorType[] = ['MANUFACTURER', 'RESELLER', 'DISTRIBUTOR', 'SERVICE_PROVIDER', 'CONSULTANT', 'CONTRACTOR', 'LESSOR', 'OTHER'];
-
   // Filter configurations for FilterToolbar
   const filterConfigs: FilterConfig[] = useMemo(() => [
     {
@@ -94,7 +103,7 @@ export function VendorsPage() {
       type: 'select',
       label: 'Type',
       placeholder: 'All Types',
-      options: vendorTypes.map(t => ({
+      options: VENDOR_TYPES.map(t => ({
         value: t,
         label: getVendorTypeLabel(t),
       })),

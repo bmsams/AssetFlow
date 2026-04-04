@@ -39,7 +39,7 @@ export function CustomAttributesEditor({
 
   const generateId = () => `attr-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-  const validateKey = (key: string): string | null => {
+  const validateKey = useCallback((key: string): string | null => {
     if (!key.trim()) {
       return 'Key is required';
     }
@@ -53,7 +53,7 @@ export function CustomAttributesEditor({
       return 'This key already exists';
     }
     return null;
-  };
+  }, [attributes]);
 
   const handleAddAttribute = useCallback(() => {
     const validationError = validateKey(newKey);
@@ -72,7 +72,7 @@ export function CustomAttributesEditor({
     setNewKey('');
     setNewValue('');
     setKeyError(null);
-  }, [newKey, newValue, attributes, onChange]);
+  }, [newKey, newValue, attributes, onChange, validateKey]);
 
   const handleRemoveAttribute = useCallback(
     (id: string) => {

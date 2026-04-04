@@ -7,6 +7,16 @@ type DisplayDensity = 'comfortable' | 'compact' | 'spacious';
 
 const DENSITY_STORAGE_KEY = 'ams-display-density';
 const NOTIFICATIONS_STORAGE_KEY = 'ams-notifications';
+type NotificationSettings = { email: boolean; inApp: boolean };
+
+function isNotificationSettings(value: unknown): value is NotificationSettings {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+
+  const candidate = value as Partial<NotificationSettings>;
+  return typeof candidate.email === 'boolean' && typeof candidate.inApp === 'boolean';
+}
 
 function getStoredDensity(): DisplayDensity {
   const stored = localStorage.getItem(DENSITY_STORAGE_KEY);
@@ -16,11 +26,14 @@ function getStoredDensity(): DisplayDensity {
   return 'comfortable';
 }
 
-function getStoredNotifications(): { email: boolean; inApp: boolean } {
+function getStoredNotifications(): NotificationSettings {
   try {
     const stored = localStorage.getItem(NOTIFICATIONS_STORAGE_KEY);
     if (stored) {
-      return JSON.parse(stored);
+      const parsed: unknown = JSON.parse(stored);
+      if (isNotificationSettings(parsed)) {
+        return parsed;
+      }
     }
   } catch {
     // ignore parse errors

@@ -30,9 +30,6 @@ export function AssetCreatePage() {
         attributes: Object.keys(attributes).length > 0 ? attributes : undefined,
       });
       navigate(`/assets/${asset.assetId}`);
-    } catch (err) {
-      // Re-throw so AssetForm can map API errors to field-level errors
-      throw err;
     } finally {
       setIsSubmitting(false);
     }

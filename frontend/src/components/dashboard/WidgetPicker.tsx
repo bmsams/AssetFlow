@@ -30,7 +30,7 @@ function generateWidgetId(type: WidgetType): string {
 export function WidgetPicker({
   onSelectWidget,
   onClose,
-  existingWidgetIds = [],
+  existingWidgetIds: _existingWidgetIds = [],
 }: WidgetPickerProps) {
   const [selectedType, setSelectedType] = useState<WidgetType | null>(null);
   const [title, setTitle] = useState('');

@@ -28,7 +28,7 @@ export function AssetEditPage() {
       try {
         setIsLoading(true);
         setLoadError(null);
-        const data = await assetApi.get(assetId!);
+        const data = await assetApi.get(assetId);
         if (isMounted) {
           setAsset(data as AnyAsset);
         }
@@ -70,9 +70,6 @@ export function AssetEditPage() {
         attributes: Object.keys(attributes).length > 0 ? attributes : undefined,
       });
       navigate(`/assets/${assetId}`);
-    } catch (err) {
-      // Re-throw so AssetForm can map API errors to field-level errors
-      throw err;
     } finally {
       setIsSubmitting(false);
     }

@@ -14,7 +14,7 @@ import { parseApiErrorToFieldErrors } from './error-mapping';
 import { useEntityOptions } from '../../hooks/useEntityOptions';
 import { adminApi } from '../../services/admin-api';
 import type { Building, Department, CostCenter, Stockroom } from '../../types/admin';
-import type { AssetType, AssetStatus, AnyAsset } from '../../types/asset';
+import type { AssetType, AnyAsset } from '../../types/asset';
 import styles from './AssetForm.module.css';
 
 export type FormMode = 'create' | 'edit';

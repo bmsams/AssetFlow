@@ -155,9 +155,15 @@ export function DepartmentsPage() {
     depts.forEach(d => map.set(d.departmentId, { ...d, childDepartments: [] }));
 
     depts.forEach(d => {
-      const dept = map.get(d.departmentId)!;
-      if (d.parentDepartmentId && map.has(d.parentDepartmentId)) {
-        const parent = map.get(d.parentDepartmentId)!;
+      const dept = map.get(d.departmentId);
+      if (!dept) return;
+
+      if (d.parentDepartmentId) {
+        const parent = map.get(d.parentDepartmentId);
+        if (!parent) {
+          roots.push(dept);
+          return;
+        }
         parent.childDepartments = parent.childDepartments || [];
         parent.childDepartments.push(dept);
       } else {
