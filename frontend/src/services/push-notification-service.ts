@@ -20,6 +20,25 @@ import type {
 } from '../types/notification';
 import { DEFAULT_NOTIFICATION_PREFERENCES } from '../types/notification';
 
+function asRecord(value: unknown): Record<string, unknown> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return {};
+  }
+  return value as Record<string, unknown>;
+}
+
+function isPushNotificationPayload(value: unknown): value is PushNotificationPayload {
+  const payload = asRecord(value);
+  return (
+    typeof payload['id'] === 'string' &&
+    typeof payload['type'] === 'string' &&
+    typeof payload['title'] === 'string' &&
+    typeof payload['body'] === 'string' &&
+    typeof payload['priority'] === 'string' &&
+    typeof payload['timestamp'] === 'string'
+  );
+}
+
 /**
  * Notification click handler type
  */
@@ -438,9 +457,13 @@ export class PushNotificationService {
     }
 
     navigator.serviceWorker.addEventListener('message', (event) => {
-      if (event.data?.type === 'NOTIFICATION_CLICK') {
-        const { notification, action } = event.data;
-        this.handleNotificationClick(notification, action);
+      const message = asRecord(event.data);
+      if (message['type'] === 'NOTIFICATION_CLICK') {
+        const notification = message['notification'];
+        const action = typeof message['action'] === 'string' ? message['action'] : undefined;
+        if (isPushNotificationPayload(notification)) {
+          this.handleNotificationClick(notification, action);
+        }
       }
     });
   }
@@ -508,7 +531,12 @@ export class PushNotificationService {
     try {
       const stored = localStorage.getItem(STORAGE_KEYS.PREFERENCES);
       if (stored) {
-        return { ...DEFAULT_NOTIFICATION_PREFERENCES, ...JSON.parse(stored) };
+        const parsed: unknown = JSON.parse(stored);
+        const parsedRecord = asRecord(parsed);
+        return {
+          ...DEFAULT_NOTIFICATION_PREFERENCES,
+          ...(parsedRecord as Partial<NotificationPreferences>),
+        };
       }
     } catch (error) {
       console.error('Failed to load notification preferences:', error);

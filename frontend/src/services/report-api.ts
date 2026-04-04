@@ -21,6 +21,16 @@ import type {
   MaintenanceComplianceReport,
 } from '../types/report';
 
+function getApiBaseUrl(): string {
+  const env = import.meta.env as Record<string, unknown>;
+  const configuredUrl = env['VITE_API_URL'];
+  const baseUrl =
+    typeof configuredUrl === 'string' && configuredUrl.length > 0
+      ? configuredUrl
+      : 'http://localhost:3001/v1';
+  return baseUrl.replace(/\/$/, '');
+}
+
 /**
  * Build query string from filters
  */
@@ -245,7 +255,7 @@ export async function exportReport(
   const url = `/reports/${reportType}/export?${queryString}`;
 
   // For file downloads, we need to handle the response differently
-  const baseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:3001/v1').replace(/\/$/, '');
+  const baseUrl = getApiBaseUrl();
   const token = getAccessToken();
   const response = await fetch(`${baseUrl}${url}`, {
     method: 'GET',

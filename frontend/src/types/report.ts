@@ -13,7 +13,6 @@ import type { AssetStatus, AssetType } from './asset';
 // ============================================================================
 
 const DEFAULT_LOCALE = 'en-US';
-const DEFAULT_CURRENCY = 'USD';
 
 /**
  * Threshold constants for utilization coloring

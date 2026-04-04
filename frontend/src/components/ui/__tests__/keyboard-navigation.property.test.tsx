@@ -1288,7 +1288,7 @@ describe('Keyboard Navigation Completeness Property-Based Tests', () => {
             cleanup();
             
             const elements: JSX.Element[] = [];
-            let expectedOrder: string[] = [];
+            const expectedOrder: string[] = [];
             
             if (config.hasInput) {
               elements.push(<input key="input" type="text" data-testid="form-input" />);

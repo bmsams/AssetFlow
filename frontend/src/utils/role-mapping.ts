@@ -5,6 +5,13 @@
 import type { UserRole } from '../hooks/useAuth';
 import { VALID_ROLES } from '../types/roles';
 
+function asRecord(value: unknown): Record<string, unknown> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return {};
+  }
+  return value as Record<string, unknown>;
+}
+
 export function extractRolesFromToken(idToken: string | null): UserRole[] {
   if (!idToken) return ['viewer'];
 
@@ -13,7 +20,7 @@ export function extractRolesFromToken(idToken: string | null): UserRole[] {
     if (!base64Url) return ['viewer'];
 
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const payload = JSON.parse(
+    const rawPayload: unknown = JSON.parse(
       decodeURIComponent(
         atob(base64)
           .split('')
@@ -21,8 +28,12 @@ export function extractRolesFromToken(idToken: string | null): UserRole[] {
           .join('')
       )
     );
+    const payload = asRecord(rawPayload);
 
-    const groups: string[] = payload['cognito:groups'] || [];
+    const rawGroups = payload['cognito:groups'];
+    const groups = Array.isArray(rawGroups)
+      ? rawGroups.filter((group): group is string => typeof group === 'string')
+      : [];
     const roles = groups.filter((g) => VALID_ROLES.has(g)) as UserRole[];
     return roles.length > 0 ? roles : ['viewer'];
   } catch {

@@ -5,6 +5,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
 import { ReceivingForm } from './ReceivingForm';
 import { receivingApi } from '../../services/receiving-api';
+import type { ReceivingRecordResponse, ScanAssetResponse } from '../../services/receiving-api';
 
 vi.mock('../../services/receiving-api', () => ({
   receivingApi: {
@@ -70,7 +71,7 @@ describe('ReceivingForm', () => {
           inspectionRequired: false,
         },
       ],
-    } as any);
+    } as ReceivingRecordResponse);
 
     renderReceivingForm('/procurement/receiving?poId=po-1');
 
@@ -107,7 +108,7 @@ describe('ReceivingForm', () => {
           inspectionRequired: false,
         },
       ],
-    } as any);
+    } as ReceivingRecordResponse);
 
     vi.mocked(receivingApi.scanAsset).mockResolvedValue({
       asset: {
@@ -137,7 +138,7 @@ describe('ReceivingForm', () => {
       },
       isLineComplete: false,
       isReceivingComplete: false,
-    } as any);
+    } as ScanAssetResponse);
 
     renderReceivingForm('/procurement/receiving?poId=po-1');
     await screen.findByRole('heading', { name: 'Receive Items' });

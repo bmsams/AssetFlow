@@ -311,7 +311,7 @@ export async function createTransfer(
     );
   }
 
-  const dataPayload = response.data as Record<string, unknown>;
+  const dataPayload = response.data;
   const transfer = (dataPayload['transfer'] as Record<string, unknown> | undefined) ?? dataPayload;
   if (!transfer || typeof transfer['transferId'] !== 'string') {
     throw new ApiError('CREATE_FAILED', 'Transfer response missing transfer payload', 400, response.requestId);
@@ -331,7 +331,7 @@ export async function approveTransfer(transferId: string): Promise<TransferOrder
     );
   }
 
-  const dataPayload = response.data as Record<string, unknown>;
+  const dataPayload = response.data;
   const transfer = (dataPayload['transfer'] as Record<string, unknown> | undefined) ?? dataPayload;
   if (!transfer || typeof transfer['transferId'] !== 'string') {
     throw new ApiError('APPROVE_FAILED', 'Approval response missing transfer payload', 400, response.requestId);
@@ -354,7 +354,7 @@ export async function completeTransfer(
     );
   }
 
-  const dataPayload = response.data as Record<string, unknown>;
+  const dataPayload = response.data;
   const transfer = (dataPayload['transfer'] as Record<string, unknown> | undefined) ?? dataPayload;
   if (!transfer || typeof transfer['transferId'] !== 'string') {
     throw new ApiError('COMPLETE_FAILED', 'Complete response missing transfer payload', 400, response.requestId);

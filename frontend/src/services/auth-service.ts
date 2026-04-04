@@ -26,6 +26,19 @@ interface CognitoConfig {
   domain: string;
 }
 
+interface CognitoAuthResult {
+  AccessToken?: string;
+  IdToken?: string;
+  RefreshToken?: string;
+}
+
+interface CognitoAuthResponse {
+  message?: string;
+  __type?: string;
+  ChallengeName?: string;
+  AuthenticationResult?: CognitoAuthResult;
+}
+
 /**
  * User information
  */
@@ -46,15 +59,63 @@ export interface LoginCredentials {
   password: string;
 }
 
+function asRecord(value: unknown): Record<string, unknown> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return {};
+  }
+  return value as Record<string, unknown>;
+}
+
+function asString(value: unknown): string | undefined {
+  return typeof value === 'string' ? value : undefined;
+}
+
+function asBoolean(value: unknown): boolean | undefined {
+  return typeof value === 'boolean' ? value : undefined;
+}
+
+function getEnvString(key: string): string | undefined {
+  const env = import.meta.env as Record<string, unknown>;
+  const value = env[key];
+  return typeof value === 'string' ? value : undefined;
+}
+
+function parseCognitoAuthResult(value: unknown): CognitoAuthResult | undefined {
+  const payload = asRecord(value);
+  const accessToken = asString(payload['AccessToken']);
+  const idToken = asString(payload['IdToken']);
+  const refreshToken = asString(payload['RefreshToken']);
+
+  if (!accessToken && !idToken && !refreshToken) {
+    return undefined;
+  }
+
+  return {
+    AccessToken: accessToken,
+    IdToken: idToken,
+    RefreshToken: refreshToken,
+  };
+}
+
+function parseCognitoResponse(value: unknown): CognitoAuthResponse {
+  const payload = asRecord(value);
+  return {
+    message: asString(payload['message']),
+    __type: asString(payload['__type']),
+    ChallengeName: asString(payload['ChallengeName']),
+    AuthenticationResult: parseCognitoAuthResult(payload['AuthenticationResult']),
+  };
+}
+
 /**
  * Get Cognito configuration from environment
  */
 function getCognitoConfig(): CognitoConfig {
   return {
-    userPoolId: import.meta.env.VITE_COGNITO_USER_POOL_ID || '',
-    clientId: import.meta.env.VITE_COGNITO_CLIENT_ID || '',
-    region: import.meta.env.VITE_AWS_REGION || 'us-east-1',
-    domain: import.meta.env.VITE_COGNITO_DOMAIN || '',
+    userPoolId: getEnvString('VITE_COGNITO_USER_POOL_ID') ?? '',
+    clientId: getEnvString('VITE_COGNITO_CLIENT_ID') ?? '',
+    region: getEnvString('VITE_AWS_REGION') ?? 'us-east-1',
+    domain: getEnvString('VITE_COGNITO_DOMAIN') ?? '',
   };
 }
 
@@ -73,7 +134,8 @@ function parseJwt(token: string): Record<string, unknown> {
         .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
         .join('')
     );
-    return JSON.parse(jsonPayload);
+    const parsed: unknown = JSON.parse(jsonPayload);
+    return asRecord(parsed);
   } catch {
     return {};
   }
@@ -84,9 +146,9 @@ function parseJwt(token: string): Record<string, unknown> {
  */
 function isTokenExpired(token: string): boolean {
   const payload = parseJwt(token);
-  const exp = payload.exp as number | undefined;
+  const exp = payload['exp'];
   
-  if (!exp) return true;
+  if (typeof exp !== 'number') return true;
   
   // Add 60 second buffer for clock skew
   return Date.now() >= (exp * 1000) - 60000;
@@ -97,18 +159,20 @@ function isTokenExpired(token: string): boolean {
  */
 function getUserInfoFromToken(idToken: string): UserInfo | null {
   const payload = parseJwt(idToken);
+  const sub = asString(payload['sub']);
+  const email = asString(payload['email']);
   
-  if (!payload.sub || !payload.email) {
+  if (!sub || !email) {
     return null;
   }
   
   return {
-    sub: payload.sub as string,
-    email: payload.email as string,
-    emailVerified: payload.email_verified as boolean ?? false,
-    name: payload.name as string | undefined,
-    givenName: payload.given_name as string | undefined,
-    familyName: payload.family_name as string | undefined,
+    sub,
+    email,
+    emailVerified: asBoolean(payload['email_verified']) ?? false,
+    name: asString(payload['name']),
+    givenName: asString(payload['given_name']),
+    familyName: asString(payload['family_name']),
   };
 }
 
@@ -169,16 +233,17 @@ export async function login(credentials: LoginCredentials): Promise<UserInfo> {
     }
   );
   
-  const data = await response.json();
+  const rawData: unknown = await response.json().catch(() => ({}));
+  const data = parseCognitoResponse(rawData);
   
   if (!response.ok) {
-    const errorMessage = data.message || data.__type || 'Authentication failed';
+    const errorMessage = data.message ?? data.__type ?? 'Authentication failed';
     throw new Error(errorMessage);
   }
   
   const authResult = data.AuthenticationResult;
   
-  if (!authResult) {
+  if (!authResult?.AccessToken || !authResult.IdToken) {
     // Handle challenges (MFA, new password required, etc.)
     if (data.ChallengeName) {
       throw new Error(`Authentication challenge required: ${data.ChallengeName}`);
@@ -271,7 +336,8 @@ export async function refreshAccessToken(): Promise<string> {
     }
   );
   
-  const data = await response.json();
+  const rawData: unknown = await response.json().catch(() => ({}));
+  const data = parseCognitoResponse(rawData);
   
   if (!response.ok) {
     // Refresh token expired or invalid - force logout
@@ -288,8 +354,9 @@ export async function refreshAccessToken(): Promise<string> {
   
   // Update tokens
   setAccessToken(authResult.AccessToken);
-  if (authResult.IdToken) {
-    setIdToken(authResult.IdToken);
+  const idToken = authResult.IdToken;
+  if (idToken) {
+    setIdToken(idToken);
   }
   
   return authResult.AccessToken;

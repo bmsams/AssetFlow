@@ -39,11 +39,17 @@ interface RequestOptions {
   skipAuth?: boolean;
 }
 
+function getEnvString(key: string): string | undefined {
+  const env = import.meta.env as Record<string, unknown>;
+  const value = env[key];
+  return typeof value === 'string' ? value : undefined;
+}
+
 /**
  * Get API configuration based on environment
  */
 function getApiConfig(): ApiConfig {
-  const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001/v1';
+  const baseUrl = getEnvString('VITE_API_URL') ?? 'http://localhost:3001/v1';
 
   return {
     baseUrl: baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl,
@@ -207,7 +213,7 @@ async function request<T>(
         body: body ? JSON.stringify(body) : undefined,
         signal: controller.signal,
       });
-      const responseData = await response.json().catch(() => ({}));
+      const responseData: unknown = await response.json().catch(() => ({}));
       return { response, responseData };
     } finally {
       clearTimeout(timeoutId);

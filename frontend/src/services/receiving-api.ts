@@ -354,7 +354,7 @@ function mapScanAssetResponse(raw: Record<string, unknown>): ScanAssetResponse {
     receivingRecord: mapReceivingRecord(asRecord(raw['receivingRecord'])),
     isLineComplete:
       typeof raw['isLineComplete'] === 'boolean'
-        ? (raw['isLineComplete'] as boolean)
+        ? raw['isLineComplete']
         : receivingLine.receivedQuantity >= receivingLine.expectedQuantity,
     isReceivingComplete: Boolean(raw['isReceivingComplete']),
   };

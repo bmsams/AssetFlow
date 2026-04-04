@@ -169,10 +169,12 @@ export class WebSocketService {
     handler: WebSocketEventHandler<T>
   ): () => void {
     const key = eventType;
-    if (!this.eventHandlers.has(key)) {
-      this.eventHandlers.set(key, new Set());
+    let handlers = this.eventHandlers.get(key);
+    if (!handlers) {
+      handlers = new Set();
+      this.eventHandlers.set(key, handlers);
     }
-    this.eventHandlers.get(key)!.add(handler as WebSocketEventHandler);
+    handlers.add(handler as WebSocketEventHandler);
 
     this.log(`Subscribed to ${eventType}`);
 
@@ -269,9 +271,13 @@ export class WebSocketService {
   /**
    * Handle incoming message
    */
-  private handleMessage(data: string): void {
+  private handleMessage(data: unknown): void {
     try {
-      const parsed = JSON.parse(data);
+      if (typeof data !== 'string') {
+        this.log('Received non-string message payload', data);
+        return;
+      }
+      const parsed: unknown = JSON.parse(data);
 
       if (!isDashboardEvent(parsed)) {
         this.log('Received invalid event format', parsed);
