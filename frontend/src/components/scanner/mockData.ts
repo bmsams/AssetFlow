@@ -77,7 +77,7 @@ export const mockScanHistory: ScanHistoryEntry[] = [
     barcodeValue: 'AMS-HW-20250101-ABC123',
     barcodeFormat: 'QR_CODE',
     scannedAt: '2025-01-15T10:30:00Z',
-    asset: mockScannedAssets['AMS-HW-20250101-ABC123']!,
+    asset: mockScannedAssets['AMS-HW-20250101-ABC123'],
     success: true,
   },
   {
@@ -85,7 +85,7 @@ export const mockScanHistory: ScanHistoryEntry[] = [
     barcodeValue: 'AMS-HW-20250102-DEF456',
     barcodeFormat: 'CODE_128',
     scannedAt: '2025-01-15T09:45:00Z',
-    asset: mockScannedAssets['AMS-HW-20250102-DEF456']!,
+    asset: mockScannedAssets['AMS-HW-20250102-DEF456'],
     success: true,
   },
   {
@@ -101,7 +101,7 @@ export const mockScanHistory: ScanHistoryEntry[] = [
     barcodeValue: 'AMS-HW-20250103-GHI789',
     barcodeFormat: 'QR_CODE',
     scannedAt: '2025-01-14T16:20:00Z',
-    asset: mockScannedAssets['AMS-HW-20250103-GHI789']!,
+    asset: mockScannedAssets['AMS-HW-20250103-GHI789'],
     success: true,
   },
   {
@@ -109,7 +109,7 @@ export const mockScanHistory: ScanHistoryEntry[] = [
     barcodeValue: 'AMS-ENT-20250105-MNO345',
     barcodeFormat: 'QR_CODE',
     scannedAt: '2025-01-14T14:10:00Z',
-    asset: mockScannedAssets['AMS-ENT-20250105-MNO345']!,
+    asset: mockScannedAssets['AMS-ENT-20250105-MNO345'],
     success: true,
   },
 ];

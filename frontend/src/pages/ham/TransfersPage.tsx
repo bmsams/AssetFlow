@@ -16,7 +16,7 @@ import {
 import { adminApi } from '../../services/admin-api';
 import { assetApi } from '../../services/asset-api';
 import { stockroomApi, type InventoryItem } from '../../services/stockroom-api';
-import type { Building, Floor, Room, Stockroom } from '../../types/admin';
+import type { Building, Stockroom } from '../../types/admin';
 import type { Asset } from '../../types/asset';
 import styles from '../Page.module.css';
 
@@ -124,7 +124,8 @@ function getExplicitStockroomBuildingIds(
   }
 
   if (stockroom.roomId && roomToBuildingId.has(stockroom.roomId)) {
-    return [roomToBuildingId.get(stockroom.roomId)!];
+    const mappedBuildingId = roomToBuildingId.get(stockroom.roomId);
+    return mappedBuildingId ? [mappedBuildingId] : [];
   }
 
   return [];
@@ -319,12 +320,12 @@ export function TransfersPage() {
       setStockrooms(stockroomResult.items);
 
       const floorBuildingByFloorId = new Map<string, string>();
-      for (const floor of floorResult.items as Floor[]) {
+      for (const floor of floorResult.items) {
         floorBuildingByFloorId.set(floor.floorId, floor.buildingId);
       }
 
       const roomBuildingMap = new Map<string, string>();
-      for (const room of roomResult.items as Room[]) {
+      for (const room of roomResult.items) {
         const buildingId = floorBuildingByFloorId.get(room.floorId);
         if (buildingId) {
           roomBuildingMap.set(room.roomId, buildingId);

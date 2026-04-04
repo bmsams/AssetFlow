@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import type { Task, TaskFilter, TaskSort, TaskStatus, TaskPriority, TaskType } from '../../types/task';
+import type { Task, TaskFilter, TaskSort, TaskStatus, TaskPriority } from '../../types/task';
 import { TaskCard } from './TaskCard';
 import { isTaskOverdue } from './mockData';
 import styles from './TaskList.module.css';
@@ -48,7 +48,6 @@ export function TaskList({
 }: TaskListProps) {
   const [filter, setFilter] = useState<TaskFilter>(initialFilter);
   const [sort, setSort] = useState<TaskSort>(initialSort);
-  const [showFilterPanel, setShowFilterPanel] = useState(false);
 
   // Filter tasks
   const filteredTasks = useMemo(() => {
@@ -271,7 +270,7 @@ export function TaskList({
                 <line x1="4" y1="18" x2="12" y2="18" />
               </svg>
               Sort
-              {sort.direction === 'asc' ? ' ↑' : ' ↓'}
+              {sort.direction === 'asc' ? ' (Asc)' : ' (Desc)'}
             </button>
 
             {hasActiveFilters && (
@@ -339,3 +338,4 @@ export function TaskList({
 }
 
 export default TaskList;
+

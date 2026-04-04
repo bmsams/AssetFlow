@@ -5,6 +5,18 @@ import { adminApi } from '../../services/admin-api';
 import type { Department, UserDetails, UpdateUserRequest } from '../../types/admin';
 import styles from './AdminPage.module.css';
 
+type UserEditFormValues = {
+  firstName: string;
+  lastName: string;
+  departmentId: string;
+  managerId: string;
+};
+
+const getValue = (values: Record<string, unknown>, key: keyof UserEditFormValues): string => {
+  const value = values[key];
+  return typeof value === 'string' ? value : '';
+};
+
 /**
  * User Edit Page
  * Allows updating firstName, lastName, departmentId, and managerId.
@@ -67,23 +79,31 @@ export function UserEditPage() {
     void loadUser();
   }, [loadUser]);
 
-  const validateForm = useCallback((values: Record<string, any>): Record<string, string> => {
+  const validateForm = useCallback((values: Record<string, unknown>): Record<string, string> => {
     const errors: Record<string, string> = {};
-    if (!values.firstName?.trim()) errors.firstName = 'First name is required';
-    if (!values.lastName?.trim()) errors.lastName = 'Last name is required';
+    const firstName = getValue(values, 'firstName').trim();
+    const lastName = getValue(values, 'lastName').trim();
+
+    if (!firstName) errors.firstName = 'First name is required';
+    if (!lastName) errors.lastName = 'Last name is required';
     return errors;
   }, []);
 
-  const handleSubmit = useCallback(async (values: Record<string, any>) => {
+  const handleSubmit = useCallback(async (values: Record<string, unknown>) => {
     if (!userId) return;
+    const firstName = getValue(values, 'firstName').trim();
+    const lastName = getValue(values, 'lastName').trim();
+    const departmentId = getValue(values, 'departmentId').trim();
+    const managerId = getValue(values, 'managerId').trim();
+
     try {
       setIsSaving(true);
       setError(null);
       const data: UpdateUserRequest = {
-        firstName: values.firstName,
-        lastName: values.lastName,
-        departmentId: values.departmentId || undefined,
-        managerId: values.managerId || undefined,
+        firstName,
+        lastName,
+        departmentId: departmentId || undefined,
+        managerId: managerId || undefined,
       };
       await adminApi.users.update(userId, data);
       navigate('/admin/users');

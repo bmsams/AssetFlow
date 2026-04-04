@@ -7,7 +7,7 @@
 
 import { type ReactNode, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import type { WidgetConfig, WidgetSize, DrillDownTarget } from '../../types/widget';
+import type { WidgetConfig, WidgetSize } from '../../types/widget';
 import { getDrillDownTarget, getWidgetGridSpan } from '../../types/widget';
 import styles from './WidgetContainer.module.css';
 
@@ -53,7 +53,7 @@ export function WidgetContainer({
   config,
   children,
   isEditing = false,
-  onSettingsChange,
+  onSettingsChange: _onSettingsChange,
   onRemove,
   onToggleVisibility,
   drillDownContext,

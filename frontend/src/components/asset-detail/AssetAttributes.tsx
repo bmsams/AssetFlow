@@ -181,11 +181,11 @@ export function AssetAttributes({
   const getTypeSpecificAttributes = (): AttributeField[] => {
     switch (asset.assetType) {
       case 'HARDWARE':
-        return getHardwareAttributes(asset as HardwareAssetDetail);
+        return getHardwareAttributes(asset);
       case 'SOFTWARE':
-        return getSoftwareAttributes(asset as SoftwareAssetDetail);
+        return getSoftwareAttributes(asset);
       case 'ENTERPRISE':
-        return getEnterpriseAttributes(asset as EnterpriseAssetDetail);
+        return getEnterpriseAttributes(asset);
       default:
         return [];
     }

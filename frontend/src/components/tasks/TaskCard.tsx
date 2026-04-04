@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import type { Task } from '../../types/task';
 import { SwipeableCard, type SwipeAction } from '../layout/SwipeableCard';
-import { getPriorityColor, getStatusColor, formatTaskType, isTaskOverdue } from './mockData';
+import { formatTaskType, isTaskOverdue } from './mockData';
 import styles from './TaskCard.module.css';
 
 export interface TaskCardProps {
@@ -202,10 +202,10 @@ export function TaskCard({
         {swipeEnabled && (task.status === 'pending' || task.status === 'in_progress') && (
           <div className={styles.swipeHint} aria-hidden="true">
             {task.status === 'pending' && onStart && (
-              <span className={styles.swipeRight}>← Swipe right to start</span>
+              <span className={styles.swipeRight}>Swipe right to start</span>
             )}
             {task.status === 'in_progress' && onComplete && (
-              <span className={styles.swipeLeft}>Swipe left to complete →</span>
+              <span className={styles.swipeLeft}>Swipe left to complete</span>
             )}
           </div>
         )}
@@ -215,3 +215,4 @@ export function TaskCard({
 }
 
 export default TaskCard;
+
