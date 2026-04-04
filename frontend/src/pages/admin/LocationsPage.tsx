@@ -306,6 +306,7 @@ export function LocationsPage() {
         }
         void fetchBuildings();
       } else if (modal.mode === 'floor' && modal.parentId) {
+        const parentId = modal.parentId;
         if (modal.isEdit && modal.editItem) {
           await adminApi.floors.update((modal.editItem as Floor).floorId, {
             name: formData.name,
@@ -323,9 +324,10 @@ export function LocationsPage() {
           success('Floor created');
           announce('Floor created successfully', 'polite');
         }
-        setFloorsMap(prev => removeMapKey(prev, modal.parentId!));
-        await loadFloors(modal.parentId, true);
+        setFloorsMap(prev => removeMapKey(prev, parentId));
+        await loadFloors(parentId, true);
       } else if (modal.mode === 'room' && modal.parentId) {
+        const parentId = modal.parentId;
         if (modal.isEdit && modal.editItem) {
           await adminApi.rooms.update((modal.editItem as Room).roomId, {
             name: formData.name,
@@ -343,9 +345,10 @@ export function LocationsPage() {
           success('Room created');
           announce('Room created successfully', 'polite');
         }
-        setRoomsMap(prev => removeMapKey(prev, modal.parentId!));
-        await loadRooms(modal.parentId, true);
+        setRoomsMap(prev => removeMapKey(prev, parentId));
+        await loadRooms(parentId, true);
       } else if (modal.mode === 'rack' && modal.parentId) {
+        const parentId = modal.parentId;
         if (modal.isEdit && modal.editItem) {
           await adminApi.racks.update((modal.editItem as Rack).rackId, {
             totalUnits: parseInt(formData.totalUnits, 10),
@@ -363,8 +366,8 @@ export function LocationsPage() {
           success('Rack created');
           announce('Rack created successfully', 'polite');
         }
-        setRacksMap(prev => removeMapKey(prev, modal.parentId!));
-        await loadRacks(modal.parentId, true);
+        setRacksMap(prev => removeMapKey(prev, parentId));
+        await loadRacks(parentId, true);
       }
 
       closeModal();

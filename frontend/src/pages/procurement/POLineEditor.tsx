@@ -556,6 +556,8 @@ export function POLineEditor({
 /**
  * Create an empty line item for adding new lines
  */
+// Helpers are intentionally exported for form pages and tests.
+/* eslint-disable react-refresh/only-export-components */
 export function createEmptyLine(): EditablePOLine {
   return {
     productType: 'HARDWARE_MODEL',
@@ -653,5 +655,6 @@ export function validateLines(lines: EditablePOLine[]): Record<number, LineValid
 export function calculateSubtotal(lines: EditablePOLine[]): number {
   return lines.reduce((sum, line) => sum + line.quantity * line.unitPrice, 0);
 }
+/* eslint-enable react-refresh/only-export-components */
 
 export default POLineEditor;

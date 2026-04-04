@@ -675,7 +675,7 @@ export function PurchaseOrderDetailPage() {
       {/* Loading skeleton */}
       {isLoading ? (
         renderSkeleton()
-      ) : (
+      ) : purchaseOrder ? (
         <>
           {/* Error Message */}
           {error && (
@@ -691,15 +691,15 @@ export function PurchaseOrderDetailPage() {
           {/* Order Status */}
           <div className={styles.detailSubtitle}>
             <StatusBadge
-              label={formatStatus(purchaseOrder!.status)}
-              variant={getStatusVariant(purchaseOrder!.status)}
+              label={formatStatus(purchaseOrder.status)}
+              variant={getStatusVariant(purchaseOrder.status)}
             />
             <span style={{ marginLeft: 'var(--spacing-2)' }}>
-              Created on {formatDate(purchaseOrder!.orderDate)}
+              Created on {formatDate(purchaseOrder.orderDate)}
             </span>
           </div>
 
-          {canShowCloseWorkflow(purchaseOrder!.status) && closeGuard && (
+          {canShowCloseWorkflow(purchaseOrder.status) && closeGuard && (
             <div className={styles.closeGuardPanel}>
               <div className={styles.closeGuardHeader}>
                 <strong>Close Readiness:</strong>{' '}
@@ -721,51 +721,51 @@ export function PurchaseOrderDetailPage() {
             <div className={styles.detailGrid}>
               <div className={styles.detailItem}>
                 <span className={styles.detailLabel}>Vendor</span>
-                <span className={styles.detailValue}>{purchaseOrder!.vendorName}</span>
+                <span className={styles.detailValue}>{purchaseOrder.vendorName}</span>
               </div>
               <div className={styles.detailItem}>
                 <span className={styles.detailLabel}>Cost Center</span>
-                <span className={styles.detailValue}>{purchaseOrder!.costCenterCode}</span>
+                <span className={styles.detailValue}>{purchaseOrder.costCenterCode}</span>
               </div>
               <div className={styles.detailItem}>
                 <span className={styles.detailLabel}>Requested By</span>
-                <span className={styles.detailValue}>{purchaseOrder!.requesterName}</span>
+                <span className={styles.detailValue}>{purchaseOrder.requesterName}</span>
               </div>
               <div className={styles.detailItem}>
                 <span className={styles.detailLabel}>Order Date</span>
-                <span className={styles.detailValue}>{formatDate(purchaseOrder!.orderDate)}</span>
+                <span className={styles.detailValue}>{formatDate(purchaseOrder.orderDate)}</span>
               </div>
 
-              {purchaseOrder!.approverName && (
+              {purchaseOrder.approverName && (
                 <div className={styles.detailItem}>
                   <span className={styles.detailLabel}>Approved By</span>
-                  <span className={styles.detailValue}>{purchaseOrder!.approverName}</span>
+                  <span className={styles.detailValue}>{purchaseOrder.approverName}</span>
                 </div>
               )}
-              {purchaseOrder!.approvedDate && (
+              {purchaseOrder.approvedDate && (
                 <div className={styles.detailItem}>
                   <span className={styles.detailLabel}>Approved Date</span>
-                  <span className={styles.detailValue}>{formatDate(purchaseOrder!.approvedDate)}</span>
+                  <span className={styles.detailValue}>{formatDate(purchaseOrder.approvedDate)}</span>
                 </div>
               )}
-              {purchaseOrder!.sentDate && (
+              {purchaseOrder.sentDate && (
                 <div className={styles.detailItem}>
                   <span className={styles.detailLabel}>Sent Date</span>
-                  <span className={styles.detailValue}>{formatDate(purchaseOrder!.sentDate)}</span>
+                  <span className={styles.detailValue}>{formatDate(purchaseOrder.sentDate)}</span>
                 </div>
               )}
-              {purchaseOrder!.expectedDeliveryDate && (
+              {purchaseOrder.expectedDeliveryDate && (
                 <div className={styles.detailItem}>
                   <span className={styles.detailLabel}>Expected Delivery</span>
                   <span className={styles.detailValue}>
-                    {formatDate(purchaseOrder!.expectedDeliveryDate)}
+                    {formatDate(purchaseOrder.expectedDeliveryDate)}
                   </span>
                 </div>
               )}
-              {purchaseOrder!.notes && (
+              {purchaseOrder.notes && (
                 <div className={styles.detailItem} style={{ gridColumn: '1 / -1' }}>
                   <span className={styles.detailLabel}>Notes</span>
-                  <span className={styles.detailValue}>{purchaseOrder!.notes}</span>
+                  <span className={styles.detailValue}>{purchaseOrder.notes}</span>
                 </div>
               )}
             </div>
@@ -789,19 +789,19 @@ export function PurchaseOrderDetailPage() {
             <div className={styles.totalsContainer}>
               <div className={styles.totalsRow}>
                 <span className={styles.totalsLabel}>Subtotal</span>
-                <span>{formatCurrency(purchaseOrder!.subtotal)}</span>
+                <span>{formatCurrency(purchaseOrder.subtotal)}</span>
               </div>
               <div className={styles.totalsRow}>
                 <span className={styles.totalsLabel}>Tax</span>
-                <span>{formatCurrency(purchaseOrder!.taxAmount)}</span>
+                <span>{formatCurrency(purchaseOrder.taxAmount)}</span>
               </div>
               <div className={styles.totalsRow}>
                 <span className={styles.totalsLabel}>Shipping</span>
-                <span>{formatCurrency(purchaseOrder!.shippingAmount)}</span>
+                <span>{formatCurrency(purchaseOrder.shippingAmount)}</span>
               </div>
               <div className={styles.totalsFinalRow}>
                 <span>Total</span>
-                <span>{formatCurrency(purchaseOrder!.totalAmount)}</span>
+                <span>{formatCurrency(purchaseOrder.totalAmount)}</span>
               </div>
             </div>
           </div>
@@ -809,7 +809,7 @@ export function PurchaseOrderDetailPage() {
           {/* Status History Card */}
           <div className={styles.detailCard}>
             <h2 className={styles.detailCardTitle}>Status History</h2>
-            {renderStatusHistory(purchaseOrder!.statusHistory)}
+            {renderStatusHistory(purchaseOrder.statusHistory)}
           </div>
 
           {/* Modals */}
@@ -822,7 +822,7 @@ export function PurchaseOrderDetailPage() {
             title="Approve Purchase Order"
           >
             <p className={styles.modalDescription}>
-              Are you sure you want to approve {purchaseOrder!.poNumber}?
+              Are you sure you want to approve {purchaseOrder.poNumber}?
             </p>
             <textarea
               value={actionNotes}
@@ -863,7 +863,7 @@ export function PurchaseOrderDetailPage() {
             title="Reject Purchase Order"
           >
             <p className={styles.modalDescription}>
-              Please provide a reason for rejecting {purchaseOrder!.poNumber}.
+              Please provide a reason for rejecting {purchaseOrder.poNumber}.
             </p>
             <textarea
               value={actionNotes}
@@ -906,7 +906,7 @@ export function PurchaseOrderDetailPage() {
             title="Cancel Purchase Order"
           >
             <p className={styles.modalDescription}>
-              Are you sure you want to cancel {purchaseOrder!.poNumber}? This action cannot be undone.
+              Are you sure you want to cancel {purchaseOrder.poNumber}? This action cannot be undone.
             </p>
             <textarea
               value={actionNotes}
@@ -948,7 +948,7 @@ export function PurchaseOrderDetailPage() {
             title="Post Receipt Accounting"
           >
             <p className={styles.modalDescription}>
-              Post receipt accrual entries for {purchaseOrder!.poNumber}.
+              Post receipt accrual entries for {purchaseOrder.poNumber}.
             </p>
             <input
               type="text"
@@ -999,7 +999,7 @@ export function PurchaseOrderDetailPage() {
             title="Post Invoice Accounting"
           >
             <p className={styles.modalDescription}>
-              Post invoice liability entries for {purchaseOrder!.poNumber}.
+              Post invoice liability entries for {purchaseOrder.poNumber}.
             </p>
             <input
               type="text"
@@ -1049,7 +1049,7 @@ export function PurchaseOrderDetailPage() {
             title="Close Purchase Order"
           >
             <p className={styles.modalDescription}>
-              Close {purchaseOrder!.poNumber} after accounting checks are complete.
+              Close {purchaseOrder.poNumber} after accounting checks are complete.
             </p>
             <textarea
               value={closeNotesInput}
@@ -1081,9 +1081,10 @@ export function PurchaseOrderDetailPage() {
             </div>
           </Modal>
         </>
-      )}
+      ) : null}
     </PageLayout>
   );
 }
 
 export default PurchaseOrderDetailPage;
+
